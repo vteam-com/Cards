@@ -34,10 +34,6 @@ class GameScreenState extends State<GameScreen> {
                 ),
                 _buildInstructionText(gameModel.activePlayerName),
                 _buildDeckOfCards(context, gameModel),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: _buildCompleteTurnButton(context),
-                ),
               ],
             ),
           ),
@@ -82,7 +78,53 @@ class GameScreenState extends State<GameScreen> {
           const SizedBox(height: 20),
           buildPlayerHand(context, gameModel, index),
           const SizedBox(height: 20),
+          buildNewCardInHand(isActivePlayer, gameModel),
         ],
+      ),
+    );
+  }
+
+  Widget buildNewCardInHand(bool isActivePlayer, final GameModel gameModel) {
+    if (isActivePlayer && gameModel.cardPickedUpFromDeckOrDiscarded != null) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            child: const Text('Keep'),
+            onPressed: () {},
+          ),
+          SizedBox(
+            width: 66,
+            height: 100,
+            child: PlayingCardWidget(
+              card: gameModel.cardPickedUpFromDeckOrDiscarded!,
+            ),
+          ),
+          ElevatedButton(
+            child: const Text('Discard'),
+            onPressed: () {
+              setState(() {
+                gameModel.discardedCards
+                    .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
+                gameModel.cardPickedUpFromDeckOrDiscarded = null;
+              });
+            },
+          ),
+        ],
+      );
+    }
+    return SizedBox(
+      height: 100,
+      child: Center(
+        child: Text(
+          isActivePlayer
+              ? 'Pick a card from the discard or top deck.'
+              : 'Wait for your turn :)',
+          style: TextStyle(
+            fontSize: isActivePlayer ? 20 : 12,
+            color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
+          ),
+        ),
       ),
     );
   }
@@ -121,23 +163,17 @@ class GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildDeckOfCards(BuildContext context, GameModel gameModel) {
-    return DeckOfCards(
-      cardsInTheDeck: context.watch<GameModel>().cardsInTheDeck.length,
-      discardedCards: context.watch<GameModel>().discardedCards,
-      onDrawCard: () {
-        final gameModel = context.read<GameModel>();
-        gameModel.drawCard();
-        gameModel.nextPlayer(); // Move to the next player
-      },
-    );
-  }
-
-  Widget _buildCompleteTurnButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        context.read<GameModel>().nextPlayer(); // Complete current turn
-      },
-      child: const Text('Complete Turn'),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: DeckOfCards(
+        cardsInTheDeck: context.watch<GameModel>().cardsInTheDeck.length,
+        discardedCards: context.watch<GameModel>().discardedCards,
+        onDrawCard: () {
+          final gameModel = context.read<GameModel>();
+          gameModel.playerDrawsFromDeck(context);
+          // gameModel.nextPlayer(); // Move to the next player
+        },
+      ),
     );
   }
 

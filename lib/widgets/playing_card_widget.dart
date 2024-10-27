@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class PlayingCardWidget extends StatelessWidget {
   const PlayingCardWidget({super.key, required this.card});
-  final PlayingCard card;
+  final PlayingCard? card;
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +12,9 @@ class PlayingCardWidget extends StatelessWidget {
       width: 100,
       height: 140,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: card == null ? null : Colors.white,
         borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.black, width: 2),
+        border: card == null ? null : Border.all(color: Colors.black, width: 2),
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
@@ -23,7 +23,11 @@ class PlayingCardWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: card.suit == 'Joker' ? _buildJoker() : _buildRegularCard(),
+      child: card == null
+          ? _buildPlaceHolder()
+          : card!.suit == 'Joker'
+              ? _buildJoker()
+              : _buildRegularCard(),
     );
   }
 
@@ -34,11 +38,11 @@ class PlayingCardWidget extends StatelessWidget {
           top: 4,
           left: 4,
           child: Text(
-            card.rank,
+            card!.rank,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: _getSuitColor(card.suit),
+              color: _getSuitColor(card!.suit),
             ),
           ),
         ),
@@ -46,24 +50,37 @@ class PlayingCardWidget extends StatelessWidget {
           bottom: 4,
           right: 4,
           child: Text(
-            card.rank,
+            card!.rank,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: _getSuitColor(card.suit),
+              color: _getSuitColor(card!.suit),
             ),
           ),
         ),
         Center(
           child: Text(
-            _getSuitSymbol(card.suit),
+            _getSuitSymbol(card!.suit),
             style: TextStyle(
               fontSize: 15,
-              color: _getSuitColor(card.suit),
+              color: _getSuitColor(card!.suit),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildPlaceHolder() {
+    return const Center(
+      child: Text(
+        '',
+        style: TextStyle(
+          fontSize: 24,
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
@@ -77,7 +94,7 @@ class PlayingCardWidget extends StatelessWidget {
             'Joker',
             style: TextStyle(
               fontSize: 24,
-              color: card.rank == 'Black' ? Colors.black : Colors.red,
+              color: card!.rank == 'Black' ? Colors.black : Colors.red,
               fontWeight: FontWeight.bold,
             ),
           ),

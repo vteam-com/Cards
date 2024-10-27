@@ -15,12 +15,14 @@ class GameModel with ChangeNotifier {
   List<List<bool>> cardVisibility = [];
   final List<String> playerNames;
   int currentPlayerIndex = 0;
+  // This ensures the player has picked or drawn a card during their turn
   bool playerHasPickedCard = false;
-
   int get numPlayers => playerNames.length;
   String get activePlayerName => playerNames[currentPlayerIndex];
 
   bool userCanPickFromDeckOrDiscarded = true;
+
+  PlayingCard? cardPickedUpFromDeckOrDiscarded;
 
   void initializeGame() {
     // for testing
@@ -120,13 +122,18 @@ class GameModel with ChangeNotifier {
   }
 
   // Ensure that only the active player can draw a card
-  void playerDrawsFromDeck() {
-    if (userCanPickFromDeckOrDiscarded && cardsInTheDeck.isNotEmpty) {
-      playerHands[currentPlayerIndex].add(cardsInTheDeck.removeLast());
+  void playerDrawsFromDeck(BuildContext context) {
+    if (userCanPickFromDeckOrDiscarded &&
+        cardsInTheDeck.isNotEmpty &&
+        currentPlayerIndex == currentPlayerIndex) {
+      cardPickedUpFromDeckOrDiscarded = cardsInTheDeck.removeLast();
+
       playerHasPickedCard = true;
       userCanPickFromDeckOrDiscarded =
           false; // Restrict further picking in the same turn
       notifyListeners();
+    } else {
+      showTurnNotification(context, "It's not your turn!");
     }
   }
 
