@@ -1,9 +1,9 @@
+import 'package:cards/playing_card_widget.dart';
 import 'package:cards/widgets/card_deck.dart';
 import 'package:cards/widgets/player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'game_model.dart';
-import 'playing_card_widget.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -29,22 +29,38 @@ class GameScreenState extends State<GameScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              Column(
-                children: [
-                  Expanded(child: _buildPlayers(gameModel)),
-                  const SizedBox(height: 20),
-                  _buildInstructionText(gameModel.activePlayerName),
-                  const SizedBox(height: 20),
-                  DeckOfCards(
-                    cardsRemaining: context.watch<GameModel>().deck.length,
-                    topOpenCard: context.watch<GameModel>().openCards.isNotEmpty
-                        ? context.watch<GameModel>().openCards.last
-                        : null,
-                    onDrawCard: () {
-                      context.read<GameModel>().drawCard();
-                    },
-                  ),
-                ],
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Center(
+                      child: _buildPlayers(gameModel),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildInstructionText(gameModel.activePlayerName),
+                    const SizedBox(height: 20),
+                    DeckOfCards(
+                      cardsRemaining: context.watch<GameModel>().deck.length,
+                      topOpenCard:
+                          context.watch<GameModel>().openCards.isNotEmpty
+                              ? context.watch<GameModel>().openCards.last
+                              : null,
+                      onDrawCard: () {
+                        context.read<GameModel>().drawCard();
+                        // Move to the next player after drawing a card
+                        context.read<GameModel>().nextPlayer();
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Assume a player action such as discarding or completing a turn has occurred
+                        context.read<GameModel>().nextPlayer();
+                      },
+                      child: const Text('Complete Turn'),
+                    ),
+                  ],
+                ),
               ),
             ],
           );
@@ -69,12 +85,10 @@ class GameScreenState extends State<GameScreen> {
             decoration: BoxDecoration(
               color: Colors.green.shade800.withAlpha(100),
               borderRadius: BorderRadius.circular(20.0),
-              border: isActivePlayer
-                  ? Border.all(
-                      color: Colors.yellow,
-                      width: 4.0,
-                    )
-                  : null,
+              border: Border.all(
+                color: isActivePlayer ? Colors.yellow : Colors.transparent,
+                width: isActivePlayer ? 4.0 : 12.0,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
