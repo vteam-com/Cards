@@ -27,8 +27,9 @@ class GameScreenState extends State<GameScreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-                    child:
-                        SingleChildScrollView(child: buildPlayers(gameModel)),
+                    child: SingleChildScrollView(
+                      child: buildPlayers(context, gameModel),
+                    ),
                   ),
                 ),
                 _buildInstructionText(gameModel.activePlayerName),
@@ -45,20 +46,24 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget buildPlayers(GameModel gameModel) {
+  Widget buildPlayers(BuildContext context, GameModel gameModel) {
     return Wrap(
       spacing: 40.0,
       runSpacing: 40.0,
       children: List.generate(gameModel.numPlayers, (index) {
-        return buildPlayerIsland(gameModel, index);
+        return buildPlayerIsland(context, gameModel, index);
       }),
     );
   }
 
-  Widget buildPlayerIsland(GameModel gameModel, int index) {
+  Widget buildPlayerIsland(
+    BuildContext context,
+    GameModel gameModel,
+    int index,
+  ) {
     final playerName = gameModel.playerNames[index];
     final playerScore = gameModel.calculatePlayerScore(index);
-    final isActivePlayer = gameModel.activePlayerIndex == index;
+    final isActivePlayer = gameModel.currentPlayerIndex == index;
     return Container(
       width: 300,
       padding: const EdgeInsets.all(20),
@@ -75,14 +80,14 @@ class GameScreenState extends State<GameScreen> {
         children: [
           Player(name: playerName, score: playerScore),
           const SizedBox(height: 20),
-          buildPlayerHand(gameModel, index),
+          buildPlayerHand(context, gameModel, index),
           const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  Widget buildPlayerHand(GameModel gameModel, int index) {
+  Widget buildPlayerHand(BuildContext context, GameModel gameModel, int index) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -91,18 +96,23 @@ class GameScreenState extends State<GameScreen> {
       ),
       itemCount: gameModel.playerHands[index].length,
       itemBuilder: (context, gridIndex) {
-        return _buildCardTile(gameModel, index, gridIndex);
+        return _buildCardTile(context, gameModel, index, gridIndex);
       },
     );
   }
 
-  Widget _buildCardTile(GameModel gameModel, int playerIndex, int gridIndex) {
+  Widget _buildCardTile(
+    BuildContext context,
+    GameModel gameModel,
+    int playerIndex,
+    int gridIndex,
+  ) {
     final isVisible = gameModel.cardVisibility[playerIndex][gridIndex];
     final card = gameModel.playerHands[playerIndex][gridIndex];
 
     return GestureDetector(
       onTap: () {
-        gameModel.revealCard(playerIndex, gridIndex);
+        gameModel.revealCard(context, playerIndex, gridIndex);
         gameModel.saveGameState();
       },
       child:

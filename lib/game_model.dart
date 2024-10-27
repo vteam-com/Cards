@@ -14,10 +14,14 @@ class GameModel with ChangeNotifier {
   List<List<PlayingCard>> playerHands = [];
   List<List<bool>> cardVisibility = [];
   final List<String> playerNames;
-  int activePlayerIndex = 0;
+  int currentPlayerIndex = 0;
+  bool playerHasPickedCard = false;
 
   int get numPlayers => playerNames.length;
-  String get activePlayerName => playerNames[activePlayerIndex];
+  String get activePlayerName => playerNames[currentPlayerIndex];
+
+  bool userCanPickFromDeckOrDiscarded = true;
+
   void initializeGame() {
     // for testing
     // initializeGameWithAllAcesToFirstPlayer();
@@ -94,6 +98,54 @@ class GameModel with ChangeNotifier {
     notifyListeners();
   }
 
+  bool isCardInDiscardPile(PlayingCard card) {
+    // Implement logic to check if the specified card is in the discard pile
+    return true; // Placeholder
+  }
+
+  // End turn adjusts flag back for the next player
+  void endTurn() {
+    if (playerHasPickedCard) {
+      advanceToNextPlayer();
+      userCanPickFromDeckOrDiscarded = true; // Reset for the next player's turn
+    } else {
+      // Optionally notify the current player that they must draw or pick a card
+    }
+  }
+
+  void advanceToNextPlayer() {
+    playerHasPickedCard = false; // Reset flag for next player
+    currentPlayerIndex = (currentPlayerIndex + 1) % playerNames.length;
+    // Optional: Handle any additional end-turn actions, like checking game state
+  }
+
+  // Ensure that only the active player can draw a card
+  void playerDrawsFromDeck() {
+    if (userCanPickFromDeckOrDiscarded && cardsInTheDeck.isNotEmpty) {
+      playerHands[currentPlayerIndex].add(cardsInTheDeck.removeLast());
+      playerHasPickedCard = true;
+      userCanPickFromDeckOrDiscarded =
+          false; // Restrict further picking in the same turn
+      notifyListeners();
+    }
+  }
+
+  // Ensure that only the active player can pick from discard pile
+  void playerPicksFromDiscardPile(PlayingCard card) {
+    if (userCanPickFromDeckOrDiscarded && isCardInDiscardPile(card)) {
+      playerHands[currentPlayerIndex].add(card);
+      playerHasPickedCard = true;
+      userCanPickFromDeckOrDiscarded =
+          false; // Restrict further picking in the same turn
+      notifyListeners();
+    }
+  }
+
+  void onPlayerActionComplete() {
+    // This method can be called to automatically end the turn if all actions are complete
+    endTurn();
+  }
+
   void revealInitialCards(int playerIndex) {
     if (cardVisibility[playerIndex].length >= 2) {
       cardVisibility[playerIndex][0] = true;
@@ -101,19 +153,38 @@ class GameModel with ChangeNotifier {
     }
   }
 
-  void toggleCardVisibility(int playerIndex, int cardIndex) {
+  void toggleCardVisibility(
+    BuildContext context,
+    int playerIndex,
+    int cardIndex,
+  ) {
+    if (currentPlayerIndex == playerIndex) {
+      cardVisibility[playerIndex][cardIndex] =
+          !cardVisibility[playerIndex][cardIndex];
+      saveGameState(); // Save state after toggling visibility
+      notifyListeners();
+    } else {
+      showTurnNotification(context, "It's not your turn!");
+    }
+
     cardVisibility[playerIndex][cardIndex] =
         !cardVisibility[playerIndex][cardIndex];
     saveGameState(); // Save state after toggling visibility
     notifyListeners();
   }
 
-  void revealCard(int playerIndex, int cardIndex) {
-    // Only change the visibility to true, if it is currently false
-    if (!cardVisibility[playerIndex][cardIndex]) {
+  void revealCard(
+    BuildContext context,
+    int playerIndex,
+    int cardIndex,
+  ) {
+    if (currentPlayerIndex == playerIndex &&
+        !cardVisibility[playerIndex][cardIndex]) {
       cardVisibility[playerIndex][cardIndex] = true;
       saveGameState(); // Save state after changing visibility
       notifyListeners();
+    } else {
+      showTurnNotification(context, "It's not your turn!");
     }
   }
 
@@ -204,13 +275,12 @@ class GameModel with ChangeNotifier {
   }
 
   void setActivePlayer(int index) {
-    activePlayerIndex = index;
+    currentPlayerIndex = index;
     notifyListeners();
   }
 
   void nextPlayer() {
-    activePlayerIndex = (activePlayerIndex + 1) % numPlayers;
-    notifyListeners();
+    setActivePlayer((currentPlayerIndex + 1) % numPlayers);
   }
 
   Future<void> saveGameState() async {
@@ -267,4 +337,15 @@ class GameModel with ChangeNotifier {
         )
         .toList();
   }
+}
+
+void showTurnNotification(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      duration: const Duration(
+        seconds: 2,
+      ), // Duration for which the SnackBar will be visible
+    ),
+  );
 }
