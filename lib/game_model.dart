@@ -17,7 +17,7 @@ class GameModel with ChangeNotifier {
   int activePlayerIndex = 0;
 
   int get numPlayers => playerNames.length;
-
+  String get activePlayerName => playerNames[activePlayerIndex];
   void initializeGame() {
     int numPlayers = playerNames.length;
     int numberOfDecks = numPlayers > 2 ? 2 : 1;
