@@ -140,6 +140,10 @@ class GameScreenState extends State<GameScreen> {
     final instructionText =
         'It\'s your turn $playersName! Choose to either pick the open deck card or tap on the top of the hidden deck.';
 
+    final parts = instructionText.split(playersName);
+    final beforeName = parts[0];
+    final afterName = parts[1];
+
     return Container(
       padding: const EdgeInsets.all(12.0),
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -148,9 +152,18 @@ class GameScreenState extends State<GameScreen> {
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(color: Colors.black54),
       ),
-      child: Text(
-        instructionText,
-        style: const TextStyle(fontSize: 16),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 20, color: Colors.black),
+          children: <TextSpan>[
+            TextSpan(text: beforeName),
+            TextSpan(
+              text: playersName,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            TextSpan(text: afterName),
+          ],
+        ),
         textAlign: TextAlign.center,
       ),
     );
