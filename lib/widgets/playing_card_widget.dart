@@ -69,12 +69,18 @@ class PlayingCardWidget extends StatelessWidget {
 
   Widget _buildJoker() {
     return Center(
-      child: Text(
-        'Joker',
-        style: TextStyle(
-          fontSize: 24,
-          color: card.rank == 'Black' ? Colors.black : Colors.red,
-          fontWeight: FontWeight.bold,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Transform.rotate(
+          angle: -45 * 3.14159265 / 180, // Converts degrees to radians
+          child: Text(
+            'Joker',
+            style: TextStyle(
+              fontSize: 24,
+              color: card.rank == 'Black' ? Colors.black : Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );
