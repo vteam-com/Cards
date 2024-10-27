@@ -20,7 +20,7 @@ class GameScreenState extends State<GameScreen> {
         title: const Text('9-Card Golf Game'),
       ),
       body: Consumer<GameModel>(
-        builder: (context, GameModel gameModel, _) {
+        builder: (context, gameModel, _) {
           return Stack(
             children: [
               Positioned.fill(
@@ -33,32 +33,13 @@ class GameScreenState extends State<GameScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    Center(
-                      child: _buildPlayers(gameModel),
-                    ),
+                    Center(child: buildPlayers(gameModel)),
                     const SizedBox(height: 20),
                     _buildInstructionText(gameModel.activePlayerName),
                     const SizedBox(height: 20),
-                    DeckOfCards(
-                      cardsRemaining: context.watch<GameModel>().deck.length,
-                      topOpenCard:
-                          context.watch<GameModel>().openCards.isNotEmpty
-                              ? context.watch<GameModel>().openCards.last
-                              : null,
-                      onDrawCard: () {
-                        context.read<GameModel>().drawCard();
-                        // Move to the next player after drawing a card
-                        context.read<GameModel>().nextPlayer();
-                      },
-                    ),
+                    _buildDeckOfCards(context, gameModel),
                     const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Assume a player action such as discarding or completing a turn has occurred
-                        context.read<GameModel>().nextPlayer();
-                      },
-                      child: const Text('Complete Turn'),
-                    ),
+                    _buildCompleteTurnButton(context),
                   ],
                 ),
               ),
@@ -69,74 +50,96 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildPlayers(final GameModel gameModel) {
+  Widget buildPlayers(GameModel gameModel) {
     return Wrap(
       spacing: 40.0,
       runSpacing: 40.0,
-      children: List.generate(
-        gameModel.numPlayers,
-        (int index) {
-          String playerName = gameModel.playerNames[index];
-          int playerScore = gameModel.calculatePlayerScore(index);
-          bool isActivePlayer = gameModel.activePlayerIndex == index;
-          return Container(
-            width: 300,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.green.shade800.withAlpha(100),
-              borderRadius: BorderRadius.circular(20.0),
-              border: Border.all(
-                color: isActivePlayer ? Colors.yellow : Colors.transparent,
-                width: isActivePlayer ? 4.0 : 12.0,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Player(
-                  name: playerName,
-                  score: playerScore,
-                ),
-                const SizedBox(height: 20),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                  ),
-                  itemCount: gameModel.playerHands[index].length,
-                  itemBuilder: (context, gridIndex) {
-                    bool isVisible = gameModel.cardVisibility[index][gridIndex];
-                    var card = gameModel.playerHands[index][gridIndex];
-                    return GestureDetector(
-                      onTap: () {
-                        gameModel.toggleCardVisibility(
-                          index,
-                          gridIndex,
-                        );
-                        gameModel.saveGameState();
-                      },
-                      child: isVisible
-                          ? PlayingCardWidget(card: card)
-                          : const HiddenCardWidget(),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          );
-        },
+      children: List.generate(gameModel.numPlayers, (index) {
+        return buildPlayerCard(gameModel, index);
+      }),
+    );
+  }
+
+  Widget buildPlayerCard(GameModel gameModel, int index) {
+    final playerName = gameModel.playerNames[index];
+    final playerScore = gameModel.calculatePlayerScore(index);
+    final isActivePlayer = gameModel.activePlayerIndex == index;
+    return Container(
+      width: 300,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.green.shade800.withAlpha(100),
+        borderRadius: BorderRadius.circular(20.0),
+        border: Border.all(
+          color: isActivePlayer ? Colors.yellow : Colors.transparent,
+          width: isActivePlayer ? 4.0 : 12.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Player(name: playerName, score: playerScore),
+          const SizedBox(height: 20),
+          _buildPlayerHand(gameModel, index),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }
 
-  // Define a function to build the instructions for the active player
-  Widget _buildInstructionText(final String playersName) {
-    String instructionText =
+  Widget _buildPlayerHand(GameModel gameModel, int index) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+      ),
+      itemCount: gameModel.playerHands[index].length,
+      itemBuilder: (context, gridIndex) {
+        return _buildCardTile(gameModel, index, gridIndex);
+      },
+    );
+  }
+
+  Widget _buildCardTile(GameModel gameModel, int playerIndex, int gridIndex) {
+    final isVisible = gameModel.cardVisibility[playerIndex][gridIndex];
+    final card = gameModel.playerHands[playerIndex][gridIndex];
+
+    return GestureDetector(
+      onTap: () {
+        gameModel.toggleCardVisibility(playerIndex, gridIndex);
+        gameModel.saveGameState();
+      },
+      child:
+          isVisible ? PlayingCardWidget(card: card) : const HiddenCardWidget(),
+    );
+  }
+
+  Widget _buildDeckOfCards(BuildContext context, GameModel gameModel) {
+    return DeckOfCards(
+      cardsInTheDeck: context.watch<GameModel>().cardsInTheDeck.length,
+      discardedCards: context.watch<GameModel>().discardedCards,
+      onDrawCard: () {
+        final gameModel = context.read<GameModel>();
+        gameModel.drawCard();
+        gameModel.nextPlayer(); // Move to the next player
+      },
+    );
+  }
+
+  Widget _buildCompleteTurnButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        context.read<GameModel>().nextPlayer(); // Complete current turn
+      },
+      child: const Text('Complete Turn'),
+    );
+  }
+
+  Widget _buildInstructionText(String playersName) {
+    final instructionText =
         'It\'s your turn $playersName! Choose to either pick the open deck card or tap on the top of the hidden deck.';
 
-    // Instruction Text Area
     return Container(
       padding: const EdgeInsets.all(12.0),
       margin: const EdgeInsets.symmetric(horizontal: 16.0),

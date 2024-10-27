@@ -9,8 +9,8 @@ class GameModel with ChangeNotifier {
   GameModel({required this.playerNames}) {
     initializeGame();
   }
-  List<PlayingCard> deck = [];
-  List<PlayingCard> openCards = []; // Tracks cards drawn from the deck
+  List<PlayingCard> cardsInTheDeck = [];
+  List<PlayingCard> discardedCards = [];
   List<List<PlayingCard>> playerHands = [];
   List<List<bool>> cardVisibility = [];
   final List<String> playerNames;
@@ -21,14 +21,14 @@ class GameModel with ChangeNotifier {
   void initializeGame() {
     int numPlayers = playerNames.length;
     int numberOfDecks = numPlayers > 2 ? 2 : 1;
-    deck = generateDeck(numberOfDecks: numberOfDecks);
+    cardsInTheDeck = generateDeck(numberOfDecks: numberOfDecks);
 
     playerHands = List.generate(numPlayers, (_) => []);
     cardVisibility = List.generate(numPlayers, (_) => []);
 
     for (int i = 0; i < numPlayers; i++) {
       for (int j = 0; j < 9; j++) {
-        playerHands[i].add(deck.removeLast());
+        playerHands[i].add(cardsInTheDeck.removeLast());
         cardVisibility[i].add(false); // All cards are initially hidden
       }
       revealInitialCards(i);
@@ -63,9 +63,9 @@ class GameModel with ChangeNotifier {
   }
 
   void drawCard() {
-    if (deck.isNotEmpty) {
-      var drawnCard = deck.removeLast();
-      openCards.add(drawnCard); // Only add the card to openCards
+    if (cardsInTheDeck.isNotEmpty) {
+      var drawnCard = cardsInTheDeck.removeLast();
+      discardedCards.add(drawnCard);
       saveGameState();
       notifyListeners();
     }
