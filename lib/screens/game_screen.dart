@@ -18,31 +18,23 @@ class GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Screen(
       title: '9-Card Golf Game',
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/background.png'),
-            fit: BoxFit.cover, // adjust the fit as needed
-          ),
-        ),
-        child: Consumer<GameModel>(
-          builder: (context, gameModel, _) {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Center(child: buildPlayers(gameModel)),
-                  const SizedBox(height: 20),
-                  _buildInstructionText(gameModel.activePlayerName),
-                  const SizedBox(height: 20),
-                  _buildDeckOfCards(context, gameModel),
-                  const SizedBox(height: 10),
-                  _buildCompleteTurnButton(context),
-                ],
-              ),
-            );
-          },
-        ),
+      child: Consumer<GameModel>(
+        builder: (context, gameModel, _) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Center(child: buildPlayers(gameModel)),
+                const SizedBox(height: 20),
+                _buildInstructionText(gameModel.activePlayerName),
+                const SizedBox(height: 20),
+                _buildDeckOfCards(context, gameModel),
+                const SizedBox(height: 10),
+                _buildCompleteTurnButton(context),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
