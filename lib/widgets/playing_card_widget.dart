@@ -1,8 +1,13 @@
 import 'package:cards/widgets/playing_card.dart';
 import 'package:flutter/material.dart';
 
+/// A widget that displays a playing card or a placeholder.
 class PlayingCardWidget extends StatelessWidget {
+  /// Creates a [PlayingCardWidget] with a [PlayingCard] card.
+  /// If the card is null, a placeholder is shown.
   const PlayingCardWidget({super.key, required this.card});
+
+  /// The playing card to be displayed.
   final PlayingCard? card;
 
   @override
@@ -31,6 +36,7 @@ class PlayingCardWidget extends StatelessWidget {
     );
   }
 
+  /// Builds a widget for displaying a regular card with suit and rank.
   Widget _buildRegularCard() {
     return Stack(
       children: [
@@ -71,6 +77,7 @@ class PlayingCardWidget extends StatelessWidget {
     );
   }
 
+  /// Builds a placeholder for when the card data is not available.
   Widget _buildPlaceHolder() {
     return const Center(
       child: Text(
@@ -84,6 +91,7 @@ class PlayingCardWidget extends StatelessWidget {
     );
   }
 
+  /// Builds a widget for displaying a Joker card.
   Widget _buildJoker() {
     return Center(
       child: FittedBox(
@@ -103,6 +111,7 @@ class PlayingCardWidget extends StatelessWidget {
     );
   }
 
+  /// Returns the suit symbol based on the suit string.
   String _getSuitSymbol(String suit) {
     switch (suit) {
       case 'Hearts':
@@ -118,6 +127,7 @@ class PlayingCardWidget extends StatelessWidget {
     }
   }
 
+  /// Returns the color associated with the suit string.
   Color _getSuitColor(String suit) {
     switch (suit) {
       case 'Hearts':

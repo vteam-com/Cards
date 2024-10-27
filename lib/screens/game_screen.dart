@@ -1,5 +1,5 @@
 import 'package:cards/widgets/card_deck.dart';
-import 'package:cards/widgets/player.dart';
+import 'package:cards/widgets/player_header.dart';
 import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:cards/widgets/screen.dart';
 import 'package:flutter/material.dart';
@@ -26,14 +26,13 @@ class GameScreenState extends State<GameScreen> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                    padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
                     child: SingleChildScrollView(
                       child: buildPlayers(context, gameModel),
                     ),
                   ),
                 ),
-                _buildInstructionText(gameModel.activePlayerName),
-                _buildDeckOfCards(context, gameModel),
+                _buildCroupier(context, gameModel),
               ],
             ),
           ),
@@ -74,25 +73,40 @@ class GameScreenState extends State<GameScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Player(name: playerName, score: playerScore),
+          PlayerHeader(name: playerName, score: playerScore),
           const SizedBox(height: 20),
           buildPlayerHand(context, gameModel, index),
           const SizedBox(height: 20),
-          buildNewCardInHand(isActivePlayer, gameModel),
+          buildPlayerAction(isActivePlayer, gameModel),
         ],
       ),
     );
   }
 
-  Widget buildNewCardInHand(bool isActivePlayer, final GameModel gameModel) {
+  Widget buildPlayerAction(bool isActivePlayer, final GameModel gameModel) {
     if (isActivePlayer && gameModel.cardPickedUpFromDeckOrDiscarded != null) {
+      bool showActionButton = gameModel.currentPlayerStates ==
+          CurrentPlayerStates.takeKeepOrDiscard;
+
       return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ElevatedButton(
-            child: const Text('Keep'),
-            onPressed: () {},
-          ),
+          if (gameModel.currentPlayerStates == CurrentPlayerStates.flipAndSwap)
+            buildMiniInstructions(
+              isActivePlayer,
+              getInstructionToPlayer(gameModel.currentPlayerStates),
+            ),
+          if (showActionButton)
+            ElevatedButton(
+              child: const Text('Keep'),
+              onPressed: () {
+                setState(() {
+                  // swap the card in the player's hand
+                  gameModel.currentPlayerStates =
+                      CurrentPlayerStates.flipAndSwap;
+                });
+              },
+            ),
           SizedBox(
             width: 66,
             height: 100,
@@ -100,30 +114,41 @@ class GameScreenState extends State<GameScreen> {
               card: gameModel.cardPickedUpFromDeckOrDiscarded!,
             ),
           ),
-          ElevatedButton(
-            child: const Text('Discard'),
-            onPressed: () {
-              setState(() {
-                gameModel.discardedCards
-                    .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
-                gameModel.cardPickedUpFromDeckOrDiscarded = null;
-              });
-            },
-          ),
+          if (showActionButton)
+            ElevatedButton(
+              child: const Text('Discard'),
+              onPressed: () {
+                setState(() {
+                  // return the card to the discard pile
+                  gameModel.discardedCards
+                      .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
+                  gameModel.cardPickedUpFromDeckOrDiscarded = null;
+                  gameModel.currentPlayerStates =
+                      CurrentPlayerStates.flipOneCard;
+                });
+              },
+            ),
         ],
       );
     }
     return SizedBox(
       height: 100,
-      child: Center(
-        child: Text(
-          isActivePlayer
-              ? 'Pick a card from the discard or top deck.'
-              : 'Wait for your turn :)',
-          style: TextStyle(
-            fontSize: isActivePlayer ? 20 : 12,
-            color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
-          ),
+      child: buildMiniInstructions(
+        isActivePlayer,
+        isActivePlayer
+            ? getInstructionToPlayer(gameModel.currentPlayerStates)
+            : 'Wait for your turn :)',
+      ),
+    );
+  }
+
+  Widget buildMiniInstructions(bool isActivePlayer, String text) {
+    return Center(
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: isActivePlayer ? 20 : 12,
+          color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
         ),
       ),
     );
@@ -138,12 +163,12 @@ class GameScreenState extends State<GameScreen> {
       ),
       itemCount: gameModel.playerHands[index].length,
       itemBuilder: (context, gridIndex) {
-        return _buildCardTile(context, gameModel, index, gridIndex);
+        return _buildPlayerCardButton(context, gameModel, index, gridIndex);
       },
     );
   }
 
-  Widget _buildCardTile(
+  Widget _buildPlayerCardButton(
     BuildContext context,
     GameModel gameModel,
     int playerIndex,
@@ -155,31 +180,49 @@ class GameScreenState extends State<GameScreen> {
     return GestureDetector(
       onTap: () {
         gameModel.revealCard(context, playerIndex, gridIndex);
-        gameModel.saveGameState();
+        gameModel.currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
       },
       child:
           isVisible ? PlayingCardWidget(card: card) : const HiddenCardWidget(),
     );
   }
 
-  Widget _buildDeckOfCards(BuildContext context, GameModel gameModel) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: DeckOfCards(
-        cardsInTheDeck: context.watch<GameModel>().cardsInTheDeck.length,
-        discardedCards: context.watch<GameModel>().discardedCards,
-        onDrawCard: () {
-          final gameModel = context.read<GameModel>();
-          gameModel.playerDrawsFromDeck(context);
-          // gameModel.nextPlayer(); // Move to the next player
-        },
+  Widget _buildCroupier(BuildContext context, GameModel gameModel) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(50),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Column(
+        children: [
+          _buildInstructionText(gameModel.activePlayerName),
+          const SizedBox(
+            height: 20,
+          ),
+          SizedBox(
+            height: 200,
+            child: DeckOfCards(
+              cardsInTheDeck: context.watch<GameModel>().cardsInTheDeck.length,
+              discardedCards: context.watch<GameModel>().discardedCards,
+              onDrawCard: () {
+                final gameModel = context.read<GameModel>();
+                gameModel.playerDrawsFromDeck(context);
+              },
+              onDrawDiscardedCard: () {
+                final gameModel = context.read<GameModel>();
+                gameModel.playerDrawsFromDiscardedDeck(context);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildInstructionText(String playersName) {
     final instructionText =
-        'It\'s your turn $playersName! Choose to either pick the open deck card or tap on the top of the hidden deck.';
+        'It\'s your turn $playersName, pick a card from the deck or discarded pile.';
 
     final parts = instructionText.split(playersName);
     final beforeName = parts[0];
@@ -187,7 +230,6 @@ class GameScreenState extends State<GameScreen> {
 
     return Container(
       padding: const EdgeInsets.all(16.0),
-      margin: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.8),
         borderRadius: BorderRadius.circular(8.0),
@@ -200,7 +242,7 @@ class GameScreenState extends State<GameScreen> {
             TextSpan(text: beforeName),
             TextSpan(
               text: playersName,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
             ),
             TextSpan(text: afterName),
           ],

@@ -3,6 +3,26 @@ import 'package:cards/widgets/playing_card.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum CurrentPlayerStates {
+  pickCardFromDeck,
+  takeKeepOrDiscard,
+  flipOneCard,
+  flipAndSwap,
+}
+
+String getInstructionToPlayer(CurrentPlayerStates state) {
+  switch (state) {
+    case CurrentPlayerStates.pickCardFromDeck:
+      return 'Pick a card from the deck or the discard pile';
+    case CurrentPlayerStates.takeKeepOrDiscard:
+      return 'Take, keep, or discard';
+    case CurrentPlayerStates.flipOneCard:
+      return 'Flip one card';
+    case CurrentPlayerStates.flipAndSwap:
+      return 'Swap one\nof your\ncards';
+  }
+}
+
 class GameModel with ChangeNotifier {
   // Initialize with the first player by default
 
@@ -15,13 +35,14 @@ class GameModel with ChangeNotifier {
   List<List<bool>> cardVisibility = [];
   final List<String> playerNames;
   int currentPlayerIndex = 0;
-  // This ensures the player has picked or drawn a card during their turn
-  bool playerHasPickedCard = false;
+
   int get numPlayers => playerNames.length;
+
   String get activePlayerName => playerNames[currentPlayerIndex];
 
-  bool userCanPickFromDeckOrDiscarded = true;
-
+  // This ensures the player has picked or drawn a card during their turn
+  CurrentPlayerStates currentPlayerStates =
+      CurrentPlayerStates.pickCardFromDeck;
   PlayingCard? cardPickedUpFromDeckOrDiscarded;
 
   void initializeGame() {
@@ -105,52 +126,88 @@ class GameModel with ChangeNotifier {
     return true; // Placeholder
   }
 
-  // End turn adjusts flag back for the next player
-  void endTurn() {
-    if (playerHasPickedCard) {
-      advanceToNextPlayer();
-      userCanPickFromDeckOrDiscarded = true; // Reset for the next player's turn
-    } else {
-      // Optionally notify the current player that they must draw or pick a card
-    }
-  }
-
   void advanceToNextPlayer() {
-    playerHasPickedCard = false; // Reset flag for next player
+    currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
     currentPlayerIndex = (currentPlayerIndex + 1) % playerNames.length;
     // Optional: Handle any additional end-turn actions, like checking game state
   }
 
   // Ensure that only the active player can draw a card
   void playerDrawsFromDeck(BuildContext context) {
-    if (userCanPickFromDeckOrDiscarded &&
+    if (currentPlayerStates == CurrentPlayerStates.pickCardFromDeck &&
         cardsInTheDeck.isNotEmpty &&
         currentPlayerIndex == currentPlayerIndex) {
       cardPickedUpFromDeckOrDiscarded = cardsInTheDeck.removeLast();
 
-      playerHasPickedCard = true;
-      userCanPickFromDeckOrDiscarded =
-          false; // Restrict further picking in the same turn
+      // Restrict further picking in the same turn
+      currentPlayerStates = CurrentPlayerStates.takeKeepOrDiscard;
+
       notifyListeners();
     } else {
       showTurnNotification(context, "It's not your turn!");
     }
   }
 
-  // Ensure that only the active player can pick from discard pile
-  void playerPicksFromDiscardPile(PlayingCard card) {
-    if (userCanPickFromDeckOrDiscarded && isCardInDiscardPile(card)) {
-      playerHands[currentPlayerIndex].add(card);
-      playerHasPickedCard = true;
-      userCanPickFromDeckOrDiscarded =
-          false; // Restrict further picking in the same turn
+  // Ensure that only the active player can draw a card
+  void playerDrawsFromDiscardedDeck(BuildContext context) {
+    if (currentPlayerStates == CurrentPlayerStates.pickCardFromDeck &&
+        cardsInTheDeck.isNotEmpty &&
+        currentPlayerIndex == currentPlayerIndex) {
+      cardPickedUpFromDeckOrDiscarded = discardedCards.removeLast();
+
+      // Restrict further picking in the same turn
+      currentPlayerStates = CurrentPlayerStates.takeKeepOrDiscard;
+
+      notifyListeners();
+    } else {
+      showTurnNotification(context, "It's not your turn!");
+    }
+  }
+
+  void swapCard(int playerIndex, int gridIndex) {
+    if (cardPickedUpFromDeckOrDiscarded == null) {
+      // If no card has been picked up, the swap cannot occur
+      return;
+    }
+
+    if (playerHands[playerIndex].isNotEmpty &&
+        gridIndex >= 0 &&
+        gridIndex < playerHands[playerIndex].length) {
+      // Swap the player's card with the picked-up card
+      PlayingCard cardToSwap = playerHands[playerIndex][gridIndex];
+
+      // Add the player's card to the discard pile
+      discardedCards.add(cardToSwap);
+
+      // Place the picked-up card in the player's hand at the same position
+      playerHands[playerIndex][gridIndex] = cardPickedUpFromDeckOrDiscarded!;
+
+      // Clear the cardPickedUpFromDeckOrDiscarded after the swap
+      cardPickedUpFromDeckOrDiscarded = null;
+
+      // Save state and notify listeners to update UI
+      saveGameState();
       notifyListeners();
     }
   }
 
+  void moveCardToDiscardPile(int playerIndex, int cardIndex) {
+    if (playerHands[playerIndex].isNotEmpty) {
+      // Remove the card from the player's hand
+      PlayingCard cardToDiscard = playerHands[playerIndex].removeAt(cardIndex);
+
+      // Add the card to the top of the discarded pile
+      discardedCards.add(cardToDiscard);
+
+      // After updating, save the game state and notify listeners to reflect changes in the UI
+      saveGameState();
+      notifyListeners();
+    }
+  }
+
+  /// This method can be called to automatically end the turn if all actions are complete
   void onPlayerActionComplete() {
-    // This method can be called to automatically end the turn if all actions are complete
-    endTurn();
+    advanceToNextPlayer();
   }
 
   void revealInitialCards(int playerIndex) {
@@ -166,10 +223,13 @@ class GameModel with ChangeNotifier {
     int cardIndex,
   ) {
     if (currentPlayerIndex == playerIndex) {
-      cardVisibility[playerIndex][cardIndex] =
-          !cardVisibility[playerIndex][cardIndex];
-      saveGameState(); // Save state after toggling visibility
-      notifyListeners();
+      if (currentPlayerStates == CurrentPlayerStates.flipOneCard) {
+        currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+        cardVisibility[playerIndex][cardIndex] =
+            !cardVisibility[playerIndex][cardIndex];
+        saveGameState(); // Save state after toggling visibility
+        notifyListeners();
+      }
     } else {
       showTurnNotification(context, "It's not your turn!");
     }
@@ -187,9 +247,19 @@ class GameModel with ChangeNotifier {
   ) {
     if (currentPlayerIndex == playerIndex &&
         !cardVisibility[playerIndex][cardIndex]) {
-      cardVisibility[playerIndex][cardIndex] = true;
-      saveGameState(); // Save state after changing visibility
-      notifyListeners();
+      if (currentPlayerStates == CurrentPlayerStates.flipOneCard ||
+          currentPlayerStates == CurrentPlayerStates.flipAndSwap) {
+        cardVisibility[playerIndex][cardIndex] = true;
+
+        if (currentPlayerStates == CurrentPlayerStates.flipAndSwap) {
+          swapCard(playerIndex, cardIndex);
+        }
+        currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+
+        saveGameState(); // Save state after changing visibility
+        notifyListeners();
+        nextPlayer();
+      }
     } else {
       showTurnNotification(context, "It's not your turn!");
     }
@@ -270,15 +340,6 @@ class GameModel with ChangeNotifier {
     }
 
     return score;
-  }
-
-  void drawCard() {
-    if (cardsInTheDeck.isNotEmpty) {
-      var drawnCard = cardsInTheDeck.removeLast();
-      discardedCards.add(drawnCard);
-      saveGameState();
-      notifyListeners();
-    }
   }
 
   void setActivePlayer(int index) {

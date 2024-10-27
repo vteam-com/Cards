@@ -1,8 +1,8 @@
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:flutter/material.dart';
 
-class Player extends StatelessWidget {
-  const Player({super.key, required this.name, required this.score});
+class PlayerHeader extends StatelessWidget {
+  const PlayerHeader({super.key, required this.name, required this.score});
   final String name;
   final int score;
 
