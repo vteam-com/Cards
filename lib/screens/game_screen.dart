@@ -50,12 +50,12 @@ class GameScreenState extends State<GameScreen> {
       spacing: 40.0,
       runSpacing: 40.0,
       children: List.generate(gameModel.numPlayers, (index) {
-        return buildPlayerCard(gameModel, index);
+        return buildPlayerIsland(gameModel, index);
       }),
     );
   }
 
-  Widget buildPlayerCard(GameModel gameModel, int index) {
+  Widget buildPlayerIsland(GameModel gameModel, int index) {
     final playerName = gameModel.playerNames[index];
     final playerScore = gameModel.calculatePlayerScore(index);
     final isActivePlayer = gameModel.activePlayerIndex == index;
@@ -75,14 +75,14 @@ class GameScreenState extends State<GameScreen> {
         children: [
           Player(name: playerName, score: playerScore),
           const SizedBox(height: 20),
-          _buildPlayerHand(gameModel, index),
+          buildPlayerHand(gameModel, index),
           const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  Widget _buildPlayerHand(GameModel gameModel, int index) {
+  Widget buildPlayerHand(GameModel gameModel, int index) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
