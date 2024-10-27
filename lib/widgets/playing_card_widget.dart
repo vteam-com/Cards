@@ -1,4 +1,4 @@
-import 'package:cards/playing_card.dart';
+import 'package:cards/widgets/playing_card.dart';
 import 'package:flutter/material.dart';
 
 class PlayingCardWidget extends StatelessWidget {

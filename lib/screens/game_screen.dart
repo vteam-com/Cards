@@ -1,10 +1,10 @@
-import 'package:cards/playing_card_widget.dart';
 import 'package:cards/widgets/card_deck.dart';
 import 'package:cards/widgets/player.dart';
+import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:cards/widgets/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'game_model.dart';
+import '../game_model.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});

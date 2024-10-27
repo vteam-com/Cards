@@ -1,5 +1,5 @@
-import 'package:cards/playing_card.dart';
-import 'package:cards/playing_card_widget.dart';
+import 'package:cards/widgets/playing_card.dart';
+import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:flutter/material.dart';
 
 class DeckOfCards extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:cards/setup_screen.dart';
+import 'package:cards/screens/setup_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

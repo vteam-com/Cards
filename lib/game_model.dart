@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:cards/playing_card.dart';
+import 'package:cards/widgets/playing_card.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

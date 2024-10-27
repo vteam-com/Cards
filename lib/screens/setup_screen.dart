@@ -1,5 +1,5 @@
 import 'package:cards/game_model.dart';
-import 'package:cards/game_screen.dart';
+import 'package:cards/screens/game_screen.dart';
 import 'package:cards/widgets/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
