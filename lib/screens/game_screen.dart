@@ -20,22 +20,25 @@ class GameScreenState extends State<GameScreen> {
       builder: (final BuildContext context, final GameModel gameModel, _) {
         return Screen(
           title: '9-Card Golf Game',
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-                  child: SingleChildScrollView(child: buildPlayers(gameModel)),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                    child:
+                        SingleChildScrollView(child: buildPlayers(gameModel)),
+                  ),
                 ),
-              ),
-              _buildInstructionText(gameModel.activePlayerName),
-              _buildDeckOfCards(context, gameModel),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: _buildCompleteTurnButton(context),
-              ),
-            ],
+                _buildInstructionText(gameModel.activePlayerName),
+                _buildDeckOfCards(context, gameModel),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: _buildCompleteTurnButton(context),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -99,7 +102,7 @@ class GameScreenState extends State<GameScreen> {
 
     return GestureDetector(
       onTap: () {
-        gameModel.toggleCardVisibility(playerIndex, gridIndex);
+        gameModel.revealCard(playerIndex, gridIndex);
         gameModel.saveGameState();
       },
       child:

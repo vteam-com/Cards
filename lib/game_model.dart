@@ -50,6 +50,15 @@ class GameModel with ChangeNotifier {
     notifyListeners();
   }
 
+  void revealCard(int playerIndex, int cardIndex) {
+    // Only change the visibility to true, if it is currently false
+    if (!cardVisibility[playerIndex][cardIndex]) {
+      cardVisibility[playerIndex][cardIndex] = true;
+      saveGameState(); // Save state after changing visibility
+      notifyListeners();
+    }
+  }
+
   int calculatePlayerScore(int index) {
     int score = 0;
     for (int i = 0; i < playerHands[index].length; i++) {
