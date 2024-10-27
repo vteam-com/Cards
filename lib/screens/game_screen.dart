@@ -16,26 +16,29 @@ class GameScreen extends StatefulWidget {
 class GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
-    return Screen(
-      title: '9-Card Golf Game',
-      child: Consumer<GameModel>(
-        builder: (context, gameModel, _) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                Center(child: buildPlayers(gameModel)),
-                const SizedBox(height: 20),
-                _buildInstructionText(gameModel.activePlayerName),
-                const SizedBox(height: 20),
-                _buildDeckOfCards(context, gameModel),
-                const SizedBox(height: 10),
-                _buildCompleteTurnButton(context),
-              ],
-            ),
-          );
-        },
-      ),
+    return Consumer<GameModel>(
+      builder: (final BuildContext context, final GameModel gameModel, _) {
+        return Screen(
+          title: '9-Card Golf Game',
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                  child: SingleChildScrollView(child: buildPlayers(gameModel)),
+                ),
+              ),
+              _buildInstructionText(gameModel.activePlayerName),
+              _buildDeckOfCards(context, gameModel),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: _buildCompleteTurnButton(context),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -134,8 +137,8 @@ class GameScreenState extends State<GameScreen> {
     final afterName = parts[1];
 
     return Container(
-      padding: const EdgeInsets.all(12.0),
-      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.all(16.0),
+      margin: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.8),
         borderRadius: BorderRadius.circular(8.0),

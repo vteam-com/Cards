@@ -17,23 +17,35 @@ class DeckOfCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildPileUnplayedCards(),
-        _buildPileDiscard(), // Build the discard pile
-      ],
+    return Container(
+      width: 340,
+      height: 200,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(50),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildPileUnplayedCards(),
+            _buildPileDiscard(), // Build the discard pile
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildPileUnplayedCards() {
     return SizedBox(
-      height: 400,
-      width: 200,
+      // height: 400,
+      width: 150,
       child: GestureDetector(
         onTap: onDrawCard,
         child: Stack(
+          alignment: Alignment.center,
           children: List.generate(cardsInTheDeck, (index) {
             double offset = index * 0.5; // Offset for stacking effect
             return Positioned(
@@ -77,9 +89,9 @@ class DeckOfCards extends StatelessWidget {
 
   Widget _buildPileDiscard() {
     return SizedBox(
-      width: 400, // Adjust the width based on the discard pile size
-      height: 200,
+      width: 150, // Adjust the width based on the discard pile size
       child: Stack(
+        alignment: Alignment.center,
         children: List.generate(discardedCards.length, (index) {
           double offset = index * 0.5; // Offset for stacking effect
           return Positioned(
