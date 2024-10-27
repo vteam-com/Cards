@@ -1,6 +1,7 @@
 import 'package:cards/playing_card_widget.dart';
 import 'package:cards/widgets/card_deck.dart';
 import 'package:cards/widgets/player.dart';
+import 'package:cards/widgets/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'game_model.dart';
@@ -15,37 +16,33 @@ class GameScreen extends StatefulWidget {
 class GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('9-Card Golf Game'),
-      ),
-      body: Consumer<GameModel>(
-        builder: (context, gameModel, _) {
-          return Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/background.png',
-                  fit: BoxFit.cover,
-                ),
+    return Screen(
+      title: '9-Card Golf Game',
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/background.png'),
+            fit: BoxFit.cover, // adjust the fit as needed
+          ),
+        ),
+        child: Consumer<GameModel>(
+          builder: (context, gameModel, _) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Center(child: buildPlayers(gameModel)),
+                  const SizedBox(height: 20),
+                  _buildInstructionText(gameModel.activePlayerName),
+                  const SizedBox(height: 20),
+                  _buildDeckOfCards(context, gameModel),
+                  const SizedBox(height: 10),
+                  _buildCompleteTurnButton(context),
+                ],
               ),
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    Center(child: buildPlayers(gameModel)),
-                    const SizedBox(height: 20),
-                    _buildInstructionText(gameModel.activePlayerName),
-                    const SizedBox(height: 20),
-                    _buildDeckOfCards(context, gameModel),
-                    const SizedBox(height: 10),
-                    _buildCompleteTurnButton(context),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
