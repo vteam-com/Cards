@@ -207,11 +207,11 @@ class GameScreenState extends State<GameScreen> {
               discardedCards: context.watch<GameModel>().cardsDeckDiscarded,
               onDrawCard: () {
                 final gameModel = context.read<GameModel>();
-                gameModel.playerDrawsFromDeck(context);
+                gameModel.drawCard(context, fromDiscardPile: false);
               },
               onDrawDiscardedCard: () {
                 final gameModel = context.read<GameModel>();
-                gameModel.playerDrawsFromDiscardedDeck(context);
+                gameModel.drawCard(context, fromDiscardPile: true);
               },
             ),
           ),
