@@ -58,7 +58,7 @@
 <text text-anchor="middle" x="75" y="-188.75" font-family="Arial" font-size="15.00">game_model</text>
 </g>
 <!-- /lib/widgets/playing_card.dart -->
-<g id="node10" class="node">
+<g id="node9" class="node">
 <title>/lib/widgets/playing_card.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M253,-68C253,-68 177,-68 177,-68 171,-68 165,-62 165,-56 165,-56 165,-44 165,-44 165,-38 171,-32 177,-32 177,-32 253,-32 253,-32 259,-32 265,-38 265,-44 265,-44 265,-56 265,-56 265,-62 259,-68 253,-68"/>
 <text text-anchor="middle" x="215" y="-44.75" font-family="Arial" font-size="15.00">playing_card</text>
@@ -82,7 +82,7 @@
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="82.69,-223.79 77.72,-214.43 75.77,-224.85 82.69,-223.79"/>
 </g>
 <!-- /lib/widgets/player_zone.dart -->
-<g id="node9" class="node">
+<g id="node8" class="node">
 <title>/lib/widgets/player_zone.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M351.5,-356C351.5,-356 278.5,-356 278.5,-356 272.5,-356 266.5,-350 266.5,-344 266.5,-344 266.5,-332 266.5,-332 266.5,-326 272.5,-320 278.5,-320 278.5,-320 351.5,-320 351.5,-320 357.5,-320 363.5,-326 363.5,-332 363.5,-332 363.5,-344 363.5,-344 363.5,-350 357.5,-356 351.5,-356"/>
 <text text-anchor="middle" x="315" y="-332.75" font-family="Arial" font-size="15.00">player_zone</text>
@@ -147,44 +147,26 @@
 <path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M232.31,-103.7C229.89,-96.32 227,-87.52 224.28,-79.25"/>
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="227.68,-78.38 221.23,-69.97 221.03,-80.57 227.68,-78.38"/>
 </g>
-<!-- /lib/widgets/card_deck.dart -->
-<g id="node7" class="node">
-<title>/lib/widgets/card_deck.dart</title>
-<path fill="Lavender" stroke="black" stroke-width="1.3" d="M217.5,-212C217.5,-212 156.5,-212 156.5,-212 150.5,-212 144.5,-206 144.5,-200 144.5,-200 144.5,-188 144.5,-188 144.5,-182 150.5,-176 156.5,-176 156.5,-176 217.5,-176 217.5,-176 223.5,-176 229.5,-182 229.5,-188 229.5,-188 229.5,-200 229.5,-200 229.5,-206 223.5,-212 217.5,-212"/>
-<text text-anchor="middle" x="187" y="-188.75" font-family="Arial" font-size="15.00">card_deck</text>
-</g>
-<!-- /lib/widgets/card_deck.dart&#45;&gt;/lib/widgets/playing_card_widget.dart -->
-<g id="edge12" class="edge">
-<title>/lib/widgets/card_deck.dart&#45;&gt;/lib/widgets/playing_card_widget.dart</title>
-<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M199.61,-175.7C205.35,-167.81 212.28,-158.3 218.66,-149.55"/>
-<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="221.32,-151.84 224.38,-141.69 215.66,-147.72 221.32,-151.84"/>
-</g>
-<!-- /lib/widgets/card_deck.dart&#45;&gt;/lib/widgets/playing_card.dart -->
-<g id="edge11" class="edge">
-<title>/lib/widgets/card_deck.dart&#45;&gt;/lib/widgets/playing_card.dart</title>
-<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M172.44,-175.64C159.08,-157.48 142.93,-128.29 154,-104 158.98,-93.09 167.43,-83.55 176.49,-75.69"/>
-<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="178.46,-78.59 184.1,-69.62 174.1,-73.12 178.46,-78.59"/>
-</g>
 <!-- /lib/widgets/table_surface.dart -->
-<g id="node8" class="node">
+<g id="node7" class="node">
 <title>/lib/widgets/table_surface.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M236,-356C236,-356 154,-356 154,-356 148,-356 142,-350 142,-344 142,-344 142,-332 142,-332 142,-326 148,-320 154,-320 154,-320 236,-320 236,-320 242,-320 248,-326 248,-332 248,-332 248,-344 248,-344 248,-350 242,-356 236,-356"/>
 <text text-anchor="middle" x="195" y="-332.75" font-family="Arial" font-size="15.00">table_surface</text>
 </g>
 <!-- /lib/widgets/player_zone.dart&#45;&gt;/lib/game_model.dart -->
-<g id="edge13" class="edge">
+<g id="edge11" class="edge">
 <title>/lib/widgets/player_zone.dart&#45;&gt;/lib/game_model.dart</title>
 <path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M266.33,-322.69C213.56,-307.17 136.69,-284.5 136,-284 124.43,-275.58 104.94,-245.5 91.1,-222.62"/>
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="94.15,-220.89 86.02,-214.1 88.14,-224.48 94.15,-220.89"/>
 </g>
 <!-- /lib/widgets/player_zone.dart&#45;&gt;/lib/widgets/playing_card_widget.dart -->
-<g id="edge17" class="edge">
+<g id="edge15" class="edge">
 <title>/lib/widgets/player_zone.dart&#45;&gt;/lib/widgets/playing_card_widget.dart</title>
 <path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M363.87,-320.92C392.23,-310.49 423.9,-296.56 432,-284 440.67,-270.55 439.66,-262.05 432,-248 404.45,-197.47 346.73,-164.29 301.37,-144.89"/>
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="302.83,-141.71 292.25,-141.13 300.16,-148.18 302.83,-141.71"/>
 </g>
 <!-- /lib/widgets/player_zone.dart&#45;&gt;/lib/widgets/playing_card.dart -->
-<g id="edge16" class="edge">
+<g id="edge14" class="edge">
 <title>/lib/widgets/player_zone.dart&#45;&gt;/lib/widgets/playing_card.dart</title>
 <path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M309.59,-319.53C306.7,-309.29 303.45,-296.04 302,-284 294.24,-219.79 316.8,-204.38 323,-140 324.53,-124.07 331.46,-117.58 323,-104 312.38,-86.97 294.52,-75.25 276.34,-67.26"/>
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="277.77,-64.06 267.18,-63.6 275.17,-70.56 277.77,-64.06"/>
@@ -196,7 +178,7 @@
 <text text-anchor="middle" x="208" y="-260.75" font-family="Arial" font-size="15.00">player_zone_cta</text>
 </g>
 <!-- /lib/widgets/player_zone.dart&#45;&gt;/lib/widgets/player_zone_cta.dart -->
-<g id="edge15" class="edge">
+<g id="edge13" class="edge">
 <title>/lib/widgets/player_zone.dart&#45;&gt;/lib/widgets/player_zone_cta.dart</title>
 <path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M288.28,-319.52C274.9,-310.76 258.51,-300.04 244.04,-290.58"/>
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="246.32,-287.88 236.03,-285.34 242.48,-293.74 246.32,-287.88"/>
@@ -208,10 +190,28 @@
 <text text-anchor="middle" x="367" y="-260.75" font-family="Arial" font-size="15.00">player_header</text>
 </g>
 <!-- /lib/widgets/player_zone.dart&#45;&gt;/lib/widgets/player_header.dart -->
-<g id="edge14" class="edge">
+<g id="edge12" class="edge">
 <title>/lib/widgets/player_zone.dart&#45;&gt;/lib/widgets/player_header.dart</title>
 <path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M327.85,-319.7C333.71,-311.81 340.77,-302.3 347.28,-293.55"/>
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="349.97,-295.8 353.12,-285.68 344.35,-291.62 349.97,-295.8"/>
+</g>
+<!-- /lib/widgets/card_piles.dart -->
+<g id="node10" class="node">
+<title>/lib/widgets/card_piles.dart</title>
+<path fill="Lavender" stroke="black" stroke-width="1.3" d="M215.75,-212C215.75,-212 156.25,-212 156.25,-212 150.25,-212 144.25,-206 144.25,-200 144.25,-200 144.25,-188 144.25,-188 144.25,-182 150.25,-176 156.25,-176 156.25,-176 215.75,-176 215.75,-176 221.75,-176 227.75,-182 227.75,-188 227.75,-188 227.75,-200 227.75,-200 227.75,-206 221.75,-212 215.75,-212"/>
+<text text-anchor="middle" x="186" y="-188.75" font-family="Arial" font-size="15.00">card_piles</text>
+</g>
+<!-- /lib/widgets/card_piles.dart&#45;&gt;/lib/widgets/playing_card_widget.dart -->
+<g id="edge17" class="edge">
+<title>/lib/widgets/card_piles.dart&#45;&gt;/lib/widgets/playing_card_widget.dart</title>
+<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M198.85,-175.7C204.71,-167.81 211.77,-158.3 218.28,-149.55"/>
+<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="220.97,-151.8 224.12,-141.68 215.35,-147.62 220.97,-151.8"/>
+</g>
+<!-- /lib/widgets/card_piles.dart&#45;&gt;/lib/widgets/playing_card.dart -->
+<g id="edge16" class="edge">
+<title>/lib/widgets/card_piles.dart&#45;&gt;/lib/widgets/playing_card.dart</title>
+<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M171.76,-175.6C158.71,-157.41 142.97,-128.2 154,-104 158.98,-93.09 167.43,-83.55 176.49,-75.69"/>
+<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="178.46,-78.59 184.1,-69.62 174.1,-73.12 178.46,-78.59"/>
 </g>
 <!-- /lib/widgets/player_zone_cta.dart&#45;&gt;/lib/game_model.dart -->
 <g id="edge18" class="edge">
@@ -222,14 +222,14 @@
 <!-- /lib/widgets/player_zone_cta.dart&#45;&gt;/lib/widgets/playing_card_widget.dart -->
 <g id="edge20" class="edge">
 <title>/lib/widgets/player_zone_cta.dart&#45;&gt;/lib/widgets/playing_card_widget.dart</title>
-<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M221.15,-247.91C227.92,-238.01 235.49,-224.96 239,-212 244.27,-192.56 243.91,-169.84 242.29,-152.22"/>
-<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="245.78,-151.91 241.18,-142.37 238.83,-152.7 245.78,-151.91"/>
+<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M220.25,-247.77C226.58,-237.82 233.65,-224.79 237,-212 242.1,-192.51 242.26,-169.79 241.2,-152.19"/>
+<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="244.7,-152.04 240.41,-142.35 237.72,-152.6 244.7,-152.04"/>
 </g>
-<!-- /lib/widgets/player_zone_cta.dart&#45;&gt;/lib/widgets/card_deck.dart -->
+<!-- /lib/widgets/player_zone_cta.dart&#45;&gt;/lib/widgets/card_piles.dart -->
 <g id="edge19" class="edge">
-<title>/lib/widgets/player_zone_cta.dart&#45;&gt;/lib/widgets/card_deck.dart</title>
-<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M202.81,-247.7C200.62,-240.41 198.02,-231.73 195.56,-223.54"/>
-<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="198.92,-222.56 192.7,-213.99 192.22,-224.57 198.92,-222.56"/>
+<title>/lib/widgets/player_zone_cta.dart&#45;&gt;/lib/widgets/card_piles.dart</title>
+<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M202.56,-247.7C200.24,-240.32 197.48,-231.52 194.88,-223.25"/>
+<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="198.3,-222.47 191.97,-213.98 191.62,-224.57 198.3,-222.47"/>
 </g>
 </g>
 </svg>

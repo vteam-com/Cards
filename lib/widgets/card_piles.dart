@@ -2,19 +2,19 @@ import 'package:cards/widgets/playing_card.dart';
 import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:flutter/material.dart';
 
-class DeckOfCards extends StatelessWidget {
-  const DeckOfCards({
+class CardPiles extends StatelessWidget {
+  const CardPiles({
     super.key,
-    required this.cardsInDeck,
-    required this.cardsDiscarded, // List of open cards
-    required this.onDrawCard,
-    required this.onDrawDiscardedCard,
+    required this.cardsInDrawPile,
+    required this.cardsDiscardPile,
+    required this.onPickedFromDrawPile,
+    required this.onPickedFromDiscardPile,
   });
 
-  final List<PlayingCard> cardsInDeck;
-  final List<PlayingCard> cardsDiscarded;
-  final VoidCallback onDrawCard;
-  final VoidCallback onDrawDiscardedCard;
+  final List<PlayingCard> cardsInDrawPile;
+  final List<PlayingCard> cardsDiscardPile;
+  final VoidCallback onPickedFromDrawPile;
+  final VoidCallback onPickedFromDiscardPile;
 
   @override
   Widget build(BuildContext context) {
@@ -34,16 +34,16 @@ class DeckOfCards extends StatelessWidget {
     return SizedBox(
       width: 150,
       child: GestureDetector(
-        onTap: onDrawCard,
+        onTap: onPickedFromDrawPile,
         child: Stack(
           alignment: Alignment.center,
-          children: List.generate(cardsInDeck.length, (index) {
+          children: List.generate(cardsInDrawPile.length, (index) {
             double offset = index * 0.5; // Offset for stacking effect
             return Positioned(
               left: offset,
               top: offset,
               child: PlayingCardWidget(
-                card: cardsInDeck[index],
+                card: cardsInDrawPile[index],
                 revealed: false,
               ),
             );
@@ -57,16 +57,16 @@ class DeckOfCards extends StatelessWidget {
     return SizedBox(
       width: 150, // Adjust the width based on the discard pile size
       child: GestureDetector(
-        onTap: onDrawDiscardedCard,
+        onTap: onPickedFromDiscardPile,
         child: Stack(
           alignment: Alignment.center,
-          children: List.generate(cardsDiscarded.length, (index) {
+          children: List.generate(cardsDiscardPile.length, (index) {
             double offset = index * 0.5; // Offset for stacking effect
             return Positioned(
               left: offset,
               top: offset,
               child: PlayingCardWidget(
-                card: cardsDiscarded[index],
+                card: cardsDiscardPile[index],
                 revealed: true,
               ),
             );

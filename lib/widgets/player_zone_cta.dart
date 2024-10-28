@@ -1,5 +1,5 @@
 import 'package:cards/game_model.dart';
-import 'package:cards/widgets/card_deck.dart';
+import 'package:cards/widgets/card_piles.dart';
 import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,14 +26,14 @@ class PlayerZoneCTA extends StatelessWidget {
               CurrentPlayerStates.pickCardFromDeck)
             SizedBox(
               height: 200,
-              child: DeckOfCards(
-                cardsInDeck: context.watch<GameModel>().cardsDeckPile,
-                cardsDiscarded: context.watch<GameModel>().cardsDeckDiscarded,
-                onDrawCard: () {
+              child: CardPiles(
+                cardsInDrawPile: context.watch<GameModel>().cardsDeckPile,
+                cardsDiscardPile: context.watch<GameModel>().cardsDeckDiscarded,
+                onPickedFromDrawPile: () {
                   final gameModel = context.read<GameModel>();
                   gameModel.drawCard(context, fromDiscardPile: false);
                 },
-                onDrawDiscardedCard: () {
+                onPickedFromDiscardPile: () {
                   final gameModel = context.read<GameModel>();
                   gameModel.drawCard(context, fromDiscardPile: true);
                 },
