@@ -5,10 +5,15 @@ import 'package:flutter/material.dart';
 class PlayingCardWidget extends StatelessWidget {
   /// Creates a [PlayingCardWidget] with a [PlayingCard] card.
   /// If the card is null, a placeholder is shown.
-  const PlayingCardWidget({super.key, required this.card});
+  const PlayingCardWidget({
+    super.key,
+    required this.card,
+    this.revealed = false,
+  });
 
   /// The playing card to be displayed.
-  final PlayingCard? card;
+  final PlayingCard card;
+  final bool revealed;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +22,9 @@ class PlayingCardWidget extends StatelessWidget {
       width: 100,
       height: 140,
       decoration: BoxDecoration(
-        color: card == null ? null : Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        border: card == null ? null : Border.all(color: Colors.black, width: 2),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.black.withAlpha(200), width: 1),
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
@@ -28,27 +33,25 @@ class PlayingCardWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: card == null
-          ? _buildPlaceHolder()
-          : card!.suit == 'Joker'
-              ? _buildJoker()
-              : _buildRegularCard(),
+      child: revealed
+          ? (card.suit == 'Joker' ? surfaceForJoker() : surfaceReveal())
+          : surfaceForHidden(),
     );
   }
 
   /// Builds a widget for displaying a regular card with suit and rank.
-  Widget _buildRegularCard() {
+  Widget surfaceReveal() {
     return Stack(
       children: [
         Positioned(
           top: 4,
           left: 4,
           child: Text(
-            card!.rank,
+            card.rank,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: _getSuitColor(card!.suit),
+              color: _getSuitColor(card.suit),
             ),
           ),
         ),
@@ -56,20 +59,20 @@ class PlayingCardWidget extends StatelessWidget {
           bottom: 4,
           right: 4,
           child: Text(
-            card!.rank,
+            card.rank,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: _getSuitColor(card!.suit),
+              color: _getSuitColor(card.suit),
             ),
           ),
         ),
         Center(
           child: Text(
-            _getSuitSymbol(card!.suit),
+            _getSuitSymbol(card.suit),
             style: TextStyle(
-              fontSize: 15,
-              color: _getSuitColor(card!.suit),
+              fontSize: 20,
+              color: _getSuitColor(card.suit),
             ),
           ),
         ),
@@ -77,22 +80,8 @@ class PlayingCardWidget extends StatelessWidget {
     );
   }
 
-  /// Builds a placeholder for when the card data is not available.
-  Widget _buildPlaceHolder() {
-    return const Center(
-      child: Text(
-        '',
-        style: TextStyle(
-          fontSize: 24,
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
   /// Builds a widget for displaying a Joker card.
-  Widget _buildJoker() {
+  Widget surfaceForJoker() {
     return Center(
       child: FittedBox(
         fit: BoxFit.scaleDown,
@@ -102,10 +91,21 @@ class PlayingCardWidget extends StatelessWidget {
             'Joker',
             style: TextStyle(
               fontSize: 24,
-              color: card!.rank == 'Black' ? Colors.black : Colors.red,
+              color: card.rank == 'Black' ? Colors.black : Colors.red,
               fontWeight: FontWeight.bold,
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget surfaceForHidden() {
+    return const DecoratedBox(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/back_of_card.png'),
+          fit: BoxFit.cover, // adjust the fit as needed
         ),
       ),
     );
@@ -140,31 +140,4 @@ class PlayingCardWidget extends StatelessWidget {
         return Colors.black;
     }
   }
-}
-
-Widget buildBackOfCard() {
-  return Container(
-    width: 100,
-    height: 140,
-    padding: const EdgeInsets.all(4),
-    decoration: BoxDecoration(
-      color: Colors.blueGrey,
-      borderRadius: BorderRadius.circular(8),
-      boxShadow: const [
-        BoxShadow(
-          color: Colors.black26,
-          blurRadius: 6.0,
-          offset: Offset(2, 2),
-        ),
-      ],
-    ),
-    child: const DecoratedBox(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/back_of_card.png'),
-          fit: BoxFit.cover, // adjust the fit as needed
-        ),
-      ),
-    ),
-  );
 }

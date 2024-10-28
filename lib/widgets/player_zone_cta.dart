@@ -22,21 +22,23 @@ class PlayerZoneCTA extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          SizedBox(
-            height: 200,
-            child: DeckOfCards(
-              cardsInTheDeck: context.watch<GameModel>().cardsDeckPile.length,
-              discardedCards: context.watch<GameModel>().cardsDeckDiscarded,
-              onDrawCard: () {
-                final gameModel = context.read<GameModel>();
-                gameModel.drawCard(context, fromDiscardPile: false);
-              },
-              onDrawDiscardedCard: () {
-                final gameModel = context.read<GameModel>();
-                gameModel.drawCard(context, fromDiscardPile: true);
-              },
+          if (gameModel.currentPlayerStates ==
+              CurrentPlayerStates.pickCardFromDeck)
+            SizedBox(
+              height: 200,
+              child: DeckOfCards(
+                cardsInDeck: context.watch<GameModel>().cardsDeckPile,
+                cardsDiscarded: context.watch<GameModel>().cardsDeckDiscarded,
+                onDrawCard: () {
+                  final gameModel = context.read<GameModel>();
+                  gameModel.drawCard(context, fromDiscardPile: false);
+                },
+                onDrawDiscardedCard: () {
+                  final gameModel = context.read<GameModel>();
+                  gameModel.drawCard(context, fromDiscardPile: true);
+                },
+              ),
             ),
-          ),
         ],
       );
     }
@@ -78,12 +80,9 @@ class PlayerZoneCTA extends StatelessWidget {
             gameModel.currentPlayerStates = CurrentPlayerStates.flipAndSwap;
           },
         ),
-        SizedBox(
-          width: 66,
-          height: 100,
-          child: PlayingCardWidget(
-            card: gameModel.cardPickedUpFromDeckOrDiscarded!,
-          ),
+        PlayingCardWidget(
+          card: gameModel.cardPickedUpFromDeckOrDiscarded!,
+          revealed: true,
         ),
         ElevatedButton(
           child: const Text(
@@ -113,12 +112,9 @@ class PlayerZoneCTA extends StatelessWidget {
           isActivePlayer,
           getInstructionToPlayer(gameModel.currentPlayerStates),
         ),
-        SizedBox(
-          width: 66,
-          height: 100,
-          child: PlayingCardWidget(
-            card: gameModel.cardPickedUpFromDeckOrDiscarded!,
-          ),
+        PlayingCardWidget(
+          card: gameModel.cardPickedUpFromDeckOrDiscarded!,
+          revealed: true,
         ),
       ],
     );

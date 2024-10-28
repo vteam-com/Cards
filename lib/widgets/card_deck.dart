@@ -5,15 +5,14 @@ import 'package:flutter/material.dart';
 class DeckOfCards extends StatelessWidget {
   const DeckOfCards({
     super.key,
-    required this.cardsInTheDeck,
-    required this.discardedCards, // List of open cards
+    required this.cardsInDeck,
+    required this.cardsDiscarded, // List of open cards
     required this.onDrawCard,
     required this.onDrawDiscardedCard,
   });
 
-  final int cardsInTheDeck;
-  final List<PlayingCard>
-      discardedCards; // Updated to handle a list of all open cards
+  final List<PlayingCard> cardsInDeck;
+  final List<PlayingCard> cardsDiscarded;
   final VoidCallback onDrawCard;
   final VoidCallback onDrawDiscardedCard;
 
@@ -38,12 +37,15 @@ class DeckOfCards extends StatelessWidget {
         onTap: onDrawCard,
         child: Stack(
           alignment: Alignment.center,
-          children: List.generate(cardsInTheDeck, (index) {
+          children: List.generate(cardsInDeck.length, (index) {
             double offset = index * 0.5; // Offset for stacking effect
             return Positioned(
               left: offset,
               top: offset,
-              child: buildBackOfCard(),
+              child: PlayingCardWidget(
+                card: cardsInDeck[index],
+                revealed: false,
+              ),
             );
           }),
         ),
@@ -58,12 +60,15 @@ class DeckOfCards extends StatelessWidget {
         onTap: onDrawDiscardedCard,
         child: Stack(
           alignment: Alignment.center,
-          children: List.generate(discardedCards.length, (index) {
+          children: List.generate(cardsDiscarded.length, (index) {
             double offset = index * 0.5; // Offset for stacking effect
             return Positioned(
               left: offset,
               top: offset,
-              child: PlayingCardWidget(card: discardedCards[index]),
+              child: PlayingCardWidget(
+                card: cardsDiscarded[index],
+                revealed: true,
+              ),
             );
           }),
         ),
