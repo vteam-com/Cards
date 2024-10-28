@@ -1,5 +1,6 @@
 import 'package:cards/game_model.dart';
 import 'package:cards/widgets/player_header.dart';
+import 'package:cards/widgets/player_zone_cta.dart';
 import 'package:cards/widgets/playing_card.dart';
 import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:flutter/material.dart';
@@ -34,13 +35,24 @@ class PlayerZone extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          //
+          // Header
+          //
           PlayerHeader(name: playerName, score: playerScore),
           const SizedBox(height: 20),
+
+          //
+          // Cards in Hand
+          //
           Expanded(
             child: buildPlayerHand(context, gameModel, index),
           ),
           const SizedBox(height: 20),
-          buildPlayerAction(isActivePlayer, gameModel),
+
+          //
+          // CTA
+          //
+          PlayerZoneCTA(isActivePlayer: isActivePlayer, gameModel: gameModel),
         ],
       ),
     );
@@ -77,71 +89,6 @@ class PlayerZone extends StatelessWidget {
       },
       child:
           isVisible ? PlayingCardWidget(card: card) : const HiddenCardWidget(),
-    );
-  }
-
-  Widget buildPlayerAction(bool isActivePlayer, final GameModel gameModel) {
-    if (isActivePlayer && gameModel.cardPickedUpFromDeckOrDiscarded != null) {
-      bool showActionButton = gameModel.currentPlayerStates ==
-          CurrentPlayerStates.takeKeepOrDiscard;
-
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          if (gameModel.currentPlayerStates == CurrentPlayerStates.flipAndSwap)
-            buildMiniInstructions(
-              isActivePlayer,
-              getInstructionToPlayer(gameModel.currentPlayerStates),
-            ),
-          if (showActionButton)
-            ElevatedButton(
-              child: const Text('Keep'),
-              onPressed: () {
-                // swap the card in the player's hand
-                gameModel.currentPlayerStates = CurrentPlayerStates.flipAndSwap;
-              },
-            ),
-          SizedBox(
-            width: 66,
-            height: 100,
-            child: PlayingCardWidget(
-              card: gameModel.cardPickedUpFromDeckOrDiscarded!,
-            ),
-          ),
-          if (showActionButton)
-            ElevatedButton(
-              child: const Text('Discard'),
-              onPressed: () {
-                // return the card to the discard pile
-                gameModel.cardsDeckDiscarded
-                    .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
-                gameModel.cardPickedUpFromDeckOrDiscarded = null;
-                gameModel.currentPlayerStates = CurrentPlayerStates.flipOneCard;
-              },
-            ),
-        ],
-      );
-    }
-    return SizedBox(
-      height: 100,
-      child: buildMiniInstructions(
-        isActivePlayer,
-        isActivePlayer
-            ? getInstructionToPlayer(gameModel.currentPlayerStates)
-            : 'Wait for your turn :)',
-      ),
-    );
-  }
-
-  Widget buildMiniInstructions(bool isActivePlayer, String text) {
-    return Center(
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: isActivePlayer ? 20 : 12,
-          color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
-        ),
-      ),
     );
   }
 }

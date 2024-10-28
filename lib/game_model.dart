@@ -16,8 +16,23 @@ class GameModel with ChangeNotifier {
   List<PlayingCard> cardsDeckDiscarded = [];
   List<List<PlayingCard>> playerHands = [];
   List<List<bool>> cardVisibility = [];
-  CurrentPlayerStates currentPlayerStates =
+
+  // Private field to hold the state
+  CurrentPlayerStates _currentPlayerStates =
       CurrentPlayerStates.pickCardFromDeck;
+
+  // Public getter to access the current player states
+  CurrentPlayerStates get currentPlayerStates => _currentPlayerStates;
+
+  // Public setter to modify the current player states
+  set currentPlayerStates(CurrentPlayerStates value) {
+    if (_currentPlayerStates != value) {
+      _currentPlayerStates = value;
+
+      notifyListeners();
+    }
+  }
+
   PlayingCard? cardPickedUpFromDeckOrDiscarded;
 
   int get numPlayers => playerNames.length;
@@ -60,7 +75,7 @@ class GameModel with ChangeNotifier {
       return;
     }
 
-    currentPlayerStates = CurrentPlayerStates.takeKeepOrDiscard;
+    currentPlayerStates = CurrentPlayerStates.keepOrDiscard;
     notifyListeners();
   }
 
@@ -243,7 +258,7 @@ void showTurnNotification(BuildContext context, String message) {
 
 enum CurrentPlayerStates {
   pickCardFromDeck,
-  takeKeepOrDiscard,
+  keepOrDiscard,
   flipOneCard,
   flipAndSwap,
 }
@@ -251,12 +266,12 @@ enum CurrentPlayerStates {
 String getInstructionToPlayer(CurrentPlayerStates state) {
   switch (state) {
     case CurrentPlayerStates.pickCardFromDeck:
-      return 'Pick a card from the deck or the discard pile';
-    case CurrentPlayerStates.takeKeepOrDiscard:
-      return 'Take, keep, or discard';
+      return 'Draw a card from the deck or the discard pile.';
+    case CurrentPlayerStates.keepOrDiscard:
+      return 'Keep, or discard?';
     case CurrentPlayerStates.flipOneCard:
-      return 'Flip one card';
+      return 'Flip one card.';
     case CurrentPlayerStates.flipAndSwap:
-      return 'Swap one\nof your\ncards';
+      return 'Swap one\nof your\ncards.';
   }
 }
