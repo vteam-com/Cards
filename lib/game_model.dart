@@ -10,7 +10,7 @@ class GameModel with ChangeNotifier {
   // Player setup
   final List<String> playerNames;
   int currentPlayerIndex = 0;
-  bool denseMode = false;
+  bool finalTurn = false;
 
   // Game state initialization
   List<PlayingCard> cardsDeckPile = [];
@@ -40,7 +40,7 @@ class GameModel with ChangeNotifier {
   String get activePlayerName => playerNames[currentPlayerIndex];
 
   void initializeGame() {
-    int numberOfDecks = numPlayers > 2 ? 2 : 1;
+    final int numberOfDecks = numPlayers > 2 ? 2 : 1;
     cardsDeckPile = generateDeck(numberOfDecks: numberOfDecks);
 
     playerHands = List.generate(numPlayers, (_) => []);
@@ -108,9 +108,9 @@ class GameModel with ChangeNotifier {
       if (!cardVisibility[playerIndex][cardIndex]) {
         cardVisibility[playerIndex][cardIndex] = true;
         currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+        advanceToNextPlayer(context);
         saveGameState();
         notifyListeners();
-        nextPlayer();
       } else {
         notifyCardUnavailable(context, 'Action not allowed in current state!');
       }
@@ -122,9 +122,9 @@ class GameModel with ChangeNotifier {
       cardVisibility[playerIndex][cardIndex] = true;
       swapCard(playerIndex, cardIndex);
       currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+      advanceToNextPlayer(context);
       saveGameState();
       notifyListeners();
-      nextPlayer();
       return;
     }
   }
@@ -140,10 +140,14 @@ class GameModel with ChangeNotifier {
   }
 
   void revealInitialCards(int playerIndex) {
-    if (cardVisibility[playerIndex].length >= 2) {
-      cardVisibility[playerIndex][0] = true;
-      cardVisibility[playerIndex][1] = true;
-    }
+    cardVisibility[playerIndex][0] = true;
+    cardVisibility[playerIndex][1] = true;
+    // cardVisibility[playerIndex][2] = true;
+    // cardVisibility[playerIndex][3] = true;
+    // cardVisibility[playerIndex][4] = true;
+    // cardVisibility[playerIndex][5] = true;
+    // cardVisibility[playerIndex][7] = true;
+    // cardVisibility[playerIndex][8] = true;
   }
 
   int calculatePlayerScore(int index) {
@@ -205,14 +209,13 @@ class GameModel with ChangeNotifier {
     return rank1 == rank2 && rank2 == rank3;
   }
 
-  void advanceToNextPlayer() {
+  void advanceToNextPlayer(BuildContext context) {
+    if (cardVisibility[currentPlayerIndex].every((visible) => visible)) {
+      triggerEndgame(context);
+    }
+
     currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
     currentPlayerIndex = (currentPlayerIndex + 1) % playerNames.length;
-  }
-
-  void nextPlayer() {
-    advanceToNextPlayer();
-    notifyListeners();
   }
 
   Future<void> saveGameState() async {
@@ -257,6 +260,11 @@ class GameModel with ChangeNotifier {
     return (jsonDecode(data) as List).map<List<bool>>((visibilityList) {
       return List<bool>.from(visibilityList);
     }).toList();
+  }
+
+  void triggerEndgame(BuildContext context) {
+    finalTurn = true;
+    notifyListeners();
   }
 }
 

@@ -32,7 +32,6 @@ class GameScreenState extends State<GameScreen> {
               }
 
               // PHONE
-              gameModel.denseMode = true;
               return layoutForPhone(context, gameModel);
             },
           ),
@@ -46,7 +45,7 @@ class GameScreenState extends State<GameScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildInstructionText(gameModel.activePlayerName),
+          _buildInstructionText(gameModel),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
@@ -64,7 +63,7 @@ class GameScreenState extends State<GameScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildInstructionText(gameModel.activePlayerName, dense: true),
+        _buildInstructionText(gameModel, dense: true),
         Expanded(
           child: SingleChildScrollView(
             child: Column(
@@ -98,8 +97,12 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildInstructionText(String playersName, {bool dense = false}) {
-    final instructionText = 'It\'s your turn $playersName.';
+  Widget _buildInstructionText(GameModel gameModel, {bool dense = false}) {
+    String playersName = gameModel.activePlayerName;
+    String instructionText = 'It\'s your turn $playersName.';
+    if (gameModel.finalTurn) {
+      instructionText = 'Final Round. $instructionText.';
+    }
 
     final parts = instructionText.split(playersName);
     final beforeName = parts[0];
