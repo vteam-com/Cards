@@ -1,6 +1,8 @@
 import 'package:cards/game_model.dart';
+import 'package:cards/widgets/card_deck.dart';
 import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PlayerZoneCTA extends StatelessWidget {
   const PlayerZoneCTA({
@@ -14,7 +16,29 @@ class PlayerZoneCTA extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isActivePlayer) {
-      return buildActivePlayerContent();
+      return Column(
+        children: [
+          buildActivePlayerContent(),
+          const SizedBox(
+            height: 20,
+          ),
+          SizedBox(
+            height: 200,
+            child: DeckOfCards(
+              cardsInTheDeck: context.watch<GameModel>().cardsDeckPile.length,
+              discardedCards: context.watch<GameModel>().cardsDeckDiscarded,
+              onDrawCard: () {
+                final gameModel = context.read<GameModel>();
+                gameModel.drawCard(context, fromDiscardPile: false);
+              },
+              onDrawDiscardedCard: () {
+                final gameModel = context.read<GameModel>();
+                gameModel.drawCard(context, fromDiscardPile: true);
+              },
+            ),
+          ),
+        ],
+      );
     }
     return buildWaitingForTurnContent();
   }

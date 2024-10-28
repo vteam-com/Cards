@@ -21,8 +21,8 @@ class PlayerZone extends StatelessWidget {
     final isActivePlayer = gameModel.currentPlayerIndex == index;
 
     return Container(
-      width: 300,
-      height: 600,
+      width: 400,
+      height: isActivePlayer ? 940 : 600,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.green.shade800.withAlpha(100),

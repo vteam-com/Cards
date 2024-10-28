@@ -1,4 +1,3 @@
-import 'package:cards/widgets/card_deck.dart';
 import 'package:cards/widgets/player_zone.dart';
 import 'package:cards/widgets/screen.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +17,13 @@ class GameScreenState extends State<GameScreen> {
     return Consumer<GameModel>(
       builder: (final BuildContext context, final GameModel gameModel, _) {
         return Screen(
-          title: '9-Card Golf Game',
+          title: '',
+          backButton: true,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                _buildInstructionText(gameModel.activePlayerName),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
@@ -31,7 +32,6 @@ class GameScreenState extends State<GameScreen> {
                     ),
                   ),
                 ),
-                _buildCroupier(context, gameModel),
               ],
             ),
           ),
@@ -53,42 +53,8 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildCroupier(BuildContext context, GameModel gameModel) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(50),
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Column(
-        children: [
-          _buildInstructionText(gameModel.activePlayerName),
-          const SizedBox(
-            height: 20,
-          ),
-          SizedBox(
-            height: 200,
-            child: DeckOfCards(
-              cardsInTheDeck: context.watch<GameModel>().cardsDeckPile.length,
-              discardedCards: context.watch<GameModel>().cardsDeckDiscarded,
-              onDrawCard: () {
-                final gameModel = context.read<GameModel>();
-                gameModel.drawCard(context, fromDiscardPile: false);
-              },
-              onDrawDiscardedCard: () {
-                final gameModel = context.read<GameModel>();
-                gameModel.drawCard(context, fromDiscardPile: true);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildInstructionText(String playersName) {
-    final instructionText =
-        'It\'s your turn $playersName, pick a card from the deck or discarded pile.';
+    final instructionText = 'It\'s your turn $playersName.';
 
     final parts = instructionText.split(playersName);
     final beforeName = parts[0];

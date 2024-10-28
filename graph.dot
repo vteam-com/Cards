@@ -17,7 +17,6 @@ digraph "" {
   "/test/widget_test.dart" [label="widget_test"];
   "/lib/game_model.dart" -> "/lib/widgets/playing_card.dart";
   "/lib/main.dart" -> "/lib/screens/setup_screen.dart";
-  "/lib/screens/game_screen.dart" -> "/lib/widgets/card_deck.dart";
   "/lib/screens/game_screen.dart" -> "/lib/widgets/player_zone.dart";
   "/lib/screens/game_screen.dart" -> "/lib/widgets/screen.dart";
   "/lib/screens/game_screen.dart" -> "/lib/game_model.dart";
@@ -32,6 +31,7 @@ digraph "" {
   "/lib/widgets/player_zone.dart" -> "/lib/widgets/playing_card.dart";
   "/lib/widgets/player_zone.dart" -> "/lib/widgets/playing_card_widget.dart";
   "/lib/widgets/player_zone_cta.dart" -> "/lib/game_model.dart";
+  "/lib/widgets/player_zone_cta.dart" -> "/lib/widgets/card_deck.dart";
   "/lib/widgets/player_zone_cta.dart" -> "/lib/widgets/playing_card_widget.dart";
   "/lib/widgets/playing_card_widget.dart" -> "/lib/widgets/playing_card.dart";
   "/test/widget_test.dart" -> "/lib/main.dart";

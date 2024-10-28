@@ -20,6 +20,7 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
   @override
   Widget build(BuildContext context) {
     return Screen(
+      backButton: false,
       title: '9 Cards Golf',
       child: Center(
         child: Padding(
@@ -44,8 +45,11 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
                   ),
                   child: TextField(
                     controller: _controller,
-                    style:
-                        TextStyle(color: Colors.green.shade900, fontSize: 24),
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 19, 67, 22),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Names',
                       errorText: _errorText.isEmpty ? null : _errorText,

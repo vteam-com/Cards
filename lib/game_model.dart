@@ -99,7 +99,7 @@ class GameModel with ChangeNotifier {
 
   void revealCard(BuildContext context, int playerIndex, int cardIndex) {
     if (!canCurrentPlayerAct(playerIndex)) {
-      notifyCardUnavailable(context, "It's not your turn!");
+      notifyCardUnavailable(context, 'Wait your turn!');
       return;
     }
 
