@@ -22,7 +22,10 @@ class Screen extends StatelessWidget {
             fit: BoxFit.cover, // adjust the fit as needed
           ),
         ),
-        child: child,
+        child: SizedBox.expand(
+          // This will make the child take the full available space
+          child: child,
+        ),
       ),
     );
   }

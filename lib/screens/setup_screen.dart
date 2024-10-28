@@ -21,53 +21,61 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
   Widget build(BuildContext context) {
     return Screen(
       title: '9 Cards Golf',
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Enter players names separated by space, comma, or semicolon',
-              style: TextStyle(color: Colors.green.shade100, fontSize: 24),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            constraints: const BoxConstraints(
+              maxWidth: 600,
             ),
-            const SizedBox(height: 40),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TextField(
-                controller: _controller,
-                style: TextStyle(color: Colors.green.shade900, fontSize: 24),
-                decoration: InputDecoration(
-                  hintText: 'Names',
-                  errorText: _errorText.isEmpty ? null : _errorText,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Enter players names separated by space, comma, or semicolon',
+                  style: TextStyle(color: Colors.green.shade100, fontSize: 24),
                 ),
-              ),
-            ),
-            const SizedBox(height: 40),
-            Material(
-              elevation: 125,
-              shadowColor: Colors.black,
-              borderRadius: BorderRadius.circular(20),
-              child: TextButton(
-                onPressed: () {
-                  _startGame(context);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Start Game',
-                    style: TextStyle(
-                      color: Colors.green.shade900,
-                      fontSize: 20,
+                const SizedBox(height: 40),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextField(
+                    controller: _controller,
+                    style:
+                        TextStyle(color: Colors.green.shade900, fontSize: 24),
+                    decoration: InputDecoration(
+                      hintText: 'Names',
+                      errorText: _errorText.isEmpty ? null : _errorText,
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 40),
+                Material(
+                  elevation: 125,
+                  shadowColor: Colors.black,
+                  borderRadius: BorderRadius.circular(20),
+                  child: TextButton(
+                    onPressed: () {
+                      _startGame(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Start Game',
+                        style: TextStyle(
+                          color: Colors.green.shade900,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
