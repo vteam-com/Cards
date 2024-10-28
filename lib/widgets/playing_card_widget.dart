@@ -142,30 +142,29 @@ class PlayingCardWidget extends StatelessWidget {
   }
 }
 
-class HiddenCardWidget extends StatelessWidget {
-  const HiddenCardWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      width: 60.0,
-      height: 80.0,
+Widget buildBackOfCard() {
+  return Container(
+    width: 100,
+    height: 140,
+    padding: const EdgeInsets.all(4),
+    decoration: BoxDecoration(
+      color: Colors.blueGrey,
+      borderRadius: BorderRadius.circular(8),
+      boxShadow: const [
+        BoxShadow(
+          color: Colors.black26,
+          blurRadius: 6.0,
+          offset: Offset(2, 2),
+        ),
+      ],
+    ),
+    child: const DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.blueGrey[800],
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.black, width: 2),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 2.0,
-            offset: Offset(2, 2),
-          ),
-        ],
+        image: DecorationImage(
+          image: AssetImage('assets/images/back_of_card.png'),
+          fit: BoxFit.cover, // adjust the fit as needed
+        ),
       ),
-      child: const Center(
-        child: Icon(Icons.question_mark, color: Colors.white),
-      ),
-    );
-  }
+    ),
+  );
 }

@@ -93,8 +93,7 @@ class PlayerZone extends StatelessWidget {
       onTap: () {
         gameModel.revealCard(context, playerIndex, gridIndex);
       },
-      child:
-          isVisible ? PlayingCardWidget(card: card) : const HiddenCardWidget(),
+      child: isVisible ? PlayingCardWidget(card: card) : buildBackOfCard(),
     );
   }
 }

@@ -43,35 +43,7 @@ class DeckOfCards extends StatelessWidget {
             return Positioned(
               left: offset,
               top: offset,
-              child: Container(
-                width: 100,
-                height: 140,
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 6.0,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.deck, size: 50, color: Colors.white),
-                    Text(
-                      '$cardsInTheDeck cards',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: buildBackOfCard(),
             );
           }),
         ),
