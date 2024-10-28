@@ -103,17 +103,6 @@ class GameModel with ChangeNotifier {
       return;
     }
 
-    // Swapping can be allowed directly with a revealed or hidden card
-    if (currentPlayerStates == CurrentPlayerStates.flipAndSwap) {
-      cardVisibility[playerIndex][cardIndex] = true;
-      swapCard(playerIndex, cardIndex);
-      currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
-      saveGameState();
-      notifyListeners();
-      nextPlayer();
-      return;
-    }
-
     if (currentPlayerStates == CurrentPlayerStates.flipOneCard) {
       if (!cardVisibility[playerIndex][cardIndex]) {
         cardVisibility[playerIndex][cardIndex] = true;
@@ -124,6 +113,18 @@ class GameModel with ChangeNotifier {
       } else {
         notifyCardUnavailable(context, 'Action not allowed in current state!');
       }
+      return;
+    }
+
+    // Swapping can be allowed directly with a revealed or hidden card
+    if (currentPlayerStates == CurrentPlayerStates.flipAndSwap) {
+      cardVisibility[playerIndex][cardIndex] = true;
+      swapCard(playerIndex, cardIndex);
+      currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+      saveGameState();
+      notifyListeners();
+      nextPlayer();
+      return;
     }
   }
 

@@ -33,7 +33,8 @@ class PlayerZone extends StatelessWidget {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           //
           // Header
@@ -44,15 +45,21 @@ class PlayerZone extends StatelessWidget {
           //
           // Cards in Hand
           //
-          Expanded(
-            child: buildPlayerHand(context, gameModel, index),
-          ),
-          const SizedBox(height: 20),
+          buildPlayerHand(context, gameModel, index),
 
           //
           // CTA
           //
-          PlayerZoneCTA(isActivePlayer: isActivePlayer, gameModel: gameModel),
+          Expanded(
+            child: Center(
+              child: IntrinsicHeight(
+                child: PlayerZoneCTA(
+                  isActivePlayer: isActivePlayer,
+                  gameModel: gameModel,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -85,7 +92,6 @@ class PlayerZone extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         gameModel.revealCard(context, playerIndex, gridIndex);
-        gameModel.currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
       },
       child:
           isVisible ? PlayingCardWidget(card: card) : const HiddenCardWidget(),

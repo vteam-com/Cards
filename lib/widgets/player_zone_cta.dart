@@ -101,24 +101,19 @@ class PlayerZoneCTA extends StatelessWidget {
   }
 
   Widget buildWaitingForTurnContent() {
-    return SizedBox(
-      height: 100,
-      child: buildMiniInstructions(
-        isActivePlayer,
-        'Wait for your turn :)',
-      ),
+    return buildMiniInstructions(
+      isActivePlayer,
+      'Wait for your turn :)',
     );
   }
 }
 
 Widget buildMiniInstructions(bool isActivePlayer, String text) {
-  return Center(
-    child: Text(
-      text,
-      style: TextStyle(
-        fontSize: isActivePlayer ? 20 : 12,
-        color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
-      ),
+  return Text(
+    text,
+    style: TextStyle(
+      fontSize: isActivePlayer ? 20 : 14,
+      color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
     ),
   );
 }
