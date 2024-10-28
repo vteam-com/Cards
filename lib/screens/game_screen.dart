@@ -120,7 +120,7 @@ class GameScreenState extends State<GameScreen> {
               onPressed: () {
                 setState(() {
                   // return the card to the discard pile
-                  gameModel.discardedCards
+                  gameModel.cardsDeckDiscarded
                       .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
                   gameModel.cardPickedUpFromDeckOrDiscarded = null;
                   gameModel.currentPlayerStates =
@@ -203,8 +203,8 @@ class GameScreenState extends State<GameScreen> {
           SizedBox(
             height: 200,
             child: DeckOfCards(
-              cardsInTheDeck: context.watch<GameModel>().cardsInTheDeck.length,
-              discardedCards: context.watch<GameModel>().discardedCards,
+              cardsInTheDeck: context.watch<GameModel>().cardsDeckPile.length,
+              discardedCards: context.watch<GameModel>().cardsDeckDiscarded,
               onDrawCard: () {
                 final gameModel = context.read<GameModel>();
                 gameModel.playerDrawsFromDeck(context);

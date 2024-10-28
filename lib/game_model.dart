@@ -3,37 +3,22 @@ import 'package:cards/widgets/playing_card.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum CurrentPlayerStates {
-  pickCardFromDeck,
-  takeKeepOrDiscard,
-  flipOneCard,
-  flipAndSwap,
-}
-
-String getInstructionToPlayer(CurrentPlayerStates state) {
-  switch (state) {
-    case CurrentPlayerStates.pickCardFromDeck:
-      return 'Pick a card from the deck or the discard pile';
-    case CurrentPlayerStates.takeKeepOrDiscard:
-      return 'Take, keep, or discard';
-    case CurrentPlayerStates.flipOneCard:
-      return 'Flip one card';
-    case CurrentPlayerStates.flipAndSwap:
-      return 'Swap one\nof your\ncards';
-  }
-}
-
 class GameModel with ChangeNotifier {
   // Initialize with the first player by default
 
   GameModel({required this.playerNames}) {
     initializeGame();
   }
-  List<PlayingCard> cardsInTheDeck = [];
-  List<PlayingCard> discardedCards = [];
+
+  List<PlayingCard> cardsDeckPile = [];
+  List<PlayingCard> cardsDeckDiscarded = [];
+
   List<List<PlayingCard>> playerHands = [];
+
   List<List<bool>> cardVisibility = [];
+
   final List<String> playerNames;
+
   int currentPlayerIndex = 0;
 
   int get numPlayers => playerNames.length;
@@ -46,98 +31,40 @@ class GameModel with ChangeNotifier {
   PlayingCard? cardPickedUpFromDeckOrDiscarded;
 
   void initializeGame() {
-    // for testing
-    // initializeGameWithAllAcesToFirstPlayer();
-    // return;
     int numPlayers = playerNames.length;
     int numberOfDecks = numPlayers > 2 ? 2 : 1;
-    cardsInTheDeck = generateDeck(numberOfDecks: numberOfDecks);
+    cardsDeckPile = generateDeck(numberOfDecks: numberOfDecks);
 
     playerHands = List.generate(numPlayers, (_) => []);
     cardVisibility = List.generate(numPlayers, (_) => []);
 
     for (int i = 0; i < numPlayers; i++) {
       for (int j = 0; j < 9; j++) {
-        playerHands[i].add(cardsInTheDeck.removeLast());
+        playerHands[i].add(cardsDeckPile.removeLast());
         cardVisibility[i].add(false); // All cards are initially hidden
       }
       revealInitialCards(i);
     }
-    notifyListeners();
-  }
 
-  void initializeGameWithAllAcesToFirstPlayer() {
-    int numPlayers = playerNames.length;
-    int numberOfDecks = numPlayers > 2 ? 2 : 1;
-    cardsInTheDeck = generateDeck(numberOfDecks: numberOfDecks);
-
-    playerHands = List.generate(numPlayers, (_) => []);
-    cardVisibility = List.generate(numPlayers, (_) => []);
-
-    // Extract all aces from the deck
-    List<PlayingCard> aces =
-        cardsInTheDeck.where((PlayingCard card) => card.rank == 'A').toList();
-
-    cardsInTheDeck.removeWhere((card) => card.rank == 'A');
-
-    // Add all aces to the first player's hand
-    playerHands[0].addAll(aces);
-    cardVisibility[0].addAll(List.generate(aces.length, (_) => true));
-
-    // Deal the remaining cards to the first player
-    for (int j = aces.length; j < 9; j++) {
-      playerHands[0].add(cardsInTheDeck.removeLast());
-      cardVisibility[0].add(true);
-    }
-
-    // Give specific cards to the second player at positions 2, 5, and 8
-    if (numPlayers > 1) {
-      for (int i = 0; i < 9; i++) {
-        if (i == 2 || i == 5 || i == 8) {
-          PlayingCard tenCard =
-              cardsInTheDeck.firstWhere((card) => card.rank == '10');
-          cardsInTheDeck.remove(tenCard);
-          playerHands[1].add(tenCard);
-        } else {
-          playerHands[1].add(cardsInTheDeck.removeLast());
-        }
-        cardVisibility[1]
-            .add(true); // Assume all cards should be visible initially
-      }
-    }
-
-    // Deal cards to the remaining players, if any
-    for (int i = 2; i < numPlayers; i++) {
-      for (int j = 0; j < 9; j++) {
-        playerHands[i].add(cardsInTheDeck.removeLast());
-        cardVisibility[i].add(true);
-      }
-    }
-
-    for (int i = 0; i < numPlayers; i++) {
-      revealInitialCards(i);
+    // Discard the top card of the deck
+    if (cardsDeckPile.isNotEmpty) {
+      cardsDeckDiscarded.add(cardsDeckPile.removeLast());
     }
 
     notifyListeners();
-  }
-
-  bool isCardInDiscardPile(PlayingCard card) {
-    // Implement logic to check if the specified card is in the discard pile
-    return true; // Placeholder
   }
 
   void advanceToNextPlayer() {
     currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
     currentPlayerIndex = (currentPlayerIndex + 1) % playerNames.length;
-    // Optional: Handle any additional end-turn actions, like checking game state
   }
 
   // Ensure that only the active player can draw a card
   void playerDrawsFromDeck(BuildContext context) {
     if (currentPlayerStates == CurrentPlayerStates.pickCardFromDeck &&
-        cardsInTheDeck.isNotEmpty &&
+        cardsDeckPile.isNotEmpty &&
         currentPlayerIndex == currentPlayerIndex) {
-      cardPickedUpFromDeckOrDiscarded = cardsInTheDeck.removeLast();
+      cardPickedUpFromDeckOrDiscarded = cardsDeckPile.removeLast();
 
       // Restrict further picking in the same turn
       currentPlayerStates = CurrentPlayerStates.takeKeepOrDiscard;
@@ -151,9 +78,9 @@ class GameModel with ChangeNotifier {
   // Ensure that only the active player can draw a card
   void playerDrawsFromDiscardedDeck(BuildContext context) {
     if (currentPlayerStates == CurrentPlayerStates.pickCardFromDeck &&
-        cardsInTheDeck.isNotEmpty &&
+        cardsDeckPile.isNotEmpty &&
         currentPlayerIndex == currentPlayerIndex) {
-      cardPickedUpFromDeckOrDiscarded = discardedCards.removeLast();
+      cardPickedUpFromDeckOrDiscarded = cardsDeckDiscarded.removeLast();
 
       // Restrict further picking in the same turn
       currentPlayerStates = CurrentPlayerStates.takeKeepOrDiscard;
@@ -164,6 +91,21 @@ class GameModel with ChangeNotifier {
     }
   }
 
+  /// Swaps a card in the player's hand with a card picked up from the deck or discard pile.
+  ///
+  /// If a card has been picked up and is available for swapping, this method
+  /// swaps the specified card from the player's hand with the picked-up card.
+  /// The swapped card from the player's hand is then moved to the discard pile.
+  ///
+  /// The method ensures that:
+  /// - The card swap occurs within valid indices of the player's hand.
+  /// - The card picked up is not null.
+  ///
+  /// After successfully swapping the cards, the game state is saved,
+  /// and listeners are notified to update the UI.
+  ///
+  /// [playerIndex] - The index of the player whose card is to be swapped.
+  /// [gridIndex] - The index of the card in the player's hand that will be swapped.
   void swapCard(int playerIndex, int gridIndex) {
     if (cardPickedUpFromDeckOrDiscarded == null) {
       // If no card has been picked up, the swap cannot occur
@@ -177,7 +119,7 @@ class GameModel with ChangeNotifier {
       PlayingCard cardToSwap = playerHands[playerIndex][gridIndex];
 
       // Add the player's card to the discard pile
-      discardedCards.add(cardToSwap);
+      cardsDeckDiscarded.add(cardToSwap);
 
       // Place the picked-up card in the player's hand at the same position
       playerHands[playerIndex][gridIndex] = cardPickedUpFromDeckOrDiscarded!;
@@ -191,53 +133,11 @@ class GameModel with ChangeNotifier {
     }
   }
 
-  void moveCardToDiscardPile(int playerIndex, int cardIndex) {
-    if (playerHands[playerIndex].isNotEmpty) {
-      // Remove the card from the player's hand
-      PlayingCard cardToDiscard = playerHands[playerIndex].removeAt(cardIndex);
-
-      // Add the card to the top of the discarded pile
-      discardedCards.add(cardToDiscard);
-
-      // After updating, save the game state and notify listeners to reflect changes in the UI
-      saveGameState();
-      notifyListeners();
-    }
-  }
-
-  /// This method can be called to automatically end the turn if all actions are complete
-  void onPlayerActionComplete() {
-    advanceToNextPlayer();
-  }
-
   void revealInitialCards(int playerIndex) {
     if (cardVisibility[playerIndex].length >= 2) {
       cardVisibility[playerIndex][0] = true;
       cardVisibility[playerIndex][1] = true;
     }
-  }
-
-  void toggleCardVisibility(
-    BuildContext context,
-    int playerIndex,
-    int cardIndex,
-  ) {
-    if (currentPlayerIndex == playerIndex) {
-      if (currentPlayerStates == CurrentPlayerStates.flipOneCard) {
-        currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
-        cardVisibility[playerIndex][cardIndex] =
-            !cardVisibility[playerIndex][cardIndex];
-        saveGameState(); // Save state after toggling visibility
-        notifyListeners();
-      }
-    } else {
-      showTurnNotification(context, "It's not your turn!");
-    }
-
-    cardVisibility[playerIndex][cardIndex] =
-        !cardVisibility[playerIndex][cardIndex];
-    saveGameState(); // Save state after toggling visibility
-    notifyListeners();
   }
 
   void revealCard(
@@ -357,18 +257,6 @@ class GameModel with ChangeNotifier {
     prefs.setString('cardVisibility', serializeVisibility(cardVisibility));
   }
 
-  Future<void> loadGameState() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? handsData = prefs.getString('playerHands');
-    String? visibilityData = prefs.getString('cardVisibility');
-    if (handsData != null) {
-      playerHands = deserializeHands(handsData);
-    }
-    if (visibilityData != null) {
-      cardVisibility = deserializeVisibility(visibilityData);
-    }
-  }
-
   String serializeHands(List<List<PlayingCard>> hands) {
     return jsonEncode(
       hands.map((hand) {
@@ -416,4 +304,24 @@ void showTurnNotification(BuildContext context, String message) {
       ), // Duration for which the SnackBar will be visible
     ),
   );
+}
+
+enum CurrentPlayerStates {
+  pickCardFromDeck,
+  takeKeepOrDiscard,
+  flipOneCard,
+  flipAndSwap,
+}
+
+String getInstructionToPlayer(CurrentPlayerStates state) {
+  switch (state) {
+    case CurrentPlayerStates.pickCardFromDeck:
+      return 'Pick a card from the deck or the discard pile';
+    case CurrentPlayerStates.takeKeepOrDiscard:
+      return 'Take, keep, or discard';
+    case CurrentPlayerStates.flipOneCard:
+      return 'Flip one card';
+    case CurrentPlayerStates.flipAndSwap:
+      return 'Swap one\nof your\ncards';
+  }
 }
