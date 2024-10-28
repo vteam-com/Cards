@@ -32,11 +32,13 @@ class PlayerZone extends StatelessWidget {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PlayerHeader(name: playerName, score: playerScore),
           const SizedBox(height: 20),
-          buildPlayerHand(context, gameModel, index),
+          Expanded(
+            child: buildPlayerHand(context, gameModel, index),
+          ),
           const SizedBox(height: 20),
           buildPlayerAction(isActivePlayer, gameModel),
         ],
@@ -50,6 +52,7 @@ class PlayerZone extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
+        childAspectRatio: 0.75,
       ),
       itemCount: gameModel.playerHands[index].length,
       itemBuilder: (context, gridIndex) {
