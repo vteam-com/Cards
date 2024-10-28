@@ -59,7 +59,7 @@ class PlayingCardWidget extends StatelessWidget {
           bottom: 4,
           right: 4,
           child: Text(
-            card.rank,
+            card.value.toString(),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -82,21 +82,39 @@ class PlayingCardWidget extends StatelessWidget {
 
   /// Builds a widget for displaying a Joker card.
   Widget surfaceForJoker() {
-    return Center(
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Transform.rotate(
-          angle: -45 * 3.14159265 / 180, // Converts degrees to radians
-          child: Text(
-            'Joker',
-            style: TextStyle(
-              fontSize: 24,
-              color: card.rank == 'Black' ? Colors.black : Colors.red,
-              fontWeight: FontWeight.bold,
+    Color color = card.rank == 'Black' ? Colors.black : Colors.red;
+    return Stack(
+      children: [
+        Center(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Transform.rotate(
+              angle: -45 * 3.14159265 / 180, // Converts degrees to radians
+              child: Text(
+                'Joker',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ),
-      ),
+        Positioned(
+          bottom: 4,
+          right: 4,
+          child: Text(
+            card.value.toString(),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
