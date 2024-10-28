@@ -151,11 +151,18 @@ class GameModel with ChangeNotifier {
     List<bool> markedForZeroScore =
         List.filled(playerHands[index].length, false);
 
-    // Example of using markIfSameRank
-    for (final indices in [
+    List<List<int>> checkingIndices = [
       [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
       [0, 3, 6],
-    ]) {
+      [1, 4, 7],
+      [2, 5, 8],
+      // [0, 4, 8], // Diagonal from top-left to bottom-right
+      // [2, 4, 6], // Diagonal from top-right to bottom-left
+    ];
+
+    for (final List<int> indices in checkingIndices) {
       markIfSameRank(playerHands[index], markedForZeroScore, indices);
     }
 
@@ -164,6 +171,7 @@ class GameModel with ChangeNotifier {
         score += playerHands[index][i].value;
       }
     }
+
     return score;
   }
 
