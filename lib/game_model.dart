@@ -216,20 +216,40 @@ class GameModel with ChangeNotifier {
     }
   }
 
+  void markIfSameRank(
+    List<PlayingCard> hand,
+    List<bool> markedForZeroScore,
+    List<int> indices,
+  ) {
+    if (indices.length == 3 &&
+        areAllTheSameRankAndNotAlreadyUsed(
+          hand[indices[0]],
+          hand[indices[1]],
+          hand[indices[2]],
+        )) {
+      for (int index in indices) {
+        hand[index].partOfSet = true;
+      }
+    }
+  }
+
   int calculatePlayerScore(int index) {
     int score = 0;
     List<bool> markedForZeroScore =
         List.filled(playerHands[index].length, false);
 
     // Check for three identical ranks in a horizontally
-    markIfSameRankHorizontal(playerHands[index], markedForZeroScore, 0);
-    markIfSameRankHorizontal(playerHands[index], markedForZeroScore, 3);
-    markIfSameRankHorizontal(playerHands[index], markedForZeroScore, 6);
-
+    markIfSameRank(
+      playerHands[index],
+      markedForZeroScore,
+      [0, 1, 2],
+    ); // Horizontal
     // Check for three identical ranks in a horizontally
-    markIfSameRankVertical(playerHands[index], markedForZeroScore, 0);
-    markIfSameRankVertical(playerHands[index], markedForZeroScore, 1);
-    markIfSameRankVertical(playerHands[index], markedForZeroScore, 2);
+    markIfSameRank(
+      playerHands[index],
+      markedForZeroScore,
+      [0, 3, 6],
+    ); // Vertical
 
     // Calculate the score
     for (int i = 0; i < playerHands[index].length; i++) {
