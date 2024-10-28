@@ -10,6 +10,7 @@ class GameModel with ChangeNotifier {
   // Player setup
   final List<String> playerNames;
   int currentPlayerIndex = 0;
+  bool denseMode = false;
 
   // Game state initialization
   List<PlayingCard> cardsDeckPile = [];

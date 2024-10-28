@@ -19,24 +19,66 @@ class GameScreenState extends State<GameScreen> {
         return Screen(
           title: '',
           backButton: true,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildInstructionText(gameModel.activePlayerName),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
-                    child: SingleChildScrollView(
-                      child: buildPlayers(context, gameModel),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // DESKTOP
+              if (constraints.maxWidth >= ResponsiveBreakpoints.desktop) {
+                return layoutForDesktop(context, gameModel);
+              }
+
+              // TABLET
+              if (constraints.maxWidth >= ResponsiveBreakpoints.phone) {
+                return layoutForDesktop(context, gameModel);
+              }
+
+              // PHONE
+              gameModel.denseMode = true;
+              return layoutForPhone(context, gameModel);
+            },
           ),
         );
       },
+    );
+  }
+
+  Widget layoutForDesktop(BuildContext context, GameModel gameModel) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildInstructionText(gameModel.activePlayerName),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
+              child: SingleChildScrollView(
+                child: buildPlayers(context, gameModel),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget layoutForPhone(BuildContext context, GameModel gameModel) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildInstructionText(gameModel.activePlayerName, dense: true),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: List.generate(gameModel.numPlayers, (index) {
+                return PlayerZone(
+                  gameModel: gameModel,
+                  index: index,
+                );
+              }),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -53,7 +95,7 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildInstructionText(String playersName) {
+  Widget _buildInstructionText(String playersName, {bool dense = false}) {
     final instructionText = 'It\'s your turn $playersName.';
 
     final parts = instructionText.split(playersName);
@@ -61,7 +103,7 @@ class GameScreenState extends State<GameScreen> {
     final afterName = parts[1];
 
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(dense ? 4 : 16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.8),
         borderRadius: BorderRadius.circular(8.0),
@@ -69,12 +111,15 @@ class GameScreenState extends State<GameScreen> {
       ),
       child: RichText(
         text: TextSpan(
-          style: const TextStyle(fontSize: 20, color: Colors.black),
+          style: TextStyle(fontSize: dense ? 12 : 20, color: Colors.black),
           children: <TextSpan>[
             TextSpan(text: beforeName),
             TextSpan(
               text: playersName,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: dense ? 16 : 20,
+              ),
             ),
             TextSpan(text: afterName),
           ],
