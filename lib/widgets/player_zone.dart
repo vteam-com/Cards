@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cards/game_model.dart';
 import 'package:cards/widgets/player_header.dart';
 import 'package:cards/widgets/player_zone_cta.dart';
@@ -19,10 +21,10 @@ class PlayerZone extends StatelessWidget {
     final playerName = gameModel.playerNames[index];
     final playerScore = gameModel.calculatePlayerScore(index);
     final isActivePlayer = gameModel.currentPlayerIndex == index;
+    double width = min(400, MediaQuery.of(context).size.width);
 
     return Container(
-      width: 400,
-      height: isActivePlayer ? 940 : 600,
+      width: width,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.green.shade800.withAlpha(100),
@@ -32,50 +34,76 @@ class PlayerZone extends StatelessWidget {
           width: isActivePlayer ? 4.0 : 12.0,
         ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          //
-          // Header
-          //
-          PlayerHeader(name: playerName, score: playerScore),
-          const SizedBox(height: 20),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            //
+            // Header
+            //
+            PlayerHeader(name: playerName, score: playerScore),
+            const SizedBox(height: 20),
 
-          //
-          // Cards in Hand
-          //
-          buildPlayerHand(context, gameModel, index),
+            //
+            // Cards in Hand
+            //
+            buildPlayerHand(context, gameModel, index, false),
 
-          //
-          // CTA
-          //
-          Expanded(
-            child: Center(
-              child: IntrinsicHeight(
-                child: PlayerZoneCTA(
-                  isActivePlayer: isActivePlayer,
-                  gameModel: gameModel,
-                ),
+            //
+            // CTA
+            //
+            FittedBox(
+              fit: BoxFit.contain,
+              child: PlayerZoneCTA(
+                isActivePlayer: isActivePlayer,
+                gameModel: gameModel,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget buildPlayerHand(BuildContext context, GameModel gameModel, int index) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: 0.75,
-      ),
-      itemCount: gameModel.playerHands[index].length,
-      itemBuilder: (context, gridIndex) {
-        return buildPlayerCardButton(context, gameModel, index, gridIndex);
+  Widget buildPlayerHand(
+    BuildContext context,
+    GameModel gameModel,
+    int playerIndex,
+    bool useSmallCards,
+  ) {
+    final List<PlayingCard> playerHand = gameModel.playerHands[playerIndex];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate the width of each card based on the available width and number of columns.
+        final double cardWidth = constraints.maxWidth / 3;
+        // Calculate the height of each card based on the aspect ratio.
+        final double cardHeight =
+            cardWidth / 0.75; // Since the aspect ratio is 0.75
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3, // Number of columns is 3
+            childAspectRatio: 0.75, // Aspect ratio of each grid item
+          ),
+          itemCount: playerHand.length,
+          itemBuilder: (context, cardIndex) {
+            return SizedBox(
+              width: cardWidth,
+              height: cardHeight,
+              child: buildPlayerCardButton(
+                context,
+                gameModel,
+                playerIndex,
+                cardIndex,
+              ),
+            );
+          },
+        );
       },
     );
   }
@@ -88,12 +116,14 @@ class PlayerZone extends StatelessWidget {
   ) {
     final bool isVisible = gameModel.cardVisibility[playerIndex][gridIndex];
     final PlayingCard card = gameModel.playerHands[playerIndex][gridIndex];
-
     return GestureDetector(
       onTap: () {
         gameModel.revealCard(context, playerIndex, gridIndex);
       },
-      child: PlayingCardWidget(card: card, revealed: isVisible),
+      child: PlayingCardWidget(
+        card: card,
+        revealed: isVisible,
+      ),
     );
   }
 }

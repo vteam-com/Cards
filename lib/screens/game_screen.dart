@@ -70,9 +70,12 @@ class GameScreenState extends State<GameScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: List.generate(gameModel.numPlayers, (index) {
-                return PlayerZone(
-                  gameModel: gameModel,
-                  index: index,
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: PlayerZone(
+                    gameModel: gameModel,
+                    index: index,
+                  ),
                 );
               }),
             ),

@@ -20,7 +20,7 @@ class PlayingCardWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(4.0),
       width: 100,
-      height: 140,
+      height: 150,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(4),
