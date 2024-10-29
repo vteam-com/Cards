@@ -23,10 +23,11 @@ class PlayerZone extends StatelessWidget {
     final Player player = gameModel.players[index];
     player.score = gameModel.calculatePlayerScore(index);
     double width = min(400, MediaQuery.of(context).size.width);
+    bool tinyHeight = MediaQuery.of(context).size.height < 700;
 
     return Container(
       width: width,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(tinyHeight ? 4 : 20),
       decoration: BoxDecoration(
         color: Colors.green.shade800.withAlpha(100),
         borderRadius: BorderRadius.circular(20.0),
@@ -45,12 +46,14 @@ class PlayerZone extends StatelessWidget {
             // Header
             //
             PlayerHeader(name: player.name, score: player.score),
-            const SizedBox(height: 20),
+
+            // gap
+            SizedBox(height: tinyHeight ? 0 : 20),
 
             //
             // Cards in Hand
             //
-            buildPlayerHand(context, gameModel, index, false),
+            buildPlayerHand(context, gameModel, index, tinyHeight),
 
             //
             // CTA
@@ -73,36 +76,28 @@ class PlayerZone extends StatelessWidget {
     BuildContext context,
     GameModel gameModel,
     int playerIndex,
-    bool useSmallCards,
+    bool squareCards,
   ) {
     final List<PlayingCard> playerHand = gameModel.playerHands[playerIndex];
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Calculate the width of each card based on the available width and number of columns.
-        final double cardWidth = constraints.maxWidth / 3;
-        // Calculate the height of each card based on the aspect ratio.
-        final double cardHeight =
-            cardWidth / 0.75; // Since the aspect ratio is 0.75
-
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3, // Number of columns is 3
-            childAspectRatio: 0.75, // Aspect ratio of each grid item
+            // Aspect ratio of each grid item
+            // recalculate or square aspect ratio
+            childAspectRatio: (squareCards ? 1 : 0.75),
           ),
           itemCount: playerHand.length,
           itemBuilder: (context, cardIndex) {
-            return SizedBox(
-              width: cardWidth,
-              height: cardHeight,
-              child: buildPlayerCardButton(
-                context,
-                gameModel,
-                playerIndex,
-                cardIndex,
-              ),
+            return buildPlayerCardButton(
+              context,
+              gameModel,
+              playerIndex,
+              cardIndex,
             );
           },
         );

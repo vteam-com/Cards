@@ -123,7 +123,7 @@ class PlayingCardWidget extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/back_of_card.png'),
-          fit: BoxFit.cover, // adjust the fit as needed
+          fit: BoxFit.fill, // adjust the fit as needed
         ),
       ),
     );
