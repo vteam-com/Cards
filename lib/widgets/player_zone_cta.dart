@@ -7,9 +7,11 @@ import 'package:provider/provider.dart';
 class PlayerZoneCTA extends StatelessWidget {
   const PlayerZoneCTA({
     super.key,
+    required this.playerIndex,
     required this.isActivePlayer,
     required this.gameModel,
   });
+  final int playerIndex;
   final bool isActivePlayer;
   final GameModel gameModel;
 
@@ -123,7 +125,9 @@ class PlayerZoneCTA extends StatelessWidget {
   Widget buildWaitingForTurnContent() {
     return buildMiniInstructions(
       isActivePlayer,
-      'Wait for your turn :)',
+      gameModel.areAllCardRevealed(playerIndex)
+          ? 'You are done.'
+          : 'Wait for your turn :)',
     );
   }
 }

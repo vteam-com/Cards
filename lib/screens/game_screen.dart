@@ -100,13 +100,24 @@ class GameScreenState extends State<GameScreen> {
   Widget _buildInstructionText(GameModel gameModel, {bool dense = false}) {
     String playersName = gameModel.activePlayerName;
     String instructionText = 'It\'s your turn $playersName.';
+    String playerAttackerName = '';
+
     if (gameModel.finalTurn) {
-      instructionText = 'Final Round. $instructionText.';
+      playerAttackerName =
+          gameModel.getPlayerName(gameModel.playerIndexOfAttacker);
+      instructionText =
+          'Final Round. $instructionText. You have to beat $playerAttackerName';
     }
 
-    final parts = instructionText.split(playersName);
-    final beforeName = parts[0];
-    final afterName = parts[1];
+    final playerNameParts = instructionText.split(playersName);
+    final beforePlayerName = playerNameParts[0];
+    final afterPlayerNameAndAttacker =
+        playerNameParts[1].split(playerAttackerName);
+
+    final afterPlayerName = afterPlayerNameAndAttacker[0];
+    final afterAttackerName = afterPlayerNameAndAttacker.length > 1
+        ? afterPlayerNameAndAttacker[1]
+        : '';
 
     return Container(
       padding: EdgeInsets.all(dense ? 4 : 16),
@@ -119,7 +130,7 @@ class GameScreenState extends State<GameScreen> {
         text: TextSpan(
           style: TextStyle(fontSize: dense ? 12 : 20, color: Colors.black),
           children: <TextSpan>[
-            TextSpan(text: beforeName),
+            TextSpan(text: beforePlayerName),
             TextSpan(
               text: playersName,
               style: TextStyle(
@@ -127,7 +138,17 @@ class GameScreenState extends State<GameScreen> {
                 fontSize: dense ? 16 : 20,
               ),
             ),
-            TextSpan(text: afterName),
+            TextSpan(text: afterPlayerName),
+            if (playerAttackerName.isNotEmpty) ...[
+              TextSpan(
+                text: playerAttackerName,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: dense ? 16 : 20,
+                ),
+              ),
+              TextSpan(text: afterAttackerName),
+            ],
           ],
         ),
         textAlign: TextAlign.center,

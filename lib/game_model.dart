@@ -11,7 +11,7 @@ class GameModel with ChangeNotifier {
   final List<String> playerNames;
   int currentPlayerIndex = 0;
   bool finalTurn = false;
-
+  int playerIndexOfAttacker = -1;
   // Game state initialization
   List<PlayingCard> cardsDeckPile = [];
   List<PlayingCard> cardsDeckDiscarded = [];
@@ -21,6 +21,10 @@ class GameModel with ChangeNotifier {
   // Private field to hold the state
   CurrentPlayerStates _currentPlayerStates =
       CurrentPlayerStates.pickCardFromDeck;
+
+  String getPlayerName(index) {
+    return playerNames[index];
+  }
 
   // Public getter to access the current player states
   CurrentPlayerStates get currentPlayerStates => _currentPlayerStates;
@@ -142,12 +146,12 @@ class GameModel with ChangeNotifier {
   void revealInitialCards(int playerIndex) {
     cardVisibility[playerIndex][0] = true;
     cardVisibility[playerIndex][1] = true;
-    // cardVisibility[playerIndex][2] = true;
-    // cardVisibility[playerIndex][3] = true;
-    // cardVisibility[playerIndex][4] = true;
-    // cardVisibility[playerIndex][5] = true;
-    // cardVisibility[playerIndex][7] = true;
-    // cardVisibility[playerIndex][8] = true;
+    cardVisibility[playerIndex][2] = true;
+    cardVisibility[playerIndex][3] = true;
+    cardVisibility[playerIndex][4] = true;
+    cardVisibility[playerIndex][5] = true;
+    cardVisibility[playerIndex][7] = true;
+    cardVisibility[playerIndex][8] = true;
   }
 
   int calculatePlayerScore(int index) {
@@ -209,8 +213,13 @@ class GameModel with ChangeNotifier {
     return rank1 == rank2 && rank2 == rank3;
   }
 
+  bool areAllCardRevealed(final int playerIndex) {
+    return (cardVisibility[playerIndex].every((visible) => visible));
+  }
+
   void advanceToNextPlayer(BuildContext context) {
-    if (cardVisibility[currentPlayerIndex].every((visible) => visible)) {
+    if (areAllCardRevealed(currentPlayerIndex)) {
+      playerIndexOfAttacker = currentPlayerIndex;
       triggerEndgame(context);
     }
 
