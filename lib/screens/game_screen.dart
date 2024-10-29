@@ -12,10 +12,38 @@ class GameScreen extends StatefulWidget {
 }
 
 class GameScreenState extends State<GameScreen> {
+  late ScrollController _scrollController;
+  List<GlobalKey> _playerKeys = [];
+  bool phoneLayout = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // Initialize keys based on number of players
+    final gameModel = Provider.of<GameModel>(context);
+    _playerKeys = List.generate(gameModel.numPlayers, (index) => GlobalKey());
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<GameModel>(
       builder: (final BuildContext context, final GameModel gameModel, _) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToActivePlayer(gameModel);
+        });
+
         final double width = MediaQuery.of(context).size.width;
         return Screen(
           title: '',
@@ -35,17 +63,54 @@ class GameScreenState extends State<GameScreen> {
     GameModel gameModel,
     final double width,
   ) {
-    if (width >= ResponsiveBreakpoints.desktop) {
-      return layoutForDesktop(context, gameModel);
-    }
-
-    // TABLET
-    if (width >= ResponsiveBreakpoints.phone) {
+    // DESKTOP or TABLET
+    if (width >= ResponsiveBreakpoints.desktop ||
+        width >= ResponsiveBreakpoints.phone) {
+      phoneLayout = false;
       return layoutForDesktop(context, gameModel);
     }
 
     // PHONE
+    phoneLayout = true;
     return layoutForPhone(context, gameModel);
+  }
+
+  void _scrollToActivePlayer(final GameModel gameModel) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final int playerIndex = gameModel.currentPlayerIndex;
+      if (playerIndex < _playerKeys.length) {
+        final RenderBox? containerBox =
+            context.findRenderObject() as RenderBox?;
+        final RenderBox? playerBox = _playerKeys[playerIndex]
+            .currentContext
+            ?.findRenderObject() as RenderBox?;
+
+        if (containerBox != null && playerBox != null) {
+          final double containerOffset =
+              containerBox.localToGlobal(Offset.zero).dy;
+          final double playerOffset =
+              playerBox.localToGlobal(Offset.zero).dy - containerOffset;
+          final double offset = _scrollController.offset + playerOffset;
+
+          // Calculate maximum scroll extent
+          final double maxScrollExtent =
+              _scrollController.position.maxScrollExtent;
+
+          // Ensure offset is within bounds
+          final double targetOffset = (offset - (phoneLayout ? 50 : 100)).clamp(
+            0.0,
+            maxScrollExtent,
+          );
+
+          // Animate to the adjusted offset
+          _scrollController.animateTo(
+            targetOffset,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
+      }
+    });
   }
 
   Widget layoutForDesktop(BuildContext context, GameModel gameModel) {
@@ -58,6 +123,7 @@ class GameScreenState extends State<GameScreen> {
             child: Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
               child: SingleChildScrollView(
+                controller: _scrollController,
                 child: buildPlayers(context, gameModel),
               ),
             ),
@@ -74,12 +140,14 @@ class GameScreenState extends State<GameScreen> {
         banner(gameModel, dense: true),
         Expanded(
           child: SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: List.generate(gameModel.numPlayers, (index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: PlayerZone(
+                    key: _playerKeys[index],
                     gameModel: gameModel,
                     index: index,
                     smallDevice: true,
@@ -99,6 +167,7 @@ class GameScreenState extends State<GameScreen> {
       runSpacing: 40.0,
       children: List.generate(gameModel.numPlayers, (index) {
         return PlayerZone(
+          key: _playerKeys[index],
           gameModel: gameModel,
           index: index,
           smallDevice: false,
