@@ -117,35 +117,68 @@ class GameModel with ChangeNotifier {
     return index >= 0 && index < hand.length;
   }
 
+  void revealAllRemainingCardsFor(int playerIndex) {
+    for (int i = 0; i < cardVisibility[playerIndex].length; i++) {
+      if (!cardVisibility[playerIndex][i]) {
+        cardVisibility[playerIndex][i] = true;
+      }
+    }
+    notifyListeners();
+  }
+
   void revealCard(BuildContext context, int playerIndex, int cardIndex) {
     if (!canCurrentPlayerAct(playerIndex)) {
       notifyCardUnavailable(context, 'Wait your turn!');
       return;
     }
 
-    if (currentPlayerStates == CurrentPlayerStates.flipOneCard) {
-      if (!cardVisibility[playerIndex][cardIndex]) {
-        cardVisibility[playerIndex][cardIndex] = true;
-        currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
-        advanceToNextPlayer(context);
-        saveGameState();
-        notifyListeners();
-      } else {
-        notifyCardUnavailable(context, 'Action not allowed in current state!');
+    if (handleFlipOneCardState(context, playerIndex, cardIndex) ||
+        handleFlipAndSwapState(context, playerIndex, cardIndex)) {
+      if (this.finalTurn) {
+        revealAllRemainingCardsFor(playerIndex);
       }
       return;
     }
 
-    // Swapping can be allowed directly with a revealed or hidden card
-    if (currentPlayerStates == CurrentPlayerStates.flipAndSwap) {
-      cardVisibility[playerIndex][cardIndex] = true;
-      swapCard(playerIndex, cardIndex);
-      currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
-      advanceToNextPlayer(context);
-      saveGameState();
-      notifyListeners();
-      return;
+    notifyCardUnavailable(context, 'Not allowed at the moment!');
+  }
+
+  bool handleFlipOneCardState(
+    BuildContext context,
+    int playerIndex,
+    int cardIndex,
+  ) {
+    if (currentPlayerStates != CurrentPlayerStates.flipOneCard ||
+        cardVisibility[playerIndex][cardIndex]) {
+      return false;
     }
+
+    cardVisibility[playerIndex][cardIndex] = true;
+    currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+    finalizeAction(context);
+    return true;
+  }
+
+  bool handleFlipAndSwapState(
+    BuildContext context,
+    int playerIndex,
+    int cardIndex,
+  ) {
+    if (currentPlayerStates != CurrentPlayerStates.flipAndSwap) {
+      return false;
+    }
+
+    cardVisibility[playerIndex][cardIndex] = true;
+    swapCard(playerIndex, cardIndex);
+    currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+    finalizeAction(context);
+    return true;
+  }
+
+  void finalizeAction(BuildContext context) {
+    advanceToNextPlayer(context);
+    saveGameState();
+    notifyListeners();
   }
 
   bool canCurrentPlayerAct(int playerIndex) {
