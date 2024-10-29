@@ -30,35 +30,48 @@ class PlayerZoneCTA extends StatelessWidget {
           child: child,
         );
       },
-      child: (isActivePlayer)
-          ? Column(
-              children: [
-                buildActivePlayerContent(),
-                const SizedBox(
-                  height: 20,
-                ),
-                if (gameModel.currentPlayerStates ==
-                    CurrentPlayerStates.pickCardFromDeck)
-                  SizedBox(
-                    height: 200,
-                    child: CardPiles(
-                      cardsInDrawPile: context.watch<GameModel>().cardsDeckPile,
-                      cardsDiscardPile:
-                          context.watch<GameModel>().cardsDeckDiscarded,
-                      onPickedFromDrawPile: () {
-                        final gameModel = context.read<GameModel>();
-                        gameModel.drawCard(context, fromDiscardPile: false);
-                      },
-                      onPickedFromDiscardPile: () {
-                        final gameModel = context.read<GameModel>();
-                        gameModel.drawCard(context, fromDiscardPile: true);
-                      },
-                    ),
-                  ),
-              ],
-            )
-          : buildWaitingForTurnContent(),
+      child: SizedBox(
+        height: 200,
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: buildContent(context),
+          ),
+        ),
+      ),
     );
+  }
+
+  Widget buildContent(BuildContext context) {
+    if (isActivePlayer) {
+      return Column(
+        children: [
+          buildActivePlayerContent(),
+          const SizedBox(
+            height: 20,
+          ),
+          if (gameModel.currentPlayerStates ==
+              CurrentPlayerStates.pickCardFromDeck)
+            SizedBox(
+              height: 200,
+              child: CardPiles(
+                cardsInDrawPile: context.watch<GameModel>().cardsDeckPile,
+                cardsDiscardPile: context.watch<GameModel>().cardsDeckDiscarded,
+                onPickedFromDrawPile: () {
+                  final gameModel = context.read<GameModel>();
+                  gameModel.drawCard(context, fromDiscardPile: false);
+                },
+                onPickedFromDiscardPile: () {
+                  final gameModel = context.read<GameModel>();
+                  gameModel.drawCard(context, fromDiscardPile: true);
+                },
+              ),
+            ),
+        ],
+      );
+    }
+
+    return buildWaitingForTurnContent();
   }
 
   Widget buildActivePlayerContent() {

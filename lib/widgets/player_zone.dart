@@ -50,13 +50,10 @@ class PlayerZone extends StatelessWidget {
             //
             // CTA
             //
-            FittedBox(
-              fit: BoxFit.contain,
-              child: PlayerZoneCTA(
-                playerIndex: index,
-                isActivePlayer: isActivePlayer,
-                gameModel: gameModel,
-              ),
+            PlayerZoneCTA(
+              playerIndex: index,
+              isActivePlayer: isActivePlayer,
+              gameModel: gameModel,
             ),
 
             //
