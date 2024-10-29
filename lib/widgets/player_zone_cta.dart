@@ -17,34 +17,48 @@ class PlayerZoneCTA extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isActivePlayer) {
-      return Column(
-        children: [
-          buildActivePlayerContent(),
-          const SizedBox(
-            height: 20,
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        // Custom fade transition with both fade in and fade out effects
+        return FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeIn, // Ease in the incoming widget
+            reverseCurve: Curves.easeOut, // Ease out the outgoing widget
           ),
-          if (gameModel.currentPlayerStates ==
-              CurrentPlayerStates.pickCardFromDeck)
-            SizedBox(
-              height: 200,
-              child: CardPiles(
-                cardsInDrawPile: context.watch<GameModel>().cardsDeckPile,
-                cardsDiscardPile: context.watch<GameModel>().cardsDeckDiscarded,
-                onPickedFromDrawPile: () {
-                  final gameModel = context.read<GameModel>();
-                  gameModel.drawCard(context, fromDiscardPile: false);
-                },
-                onPickedFromDiscardPile: () {
-                  final gameModel = context.read<GameModel>();
-                  gameModel.drawCard(context, fromDiscardPile: true);
-                },
-              ),
-            ),
-        ],
-      );
-    }
-    return buildWaitingForTurnContent();
+          child: child,
+        );
+      },
+      child: (isActivePlayer)
+          ? Column(
+              children: [
+                buildActivePlayerContent(),
+                const SizedBox(
+                  height: 20,
+                ),
+                if (gameModel.currentPlayerStates ==
+                    CurrentPlayerStates.pickCardFromDeck)
+                  SizedBox(
+                    height: 200,
+                    child: CardPiles(
+                      cardsInDrawPile: context.watch<GameModel>().cardsDeckPile,
+                      cardsDiscardPile:
+                          context.watch<GameModel>().cardsDeckDiscarded,
+                      onPickedFromDrawPile: () {
+                        final gameModel = context.read<GameModel>();
+                        gameModel.drawCard(context, fromDiscardPile: false);
+                      },
+                      onPickedFromDiscardPile: () {
+                        final gameModel = context.read<GameModel>();
+                        gameModel.drawCard(context, fromDiscardPile: true);
+                      },
+                    ),
+                  ),
+              ],
+            )
+          : buildWaitingForTurnContent(),
+    );
   }
 
   Widget buildActivePlayerContent() {
