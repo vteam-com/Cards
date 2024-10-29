@@ -1,14 +1,20 @@
 import 'dart:convert';
+import 'package:cards/player.dart';
 import 'package:cards/widgets/playing_card.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GameModel with ChangeNotifier {
-  GameModel({required this.playerNames}) {
+  GameModel({required final List<String> names}) {
+    // Initialize players from the list of names
+    for (final String name in names) {
+      players.add(Player(name: name));
+    }
     initializeGame();
   }
   // Player setup
-  final List<String> playerNames;
+  final List<Player> players = [];
+
   int currentPlayerIndex = 0;
   bool finalTurn = false;
   int playerIndexOfAttacker = -1;
@@ -22,8 +28,11 @@ class GameModel with ChangeNotifier {
   CurrentPlayerStates _currentPlayerStates =
       CurrentPlayerStates.pickCardFromDeck;
 
-  String getPlayerName(index) {
-    return playerNames[index];
+  String getPlayerName(final int index) {
+    if (index == -1) {
+      return 'No one';
+    }
+    return players[index].name;
   }
 
   // Public getter to access the current player states
@@ -40,8 +49,14 @@ class GameModel with ChangeNotifier {
 
   PlayingCard? cardPickedUpFromDeckOrDiscarded;
 
-  int get numPlayers => playerNames.length;
-  String get activePlayerName => playerNames[currentPlayerIndex];
+  int get numPlayers => players.length;
+
+  String get activePlayerName {
+    if (currentPlayerIndex >= 0 && currentPlayerIndex < players.length) {
+      return players[currentPlayerIndex].name;
+    }
+    return '';
+  }
 
   void initializeGame() {
     final int numberOfDecks = numPlayers > 2 ? 2 : 1;
@@ -151,7 +166,7 @@ class GameModel with ChangeNotifier {
     cardVisibility[playerIndex][4] = true;
     cardVisibility[playerIndex][5] = true;
     cardVisibility[playerIndex][7] = true;
-    cardVisibility[playerIndex][8] = true;
+    // cardVisibility[playerIndex][8] = true;
   }
 
   int calculatePlayerScore(int index) {
@@ -218,13 +233,14 @@ class GameModel with ChangeNotifier {
   }
 
   void advanceToNextPlayer(BuildContext context) {
-    if (areAllCardRevealed(currentPlayerIndex)) {
-      playerIndexOfAttacker = currentPlayerIndex;
-      triggerEndgame(context);
+    if (finalTurn == false) {
+      if (areAllCardRevealed(currentPlayerIndex)) {
+        playerIndexOfAttacker = currentPlayerIndex;
+        triggerEndgame(context);
+      }
     }
-
     currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
-    currentPlayerIndex = (currentPlayerIndex + 1) % playerNames.length;
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
   }
 
   Future<void> saveGameState() async {

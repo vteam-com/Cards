@@ -7,6 +7,7 @@ digraph "" {
   "/lib/screens/game_screen.dart" [label="game_screen"];
   "/lib/screens/setup_screen.dart" [label="setup_screen"];
   "/lib/main.dart" [label="main"];
+  "/lib/player.dart" [label="player"];
   "/lib/widgets/playing_card_widget.dart" [label="playing_card_widget"];
   "/lib/widgets/table_surface.dart" [label="table_surface"];
   "/lib/widgets/player_zone.dart" [label="player_zone"];
@@ -25,6 +26,7 @@ digraph "" {
       label="lib";
       "/lib/game_model.dart";
       "/lib/main.dart";
+      "/lib/player.dart";
       subgraph "cluster~/lib/screens" {
         label="screens";
         "/lib/screens/game_screen.dart";
@@ -44,6 +46,7 @@ digraph "" {
     }
   }
   "/test/widget_test.dart" -> "/lib/main.dart";
+  "/lib/game_model.dart" -> "/lib/player.dart";
   "/lib/game_model.dart" -> "/lib/widgets/playing_card.dart";
   "/lib/screens/game_screen.dart" -> "/lib/widgets/player_zone.dart";
   "/lib/screens/game_screen.dart" -> "/lib/widgets/screen.dart";
@@ -52,6 +55,7 @@ digraph "" {
   "/lib/screens/setup_screen.dart" -> "/lib/screens/game_screen.dart";
   "/lib/screens/setup_screen.dart" -> "/lib/widgets/screen.dart";
   "/lib/main.dart" -> "/lib/screens/setup_screen.dart";
+  "/lib/player.dart" -> "/lib/widgets/playing_card.dart";
   "/lib/widgets/playing_card_widget.dart" -> "/lib/widgets/playing_card.dart";
   "/lib/widgets/player_zone.dart" -> "/lib/game_model.dart";
   "/lib/widgets/player_zone.dart" -> "/lib/widgets/player_header.dart";

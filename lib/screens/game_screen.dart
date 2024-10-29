@@ -45,7 +45,7 @@ class GameScreenState extends State<GameScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildInstructionText(gameModel),
+          banner(gameModel),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
@@ -63,7 +63,7 @@ class GameScreenState extends State<GameScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildInstructionText(gameModel, dense: true),
+        banner(gameModel, dense: true),
         Expanded(
           child: SingleChildScrollView(
             child: Column(
@@ -97,27 +97,58 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildInstructionText(GameModel gameModel, {bool dense = false}) {
+  Widget banner(
+    GameModel gameModel, {
+    bool dense = false,
+  }) {
     String playersName = gameModel.activePlayerName;
-    String instructionText = 'It\'s your turn $playersName.';
-    String playerAttackerName = '';
+    String inputText = 'It\'s your turn $playersName.';
+    String playerAttackerName =
+        gameModel.getPlayerName(gameModel.playerIndexOfAttacker);
 
     if (gameModel.finalTurn) {
-      playerAttackerName =
-          gameModel.getPlayerName(gameModel.playerIndexOfAttacker);
-      instructionText =
-          'Final Round. $instructionText. You have to beat $playerAttackerName';
+      inputText =
+          'Final Round. $inputText. You have to beat $playerAttackerName';
     }
 
-    final playerNameParts = instructionText.split(playersName);
-    final beforePlayerName = playerNameParts[0];
-    final afterPlayerNameAndAttacker =
-        playerNameParts[1].split(playerAttackerName);
+    List<String> keywords = [playersName, playerAttackerName];
 
-    final afterPlayerName = afterPlayerNameAndAttacker[0];
-    final afterAttackerName = afterPlayerNameAndAttacker.length > 1
-        ? afterPlayerNameAndAttacker[1]
-        : '';
+    List<TextSpan> generateStyledText(String text, List<String> keywords) {
+      List<TextSpan> spans = [];
+      int start = 0;
+      final textLower = text.toLowerCase();
+
+      for (final keyword in keywords) {
+        final keywordLower = keyword.toLowerCase();
+        int index = textLower.indexOf(keywordLower, start);
+
+        while (index >= 0) {
+          if (index > start) {
+            // Add normal text before the keyword
+            spans.add(TextSpan(text: text.substring(start, index)));
+          }
+          // Add the keyword with bold style
+          spans.add(
+            TextSpan(
+              text: text.substring(index, index + keyword.length),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: dense ? 16 : 20,
+              ),
+            ),
+          );
+          start = index + keyword.length;
+          index = textLower.indexOf(keywordLower, start);
+        }
+      }
+
+      // Add remaining text
+      if (start < text.length) {
+        spans.add(TextSpan(text: text.substring(start)));
+      }
+
+      return spans;
+    }
 
     return Container(
       padding: EdgeInsets.all(dense ? 4 : 16),
@@ -129,27 +160,7 @@ class GameScreenState extends State<GameScreen> {
       child: RichText(
         text: TextSpan(
           style: TextStyle(fontSize: dense ? 12 : 20, color: Colors.black),
-          children: <TextSpan>[
-            TextSpan(text: beforePlayerName),
-            TextSpan(
-              text: playersName,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: dense ? 16 : 20,
-              ),
-            ),
-            TextSpan(text: afterPlayerName),
-            if (playerAttackerName.isNotEmpty) ...[
-              TextSpan(
-                text: playerAttackerName,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: dense ? 16 : 20,
-                ),
-              ),
-              TextSpan(text: afterAttackerName),
-            ],
-          ],
+          children: generateStyledText(inputText, keywords),
         ),
         textAlign: TextAlign.center,
       ),

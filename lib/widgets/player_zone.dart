@@ -18,7 +18,7 @@ class PlayerZone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String playerName = gameModel.playerNames[index];
+    final String playerName = gameModel.players[index].name;
     final int playerScore = gameModel.calculatePlayerScore(index);
     final bool isActivePlayer = gameModel.currentPlayerIndex == index;
     double width = min(400, MediaQuery.of(context).size.width);

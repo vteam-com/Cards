@@ -102,7 +102,7 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => ChangeNotifierProvider(
-            create: (_) => GameModel(playerNames: playerNames),
+            create: (_) => GameModel(names: playerNames),
             child: const GameScreen(),
           ),
         ),
