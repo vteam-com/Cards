@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cards/player.dart';
+import 'package:cards/screens/game_over_screen.dart';
 import 'package:cards/widgets/playing_card.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,9 +16,10 @@ class GameModel with ChangeNotifier {
   // Player setup
   final List<Player> players = [];
 
-  int currentPlayerIndex = 0;
-  bool finalTurn = false;
-  int playerIndexOfAttacker = -1;
+  late int currentPlayerIndex;
+  late bool finalTurn;
+  late int playerIndexOfAttacker;
+
   // Game state initialization
   List<PlayingCard> cardsDeckPile = [];
   List<PlayingCard> cardsDeckDiscarded = [];
@@ -58,7 +60,22 @@ class GameModel with ChangeNotifier {
     return '';
   }
 
+  /// Checks if all players have revealed all their cards.
+  bool areAllCardsFromHandsRevealed() {
+    for (int playerIndex = 0; playerIndex < numPlayers; playerIndex++) {
+      if (!areAllCardRevealed(playerIndex)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Initializes the game by setting up the decks, hands, and visibility.
   void initializeGame() {
+    currentPlayerIndex = 0;
+    finalTurn = false;
+    playerIndexOfAttacker = -1;
+
     final int numberOfDecks = numPlayers > 2 ? 2 : 1;
     cardsDeckPile = generateDeck(numberOfDecks: numberOfDecks);
 
@@ -136,11 +153,22 @@ class GameModel with ChangeNotifier {
         handleFlipAndSwapState(context, playerIndex, cardIndex)) {
       if (this.finalTurn) {
         revealAllRemainingCardsFor(playerIndex);
+        if (areAllCardsFromHandsRevealed()) {
+          endGame(context);
+        }
       }
       return;
     }
 
     notifyCardUnavailable(context, 'Not allowed at the moment!');
+  }
+
+  void endGame(BuildContext context) {
+    showGameOverDialog(
+      context,
+      players,
+      initializeGame,
+    );
   }
 
   bool handleFlipOneCardState(
@@ -192,13 +220,13 @@ class GameModel with ChangeNotifier {
   }
 
   void revealInitialCards(int playerIndex) {
-    cardVisibility[playerIndex][0] = true;
-    cardVisibility[playerIndex][1] = true;
-    cardVisibility[playerIndex][2] = true;
-    cardVisibility[playerIndex][3] = true;
     cardVisibility[playerIndex][4] = true;
-    cardVisibility[playerIndex][5] = true;
     cardVisibility[playerIndex][7] = true;
+    // cardVisibility[playerIndex][2] = true;
+    // cardVisibility[playerIndex][3] = true;
+    // cardVisibility[playerIndex][4] = true;
+    // cardVisibility[playerIndex][5] = true;
+    // cardVisibility[playerIndex][7] = true;
     // cardVisibility[playerIndex][8] = true;
   }
 
@@ -269,7 +297,7 @@ class GameModel with ChangeNotifier {
     if (finalTurn == false) {
       if (areAllCardRevealed(currentPlayerIndex)) {
         playerIndexOfAttacker = currentPlayerIndex;
-        triggerEndgame(context);
+        triggerStartForRound(context);
       }
     }
     currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
@@ -320,7 +348,7 @@ class GameModel with ChangeNotifier {
     }).toList();
   }
 
-  void triggerEndgame(BuildContext context) {
+  void triggerStartForRound(BuildContext context) {
     finalTurn = true;
     notifyListeners();
   }
@@ -337,6 +365,7 @@ enum CurrentPlayerStates {
   keepOrDiscard,
   flipOneCard,
   flipAndSwap,
+  gameOver,
 }
 
 String getInstructionToPlayer(CurrentPlayerStates state) {
@@ -349,5 +378,7 @@ String getInstructionToPlayer(CurrentPlayerStates state) {
       return 'Flip one card.';
     case CurrentPlayerStates.flipAndSwap:
       return 'Swap one\nof your\ncards.';
+    case CurrentPlayerStates.gameOver:
+      return 'Game Over.';
   }
 }

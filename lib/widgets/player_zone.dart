@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cards/game_model.dart';
+import 'package:cards/player.dart';
 import 'package:cards/widgets/player_header.dart';
 import 'package:cards/widgets/player_zone_cta.dart';
 import 'package:cards/widgets/playing_card.dart';
@@ -18,9 +19,9 @@ class PlayerZone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String playerName = gameModel.players[index].name;
-    final int playerScore = gameModel.calculatePlayerScore(index);
     final bool isActivePlayer = gameModel.currentPlayerIndex == index;
+    final Player player = gameModel.players[index];
+    player.score = gameModel.calculatePlayerScore(index);
     double width = min(400, MediaQuery.of(context).size.width);
 
     return Container(
@@ -43,7 +44,7 @@ class PlayerZone extends StatelessWidget {
             //
             // Header
             //
-            PlayerHeader(name: playerName, score: playerScore),
+            PlayerHeader(name: player.name, score: player.score),
             const SizedBox(height: 20),
 
             //
