@@ -1,6 +1,7 @@
 import 'package:cards/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/widgets/screen.dart';
+import 'package:cards/widgets/text_url.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,11 +33,26 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Spacer(),
+                Text(
+                  'Players swap cards in their grid to score as low as possible. Lining up three of the same rank in a row or column counts as zero. Anyone can end a round by “closing,” but if someone scores lower, the closer’s points double!\n',
+                  style: TextStyle(
+                    color: Colors.green.shade100,
+                    fontSize: 20,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                const TextWithLink(
+                  text: 'Learn more',
+                  linkText: 'Wikipedia',
+                  url: 'https://en.wikipedia.org/wiki/Golf_(card_game)',
+                ),
+                const Spacer(),
                 Text(
                   'Enter players names separated by space, comma, or semicolon',
-                  style: TextStyle(color: Colors.green.shade100, fontSize: 24),
+                  style: TextStyle(color: Colors.green.shade100, fontSize: 20),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -77,6 +93,7 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
                     ),
                   ),
                 ),
+                const Spacer(),
               ],
             ),
           ),
