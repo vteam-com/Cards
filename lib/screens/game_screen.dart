@@ -2,7 +2,7 @@ import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/player_zone.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../game_model.dart';
+import '../models/game_model.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});

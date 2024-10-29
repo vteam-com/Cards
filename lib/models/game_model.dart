@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:cards/player.dart';
+import 'package:cards/models/player.dart';
 import 'package:cards/screens/game_over_screen.dart';
 import 'package:cards/widgets/playing_card.dart';
 import 'package:flutter/material.dart';

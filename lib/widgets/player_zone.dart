@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:cards/game_model.dart';
-import 'package:cards/player.dart';
+import 'package:cards/models/game_model.dart';
+import 'package:cards/models/player.dart';
 import 'package:cards/widgets/player_header.dart';
 import 'package:cards/widgets/player_zone_cta.dart';
 import 'package:cards/widgets/playing_card.dart';

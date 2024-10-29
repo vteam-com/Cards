@@ -1,4 +1,4 @@
-import 'package:cards/game_model.dart';
+import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/text_url.dart';
