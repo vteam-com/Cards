@@ -47,14 +47,6 @@ class PlayerZone extends StatelessWidget {
             //
             PlayerHeader(name: player.name, score: player.score),
 
-            // gap
-            SizedBox(height: smallDevice ? 0 : 20),
-
-            //
-            // Cards in Hand
-            //
-            buildPlayerHand(context, gameModel, index, smallDevice),
-
             //
             // CTA
             //
@@ -66,6 +58,11 @@ class PlayerZone extends StatelessWidget {
                 gameModel: gameModel,
               ),
             ),
+
+            //
+            // Cards in Hand
+            //
+            buildPlayerHand(context, gameModel, index, smallDevice),
           ],
         ),
       ),
