@@ -1,4 +1,3 @@
-import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:flutter/material.dart';
 
 class PlayerHeader extends StatelessWidget {
@@ -12,16 +11,11 @@ class PlayerHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        TextAvatar(
-          text: name,
-          numberLetters: 2,
-          shape: Shape.Circular,
-        ),
         Text(
           name,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
           ),
         ),

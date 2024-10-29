@@ -13,21 +13,21 @@ class PlayerZone extends StatelessWidget {
     super.key,
     required this.gameModel,
     required this.index,
+    required this.smallDevice,
   });
   final GameModel gameModel;
   final int index;
+  final bool smallDevice;
 
   @override
   Widget build(BuildContext context) {
     final bool isActivePlayer = gameModel.currentPlayerIndex == index;
     final Player player = gameModel.players[index];
     player.score = gameModel.calculatePlayerScore(index);
-    double width = min(400, MediaQuery.of(context).size.width);
-    bool tinyHeight = MediaQuery.of(context).size.height < 700;
 
     return Container(
-      width: width,
-      padding: EdgeInsets.all(tinyHeight ? 4 : 20),
+      width: min(400, MediaQuery.of(context).size.width),
+      padding: EdgeInsets.all(smallDevice ? 8 : 20),
       decoration: BoxDecoration(
         color: Colors.green.shade800.withAlpha(100),
         borderRadius: BorderRadius.circular(20.0),
@@ -48,12 +48,12 @@ class PlayerZone extends StatelessWidget {
             PlayerHeader(name: player.name, score: player.score),
 
             // gap
-            SizedBox(height: tinyHeight ? 0 : 20),
+            SizedBox(height: smallDevice ? 0 : 20),
 
             //
             // Cards in Hand
             //
-            buildPlayerHand(context, gameModel, index, tinyHeight),
+            buildPlayerHand(context, gameModel, index, smallDevice),
 
             //
             // CTA

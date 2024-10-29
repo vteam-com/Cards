@@ -1,5 +1,5 @@
+import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/player_zone.dart';
-import 'package:cards/widgets/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../game_model.dart';
@@ -16,28 +16,36 @@ class GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Consumer<GameModel>(
       builder: (final BuildContext context, final GameModel gameModel, _) {
+        final double width = MediaQuery.of(context).size.width;
         return Screen(
           title: '',
           backButton: true,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              // DESKTOP
-              if (constraints.maxWidth >= ResponsiveBreakpoints.desktop) {
-                return layoutForDesktop(context, gameModel);
-              }
-
-              // TABLET
-              if (constraints.maxWidth >= ResponsiveBreakpoints.phone) {
-                return layoutForDesktop(context, gameModel);
-              }
-
-              // PHONE
-              return layoutForPhone(context, gameModel);
-            },
+          child: adaptiveLayout(
+            context,
+            gameModel,
+            width,
           ),
         );
       },
     );
+  }
+
+  Widget adaptiveLayout(
+    BuildContext context,
+    GameModel gameModel,
+    final double width,
+  ) {
+    if (width >= ResponsiveBreakpoints.desktop) {
+      return layoutForDesktop(context, gameModel);
+    }
+
+    // TABLET
+    if (width >= ResponsiveBreakpoints.phone) {
+      return layoutForDesktop(context, gameModel);
+    }
+
+    // PHONE
+    return layoutForPhone(context, gameModel);
   }
 
   Widget layoutForDesktop(BuildContext context, GameModel gameModel) {
@@ -74,6 +82,7 @@ class GameScreenState extends State<GameScreen> {
                   child: PlayerZone(
                     gameModel: gameModel,
                     index: index,
+                    smallDevice: true,
                   ),
                 );
               }),
@@ -92,6 +101,7 @@ class GameScreenState extends State<GameScreen> {
         return PlayerZone(
           gameModel: gameModel,
           index: index,
+          smallDevice: false,
         );
       }),
     );
