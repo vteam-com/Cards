@@ -1,4 +1,6 @@
 import 'package:cards/models/game_model.dart';
+import 'package:cards/widgets/blink.dart';
+import 'package:cards/widgets/blinking_text.dart';
 import 'package:cards/widgets/card_piles.dart';
 import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:flutter/material.dart';
@@ -17,28 +19,9 @@ class PlayerZoneCTA extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      transitionBuilder: (Widget child, Animation<double> animation) {
-        // Custom fade transition with both fade in and fade out effects
-        return FadeTransition(
-          opacity: CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeIn, // Ease in the incoming widget
-            reverseCurve: Curves.easeOut, // Ease out the outgoing widget
-          ),
-          child: child,
-        );
-      },
-      child: SizedBox(
-        height: 140,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: buildContent(context),
-          ),
-        ),
-      ),
+    return SizedBox(
+      height: 140,
+      child: Center(child: buildContent(context)),
     );
   }
 
@@ -65,18 +48,20 @@ class PlayerZoneCTA extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Expanded(
-          child: ElevatedButton(
-            child: const Text(
-              'Keep',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+          child: Blink(
+            child: ElevatedButton(
+              child: const Text(
+                'Keep',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
+              onPressed: () {
+                gameModel.currentPlayerStates = CurrentPlayerStates.flipAndSwap;
+              },
             ),
-            onPressed: () {
-              gameModel.currentPlayerStates = CurrentPlayerStates.flipAndSwap;
-            },
           ),
         ),
         const SizedBox(
@@ -93,21 +78,23 @@ class PlayerZoneCTA extends StatelessWidget {
           width: 10,
         ),
         Expanded(
-          child: ElevatedButton(
-            child: const Text(
-              'Discard',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+          child: Blink(
+            child: ElevatedButton(
+              child: const Text(
+                'Discard',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
+              onPressed: () {
+                gameModel.cardsDeckDiscarded
+                    .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
+                gameModel.cardPickedUpFromDeckOrDiscarded = null;
+                gameModel.currentPlayerStates = CurrentPlayerStates.flipOneCard;
+              },
             ),
-            onPressed: () {
-              gameModel.cardsDeckDiscarded
-                  .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
-              gameModel.cardPickedUpFromDeckOrDiscarded = null;
-              gameModel.currentPlayerStates = CurrentPlayerStates.flipOneCard;
-            },
           ),
         ),
       ],
@@ -142,16 +129,17 @@ class PlayerZoneCTA extends StatelessWidget {
 
   Widget ctaPickCardFromPiles(final BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         buildMiniInstructions(
           true,
           'Draw a card\nfrom the piles',
         ),
         const SizedBox(
-          width: 20,
+          width: 10,
         ),
         FittedBox(
-          fit: BoxFit.cover,
+          fit: BoxFit.scaleDown,
           child: CardPiles(
             cardsInDrawPile: context.watch<GameModel>().cardsDeckPile,
             cardsDiscardPile: context.watch<GameModel>().cardsDeckDiscarded,
@@ -180,11 +168,14 @@ class PlayerZoneCTA extends StatelessWidget {
 }
 
 Widget buildMiniInstructions(bool isActivePlayer, String text) {
-  return Text(
-    text,
-    style: TextStyle(
-      fontSize: 18,
-      color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
-    ),
+  final style = TextStyle(
+    fontSize: 18,
+    color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
   );
+
+  if (isActivePlayer) {
+    return BlinkingText(text: text, style: style);
+  } else {
+    return Text(text, style: style);
+  }
 }
