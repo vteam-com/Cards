@@ -25,7 +25,7 @@ class BlinkState extends State<Blink> with SingleTickerProviderStateMixin {
       vsync: this,
     );
 
-    _animation = Tween<double>(begin: 1.0, end: 0.0).animate(
+    _animation = Tween<double>(begin: 1.0, end: 0.2).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
