@@ -51,7 +51,7 @@ class PlayerZoneCTA extends StatelessWidget {
           return ctaSwapWithKeptCard();
         case CurrentPlayerStates.flipOneCard:
           return ctaFlipOneOfYourHiddenCards();
-        case CurrentPlayerStates.pickCardFromDeck:
+        case CurrentPlayerStates.pickCardFromPiles:
         default:
           return ctaPickCardFromPiles(context);
       }

@@ -28,7 +28,7 @@ class GameModel with ChangeNotifier {
 
   // Private field to hold the state
   CurrentPlayerStates _currentPlayerStates =
-      CurrentPlayerStates.pickCardFromDeck;
+      CurrentPlayerStates.pickCardFromPiles;
 
   String getPlayerName(final int index) {
     if (index == -1) {
@@ -98,21 +98,20 @@ class GameModel with ChangeNotifier {
   }
 
   void drawCard(BuildContext context, {required bool fromDiscardPile}) {
-    if (currentPlayerStates != CurrentPlayerStates.pickCardFromDeck) {
+    if (currentPlayerStates != CurrentPlayerStates.pickCardFromPiles) {
       showTurnNotification(context, "It's not your turn!");
       return;
     }
 
     if (fromDiscardPile && cardsDeckDiscarded.isNotEmpty) {
       cardPickedUpFromDeckOrDiscarded = cardsDeckDiscarded.removeLast();
+      currentPlayerStates = CurrentPlayerStates.flipAndSwap;
     } else if (!fromDiscardPile && cardsDeckPile.isNotEmpty) {
       cardPickedUpFromDeckOrDiscarded = cardsDeckPile.removeLast();
+      currentPlayerStates = CurrentPlayerStates.keepOrDiscard;
     } else {
       showTurnNotification(context, 'No cards available to draw!');
-      return;
     }
-
-    currentPlayerStates = CurrentPlayerStates.keepOrDiscard;
     notifyListeners();
   }
 
@@ -182,7 +181,7 @@ class GameModel with ChangeNotifier {
     }
 
     cardVisibility[playerIndex][cardIndex] = true;
-    currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
     finalizeAction(context);
     return true;
   }
@@ -198,7 +197,7 @@ class GameModel with ChangeNotifier {
 
     cardVisibility[playerIndex][cardIndex] = true;
     swapCard(playerIndex, cardIndex);
-    currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
     finalizeAction(context);
     return true;
   }
@@ -300,7 +299,7 @@ class GameModel with ChangeNotifier {
         triggerStartForRound(context);
       }
     }
-    currentPlayerStates = CurrentPlayerStates.pickCardFromDeck;
+    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
   }
 
@@ -361,24 +360,9 @@ void showTurnNotification(BuildContext context, String message) {
 }
 
 enum CurrentPlayerStates {
-  pickCardFromDeck,
+  pickCardFromPiles,
   keepOrDiscard,
   flipOneCard,
   flipAndSwap,
   gameOver,
-}
-
-String getInstructionToPlayer(CurrentPlayerStates state) {
-  switch (state) {
-    case CurrentPlayerStates.pickCardFromDeck:
-      return 'Draw a card from one of piles';
-    case CurrentPlayerStates.keepOrDiscard:
-      return 'Keep, or discard?';
-    case CurrentPlayerStates.flipOneCard:
-      return 'Flip one card.';
-    case CurrentPlayerStates.flipAndSwap:
-      return 'Swap one\nof your\ncards.';
-    case CurrentPlayerStates.gameOver:
-      return 'Game Over.';
-  }
 }
