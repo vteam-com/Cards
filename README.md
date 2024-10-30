@@ -1,4 +1,4 @@
-# Song Lyrics and Chords App
+# Card games
 
 A Flutter base Multiplayer Card Game.
 
