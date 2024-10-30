@@ -110,7 +110,7 @@ class PlayerZoneCTA extends StatelessWidget {
           'Tap any of your ↓ cards\nto swap with this →',
         ),
         const SizedBox(
-          width: 20,
+          width: 10,
         ),
         PlayingCardWidget(
           card: gameModel.cardPickedUpFromDeckOrDiscarded!,
@@ -129,12 +129,15 @@ class PlayerZoneCTA extends StatelessWidget {
 
   Widget ctaPickCardFromPiles(final BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       children: [
         buildMiniInstructions(
           true,
           'Draw a card\nfrom\nthe piles ⇉',
+        ),
+        const SizedBox(
+          width: 10,
         ),
         FittedBox(
           fit: BoxFit.scaleDown,

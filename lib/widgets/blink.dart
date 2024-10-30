@@ -25,7 +25,7 @@ class BlinkState extends State<Blink> with SingleTickerProviderStateMixin {
       vsync: this,
     );
 
-    _animation = Tween<double>(begin: 1.0, end: 0.8).animate(
+    _animation = Tween<double>(begin: 1.0, end: 0.85).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
@@ -46,7 +46,7 @@ class BlinkState extends State<Blink> with SingleTickerProviderStateMixin {
         return Transform.scale(
           scale: _animation.value, // Use the same animation for scaling
           child: Opacity(
-            opacity: 1, // _animation.value),
+            opacity: _animation.value, // _animation.value),
             child: widget.child,
           ),
         );
