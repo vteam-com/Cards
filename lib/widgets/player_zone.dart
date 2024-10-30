@@ -66,7 +66,7 @@ class PlayerZone extends StatelessWidget {
             // Cards in Hand
             //
             SizedBox(
-              height: smallDevice ? 400 : null,
+              height: smallDevice ? 380 : null,
               child: FittedBox(
                 fit: BoxFit.cover,
                 child: buildPlayerHand(context, gameModel, index),
