@@ -14,6 +14,7 @@ class BlinkingText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Blink(
       child: Text(
+        textAlign: TextAlign.right,
         text,
         style: style,
       ),

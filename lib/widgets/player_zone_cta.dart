@@ -107,7 +107,7 @@ class PlayerZoneCTA extends StatelessWidget {
       children: [
         buildMiniInstructions(
           true,
-          'Tap any of your cards\nto swap with this.',
+          'Tap any of your ↓ cards\nto swap with this →',
         ),
         const SizedBox(
           width: 20,
@@ -129,14 +129,12 @@ class PlayerZoneCTA extends StatelessWidget {
 
   Widget ctaPickCardFromPiles(final BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.max,
       children: [
         buildMiniInstructions(
           true,
-          'Draw a card\nfrom the piles',
-        ),
-        const SizedBox(
-          width: 10,
+          'Draw a card\nfrom\nthe piles ⇉',
         ),
         FittedBox(
           fit: BoxFit.scaleDown,
