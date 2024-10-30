@@ -31,10 +31,10 @@ class PlayerZoneCTA extends StatelessWidget {
         );
       },
       child: SizedBox(
-        height: 200,
-        child: Center(
-          child: FittedBox(
-            fit: BoxFit.contain,
+        height: 140,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
             child: buildContent(context),
           ),
         ),
@@ -44,106 +44,126 @@ class PlayerZoneCTA extends StatelessWidget {
 
   Widget buildContent(BuildContext context) {
     if (isActivePlayer) {
-      return Column(
-        children: [
-          buildActivePlayerContent(),
-          const SizedBox(
-            height: 20,
-          ),
-          if (gameModel.currentPlayerStates ==
-              CurrentPlayerStates.pickCardFromDeck)
-            SizedBox(
-              height: 200,
-              child: CardPiles(
-                cardsInDrawPile: context.watch<GameModel>().cardsDeckPile,
-                cardsDiscardPile: context.watch<GameModel>().cardsDeckDiscarded,
-                onPickedFromDrawPile: () {
-                  final gameModel = context.read<GameModel>();
-                  gameModel.drawCard(context, fromDiscardPile: false);
-                },
-                onPickedFromDiscardPile: () {
-                  final gameModel = context.read<GameModel>();
-                  gameModel.drawCard(context, fromDiscardPile: true);
-                },
+      switch (gameModel.currentPlayerStates) {
+        case CurrentPlayerStates.keepOrDiscard:
+          return ctaKeepOrDiscard();
+        case CurrentPlayerStates.flipAndSwap:
+          return ctaSwapWithKeptCard();
+        case CurrentPlayerStates.flipOneCard:
+          return ctaFlipOneOfYourHiddenCards();
+        case CurrentPlayerStates.pickCardFromDeck:
+        default:
+          return ctaPickCardFromPiles(context);
+      }
+    } else {
+      return buildWaitingForTurnContent();
+    }
+  }
+
+  Widget ctaKeepOrDiscard() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            child: const Text(
+              'Keep',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
-        ],
-      );
-    }
-
-    return buildWaitingForTurnContent();
-  }
-
-  Widget buildActivePlayerContent() {
-    switch (gameModel.currentPlayerStates) {
-      case CurrentPlayerStates.keepOrDiscard:
-        return buildTakeKeepOrDiscardContent();
-      case CurrentPlayerStates.flipAndSwap:
-        return buildFlipAndSwapContent();
-      // Define additional cases for other states as needed
-      case CurrentPlayerStates.pickCardFromDeck:
-      default:
-        return isActivePlayer
-            ? buildMiniInstructions(
-                isActivePlayer,
-                getInstructionToPlayer(gameModel.currentPlayerStates),
-              )
-            : buildWaitingForTurnContent();
-    }
-  }
-
-  Widget buildTakeKeepOrDiscardContent() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ElevatedButton(
-          child: const Text(
-            'Keep',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+            onPressed: () {
+              gameModel.currentPlayerStates = CurrentPlayerStates.flipAndSwap;
+            },
           ),
-          onPressed: () {
-            gameModel.currentPlayerStates = CurrentPlayerStates.flipAndSwap;
-          },
         ),
-        PlayingCardWidget(
-          card: gameModel.cardPickedUpFromDeckOrDiscarded!,
-          revealed: true,
+        const SizedBox(
+          width: 10,
         ),
-        ElevatedButton(
-          child: const Text(
-            'Discard',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+        FittedBox(
+          fit: BoxFit.cover,
+          child: PlayingCardWidget(
+            card: gameModel.cardPickedUpFromDeckOrDiscarded!,
+            revealed: true,
           ),
-          onPressed: () {
-            gameModel.cardsDeckDiscarded
-                .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
-            gameModel.cardPickedUpFromDeckOrDiscarded = null;
-            gameModel.currentPlayerStates = CurrentPlayerStates.flipOneCard;
-          },
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Expanded(
+          child: ElevatedButton(
+            child: const Text(
+              'Discard',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            onPressed: () {
+              gameModel.cardsDeckDiscarded
+                  .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
+              gameModel.cardPickedUpFromDeckOrDiscarded = null;
+              gameModel.currentPlayerStates = CurrentPlayerStates.flipOneCard;
+            },
+          ),
         ),
       ],
     );
   }
 
-  Widget buildFlipAndSwapContent() {
+  Widget ctaSwapWithKeptCard() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         buildMiniInstructions(
-          isActivePlayer,
-          getInstructionToPlayer(gameModel.currentPlayerStates),
+          true,
+          'Tap any of your cards\nto swap with this.',
+        ),
+        const SizedBox(
+          width: 20,
         ),
         PlayingCardWidget(
           card: gameModel.cardPickedUpFromDeckOrDiscarded!,
           revealed: true,
+        ),
+      ],
+    );
+  }
+
+  Widget ctaFlipOneOfYourHiddenCards() {
+    return buildMiniInstructions(
+      true,
+      'Flip open one of your hidden cards',
+    );
+  }
+
+  Widget ctaPickCardFromPiles(final BuildContext context) {
+    return Row(
+      children: [
+        buildMiniInstructions(
+          true,
+          'Draw a card\nfrom the piles',
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        FittedBox(
+          fit: BoxFit.cover,
+          child: CardPiles(
+            cardsInDrawPile: context.watch<GameModel>().cardsDeckPile,
+            cardsDiscardPile: context.watch<GameModel>().cardsDeckDiscarded,
+            onPickedFromDrawPile: () {
+              final gameModel = context.read<GameModel>();
+              gameModel.drawCard(context, fromDiscardPile: false);
+            },
+            onPickedFromDiscardPile: () {
+              final gameModel = context.read<GameModel>();
+              gameModel.drawCard(context, fromDiscardPile: true);
+            },
+          ),
         ),
       ],
     );
@@ -163,7 +183,7 @@ Widget buildMiniInstructions(bool isActivePlayer, String text) {
   return Text(
     text,
     style: TextStyle(
-      fontSize: isActivePlayer ? 20 : 14,
+      fontSize: 18,
       color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
     ),
   );

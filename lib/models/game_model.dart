@@ -371,7 +371,7 @@ enum CurrentPlayerStates {
 String getInstructionToPlayer(CurrentPlayerStates state) {
   switch (state) {
     case CurrentPlayerStates.pickCardFromDeck:
-      return 'Draw a card from the deck or the discard pile.';
+      return 'Draw a card from one of piles';
     case CurrentPlayerStates.keepOrDiscard:
       return 'Keep, or discard?';
     case CurrentPlayerStates.flipOneCard:

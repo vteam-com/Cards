@@ -17,25 +17,28 @@ class PlayingCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(4.0),
-      width: 100,
-      height: 150,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Colors.black.withAlpha(200), width: 1),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 2.0,
-            offset: Offset(2, 2),
-          ),
-        ],
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Container(
+        margin: const EdgeInsets.all(4.0),
+        width: 100,
+        height: 150,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.black.withAlpha(200), width: 1),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 2.0,
+              offset: Offset(2, 2),
+            ),
+          ],
+        ),
+        child: revealed
+            ? (card.suit == 'Joker' ? surfaceForJoker() : surfaceReveal())
+            : surfaceForHidden(),
       ),
-      child: revealed
-          ? (card.suit == 'Joker' ? surfaceForJoker() : surfaceReveal())
-          : surfaceForHidden(),
     );
   }
 

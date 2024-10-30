@@ -46,6 +46,9 @@ class PlayerZone extends StatelessWidget {
             // Header
             //
             PlayerHeader(name: player.name, score: player.score),
+            Divider(
+              color: Colors.white.withAlpha(100),
+            ),
 
             //
             // CTA
@@ -55,11 +58,20 @@ class PlayerZone extends StatelessWidget {
               isActivePlayer: isActivePlayer,
               gameModel: gameModel,
             ),
+            Divider(
+              color: Colors.white.withAlpha(100),
+            ),
 
             //
             // Cards in Hand
             //
-            buildPlayerHand(context, gameModel, index, smallDevice),
+            SizedBox(
+              height: smallDevice ? 400 : null,
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: buildPlayerHand(context, gameModel, index),
+              ),
+            ),
           ],
         ),
       ),
@@ -70,30 +82,48 @@ class PlayerZone extends StatelessWidget {
     BuildContext context,
     GameModel gameModel,
     int playerIndex,
-    bool squareCards,
   ) {
-    final List<PlayingCard> playerHand = gameModel.playerHands[playerIndex];
-
     return LayoutBuilder(
       builder: (context, constraints) {
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // Number of columns is 3
-            // Aspect ratio of each grid item
-            // recalculate or square aspect ratio
-            childAspectRatio: (squareCards ? 1 : 0.75),
-          ),
-          itemCount: playerHand.length,
-          itemBuilder: (context, cardIndex) {
-            return buildPlayerCardButton(
-              context,
-              gameModel,
-              playerIndex,
-              cardIndex,
-            );
-          },
+        return Column(
+          children: [
+            Row(
+              children: [0, 1, 2].map(
+                (cardIndex) {
+                  return buildPlayerCardButton(
+                    context,
+                    gameModel,
+                    playerIndex,
+                    cardIndex,
+                  );
+                },
+              ).toList(),
+            ),
+            Row(
+              children: [3, 4, 5].map(
+                (cardIndex) {
+                  return buildPlayerCardButton(
+                    context,
+                    gameModel,
+                    playerIndex,
+                    cardIndex,
+                  );
+                },
+              ).toList(),
+            ),
+            Row(
+              children: [6, 7, 8].map(
+                (cardIndex) {
+                  return buildPlayerCardButton(
+                    context,
+                    gameModel,
+                    playerIndex,
+                    cardIndex,
+                  );
+                },
+              ).toList(),
+            ),
+          ],
         );
       },
     );
