@@ -136,7 +136,7 @@ class PlayerZone extends StatelessWidget {
     int gridIndex,
   ) {
     final bool isVisible = gameModel.cardVisibility[playerIndex][gridIndex];
-    final PlayingCard card = gameModel.playerHands[playerIndex][gridIndex];
+    final PlayingCard card = gameModel.players[playerIndex].hand[gridIndex];
     return GestureDetector(
       onTap: () {
         gameModel.revealCard(context, playerIndex, gridIndex);

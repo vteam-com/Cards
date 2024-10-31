@@ -24,7 +24,6 @@ class GameModel with ChangeNotifier {
   // Game state initialization
   List<PlayingCard> cardsDeckPile = [];
   List<PlayingCard> cardsDeckDiscarded = [];
-  List<List<PlayingCard>> playerHands = [];
   List<List<bool>> cardVisibility = [];
 
   // Private field to hold the state
@@ -77,15 +76,16 @@ class GameModel with ChangeNotifier {
     final int numberOfDecks = numPlayers > 2 ? 2 : 1;
     cardsDeckPile = generateDeck(numberOfDecks: numberOfDecks);
 
-    playerHands = List.generate(numPlayers, (_) => []);
     cardVisibility = List.generate(numPlayers, (_) => []);
 
-    for (int i = 0; i < numPlayers; i++) {
+    for (int playerIndex = 0; playerIndex < numPlayers; playerIndex++) {
       for (int j = 0; j < 9; j++) {
-        playerHands[i].add(cardsDeckPile.removeLast());
-        cardVisibility[i].add(false);
+        players[playerIndex].hand.add(
+              cardsDeckPile.removeLast(),
+            ); // Add card to player's hand directly
+        cardVisibility[playerIndex].add(false);
       }
-      revealInitialCards(i);
+      revealInitialCards(playerIndex);
     }
 
     if (cardsDeckPile.isNotEmpty) {
@@ -115,16 +115,20 @@ class GameModel with ChangeNotifier {
 
   void swapCard(int playerIndex, int gridIndex) {
     if (cardPickedUpFromDeckOrDiscarded == null ||
-        !validGridIndex(playerHands[playerIndex], gridIndex)) {
+        !validGridIndex(players[playerIndex].hand, gridIndex)) {
+      // Access player's hand directly
       return;
     }
 
-    PlayingCard cardToSwap = playerHands[playerIndex][gridIndex];
+    PlayingCard cardToSwap =
+        players[playerIndex].hand[gridIndex]; // Access player's hand directly
     cardsDeckDiscarded.add(cardToSwap);
-    playerHands[playerIndex][gridIndex] = cardPickedUpFromDeckOrDiscarded!;
+
+    players[playerIndex].hand[gridIndex] =
+        cardPickedUpFromDeckOrDiscarded!; // Access player's hand directly
+
     cardPickedUpFromDeckOrDiscarded = null;
     saveGameState();
-    notifyListeners();
   }
 
   bool validGridIndex(List<PlayingCard> hand, int index) {
@@ -227,10 +231,10 @@ class GameModel with ChangeNotifier {
     // cardVisibility[playerIndex][8] = true;
   }
 
-  int calculatePlayerScore(int index) {
+  int calculatePlayerScore(int playerIndex) {
     int score = 0;
     List<bool> markedForZeroScore =
-        List.filled(playerHands[index].length, false);
+        List.filled(players[playerIndex].hand.length, false);
 
     List<List<int>> checkingIndices = [
       [0, 1, 2],
@@ -244,12 +248,13 @@ class GameModel with ChangeNotifier {
     ];
 
     for (final List<int> indices in checkingIndices) {
-      markIfSameRank(playerHands[index], markedForZeroScore, indices);
+      markIfSameRank(players[playerIndex].hand, markedForZeroScore, indices);
     }
 
-    for (int i = 0; i < playerHands[index].length; i++) {
-      if (cardVisibility[index][i] && !playerHands[index][i].partOfSet) {
-        score += playerHands[index][i].value;
+    for (int i = 0; i < players[playerIndex].hand.length; i++) {
+      if (cardVisibility[playerIndex][i] &&
+          !players[playerIndex].hand[i].partOfSet) {
+        score += players[playerIndex].hand[i].value;
       }
     }
 
@@ -303,8 +308,16 @@ class GameModel with ChangeNotifier {
 
   Future<void> saveGameState() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('playerHands', serializeHands(playerHands));
+    // Directly access the player's hand from the players list
+    prefs.setString(
+      'playerHands',
+      serializeHands(players.map((p) => p.hand).toList()),
+    );
     prefs.setString('cardVisibility', serializeVisibility(cardVisibility));
+    prefs.setInt('currentPlayerIndex', currentPlayerIndex);
+    prefs.setBool('finalTurn', finalTurn);
+    prefs.setInt('playerIndexOfAttacker', playerIndexOfAttacker);
+    // Consider saving other game state variables like cardsDeckPile, cardsDeckDiscarded, etc. as needed
   }
 
   String serializeHands(List<List<PlayingCard>> hands) {
