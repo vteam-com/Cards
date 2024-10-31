@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
+import 'package:cards/widgets/list_players.dart';
 import 'package:cards/widgets/text_url.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,10 +17,63 @@ class PlayerSetupScreen extends StatefulWidget {
 }
 
 class PlayerSetupScreenState extends State<PlayerSetupScreen> {
-  final TextEditingController _controller = TextEditingController(
-    text: 'John, Paul, George, Ringo', // Default player names
+  late StreamSubscription _streamSubscription;
+  String joiningAs = '';
+
+  final TextEditingController _controllerRoom = TextEditingController(
+    text: 'Banana', // Default player names
   );
-  String _errorText = '';
+  final String _errorTextRoom = '';
+
+  final TextEditingController _controllerName = TextEditingController(
+    text: 'PowerRanger', // Default player names
+  );
+  final String _errorTextName = '';
+
+  List<String> _playerNames = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _streamSubscription =
+        FirebaseDatabase.instance.ref().onValue.listen((event) {
+      final DataSnapshot snapshot = event.snapshot;
+      final Object? data = snapshot.value;
+      if (data != null) {
+        if (data is Map<Object?, Object?>) {
+          final room = data['rooms'] as Map<Object?, Object?>;
+          final room1 = room['room1'] as Map<Object?, Object?>;
+          final players = room1['players'] as List<Object?>;
+
+          setState(() {
+            _playerNames = [];
+            for (final Object? playerName in players) {
+              if (playerName != null) {
+                var name = playerName as String;
+                _playerNames.add(name);
+              }
+            }
+          });
+        } else if (data is List<dynamic>) {
+          // Handle List data
+        } else if (data is String) {
+          // Handle String data
+        } else if (data is num) {
+          // Handle Number data
+        } else if (data is bool) {
+          // Handle Boolean data
+        } else {
+          // Handle null or other unexpected types
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,51 +105,65 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
                   url: 'https://en.wikipedia.org/wiki/Golf_(card_game)',
                 ),
                 const Spacer(),
-                Text(
-                  'Enter players names separated by space, comma, or semicolon',
-                  style: TextStyle(color: Colors.green.shade100, fontSize: 20),
-                ),
+                editBox('Room', _controllerRoom, _errorTextRoom),
                 const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextField(
-                    controller: _controller,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 19, 67, 22),
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Names',
-                      errorText: _errorText.isEmpty ? null : _errorText,
-                    ),
-                  ),
-                ),
+                if (joiningAs.isEmpty)
+                  editBox('Name', _controllerName, _errorTextName),
                 const SizedBox(height: 40),
-                Material(
-                  elevation: 125,
-                  shadowColor: Colors.black,
-                  borderRadius: BorderRadius.circular(20),
-                  child: TextButton(
-                    onPressed: () {
-                      _startGame(context);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Start Game',
-                        style: TextStyle(
-                          color: Colors.green.shade900,
-                          fontSize: 20,
+                if (joiningAs.isEmpty)
+                  Material(
+                    elevation: 125,
+                    shadowColor: Colors.black,
+                    borderRadius: BorderRadius.circular(20),
+                    child: TextButton(
+                      onPressed: () {
+                        joinGame(context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Join Game',
+                          style: TextStyle(
+                            color: Colors.green.shade900,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                     ),
                   ),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: 400,
+                  height: 300,
+                  child: PlayerListWidget(
+                    playerNames: _playerNames,
+                    onRemovePlayer: (String nameToRemove) {
+                      removePlayer(nameToRemove);
+                    },
+                  ),
                 ),
+                const SizedBox(height: 40),
+                if (_playerNames.length > 1)
+                  Material(
+                    elevation: 125,
+                    shadowColor: Colors.black,
+                    borderRadius: BorderRadius.circular(20),
+                    child: TextButton(
+                      onPressed: () {
+                        startGame(context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Start Game',
+                          style: TextStyle(
+                            color: Colors.green.shade900,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 const Spacer(),
               ],
             ),
@@ -102,32 +173,86 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
     );
   }
 
-  void _startGame(BuildContext context) {
-    String input = _controller.text.trim();
-    List<String> playerNames = _parsePlayerNames(input);
-
-    if (playerNames.length > 4) {
-      setState(() {
-        _errorText = 'Maximum 4 players allowed.';
-      });
-    } else if (playerNames.isEmpty) {
-      setState(() {
-        _errorText = 'Please enter at least one player name.';
-      });
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChangeNotifierProvider(
-            create: (_) => GameModel(names: playerNames),
-            child: const GameScreen(),
+  Widget editBox(
+    final String label,
+    final TextEditingController controller,
+    final String errorStatus,
+  ) {
+    return Container(
+      width: 400,
+      height: 100,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.green.shade100,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: Color.fromARGB(255, 19, 67, 22),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      );
-    }
+          const SizedBox(
+            width: 20,
+          ),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              decoration: InputDecoration(
+                hintText: label,
+                errorText: errorStatus.isEmpty ? null : errorStatus,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  List<String> _parsePlayerNames(String input) {
+  void joinGame(BuildContext context) {
+    String nameOfPersonJoining = _controllerName.text.trim();
+
+    _playerNames.add(nameOfPersonJoining);
+    pushPlayersNamesToFirebase();
+    joiningAs = nameOfPersonJoining;
+  }
+
+  void pushPlayersNamesToFirebase() {
+    final refPlayers =
+        FirebaseDatabase.instance.ref().child('rooms/room1/players');
+    refPlayers.set(_playerNames);
+  }
+
+  void removePlayer(final String nameToRemove) {
+    _playerNames = _playerNames.where((name) => name != nameToRemove).toList();
+    pushPlayersNamesToFirebase();
+  }
+
+  void startGame(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (_) => GameModel(
+            names: _playerNames,
+            gameRoomId: _controllerRoom.text.trim(),
+          ),
+          child: const GameScreen(),
+        ),
+      ),
+    );
+  }
+
+  List<String> parsePlayerNames(String input) {
     if (input.isEmpty) {
       return [];
     }

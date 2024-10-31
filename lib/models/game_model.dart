@@ -6,13 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GameModel with ChangeNotifier {
-  GameModel({required final List<String> names}) {
+  GameModel({required final List<String> names, required this.gameRoomId}) {
     // Initialize players from the list of names
     for (final String name in names) {
       players.add(Player(name: name));
     }
     initializeGame();
   }
+  final String gameRoomId;
   // Player setup
   final List<Player> players = [];
 

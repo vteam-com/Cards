@@ -47,6 +47,10 @@ A Flutter base Multiplayer Card Game.
 - `lib/`: Contains the Dart source code
 - `assets/`: Static assets including JSON data and images
 
+## Firebase
+
+- Edit and update the file ```firebase_options.dart``` with your firebase project details.
+  
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

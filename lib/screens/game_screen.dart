@@ -181,7 +181,8 @@ class GameScreenState extends State<GameScreen> {
     bool dense = false,
   }) {
     String playersName = gameModel.activePlayerName;
-    String inputText = 'It\'s your turn $playersName.';
+    String inputText =
+        'It\'s your turn $playersName. Room: ${gameModel.gameRoomId}';
     String playerAttackerName =
         gameModel.getPlayerName(gameModel.playerIndexOfAttacker);
 

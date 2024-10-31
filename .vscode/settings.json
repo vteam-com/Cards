@@ -1,6 +1,7 @@
 {
     "cmake.ignoreCMakeListsMissing": true,
     "cSpell.words": [
-        "prefs"
+        "prefs",
+        "vteam"
     ]
 }
