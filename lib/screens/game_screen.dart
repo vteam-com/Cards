@@ -192,7 +192,7 @@ class GameScreenState extends State<GameScreen> {
                     key: _playerKeys[
                         index], // Key for identifying the player zone
                     gameModel: gameModel, // Game state data
-                    index: index, // Index of the player
+                    indexOfPlayer: index, // Index of the player
                     smallDevice: true, // Indicate that this is a small device
                   ),
                 );
@@ -225,7 +225,7 @@ class GameScreenState extends State<GameScreen> {
         return PlayerZone(
           key: _playerKeys[index], // Key for identifying the player zone
           gameModel: gameModel, // Game state data
-          index: index, // Index of the player
+          indexOfPlayer: index, // Index of the player
           smallDevice: false, // Indicate that this is not a small device
         );
       }),

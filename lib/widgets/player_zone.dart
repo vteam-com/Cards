@@ -12,18 +12,17 @@ class PlayerZone extends StatelessWidget {
   const PlayerZone({
     super.key,
     required this.gameModel,
-    required this.index,
+    required this.indexOfPlayer,
     required this.smallDevice,
   });
   final GameModel gameModel;
-  final int index;
+  final int indexOfPlayer;
   final bool smallDevice;
 
   @override
   Widget build(BuildContext context) {
-    final bool isActivePlayer = gameModel.currentPlayerIndex == index;
-    final Player player = gameModel.players[index];
-    player.score = gameModel.calculatePlayerScore(index);
+    final bool isActivePlayer = gameModel.currentPlayerIndex == indexOfPlayer;
+    final Player player = gameModel.players[indexOfPlayer];
 
     return Container(
       width: min(400, MediaQuery.of(context).size.width),
@@ -45,7 +44,10 @@ class PlayerZone extends StatelessWidget {
             //
             // Header
             //
-            PlayerHeader(name: player.name, score: player.score),
+            PlayerHeader(
+              name: player.name,
+              sumOfRevealedCards: player.sumOfRevealedCards,
+            ),
             Divider(
               color: Colors.white.withAlpha(100),
             ),
@@ -54,7 +56,7 @@ class PlayerZone extends StatelessWidget {
             // CTA
             //
             PlayerZoneCTA(
-              playerIndex: index,
+              playerIndex: indexOfPlayer,
               isActivePlayer: isActivePlayer,
               gameModel: gameModel,
             ),
@@ -69,7 +71,7 @@ class PlayerZone extends StatelessWidget {
               height: smallDevice ? 380 : null,
               child: FittedBox(
                 fit: BoxFit.cover,
-                child: buildPlayerHand(context, gameModel, index),
+                child: buildPlayerHand(context, gameModel, indexOfPlayer),
               ),
             ),
           ],

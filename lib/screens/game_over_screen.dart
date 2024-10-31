@@ -8,7 +8,7 @@ void showGameOverDialog(
 ) {
   // sort from lowest to hightest score
   players.sort(
-    (a, b) => a.score.compareTo(b.score),
+    (a, b) => a.sumOfRevealedCards.compareTo(b.sumOfRevealedCards),
   );
 
   showDialog(
@@ -28,7 +28,7 @@ void showGameOverDialog(
                       style: const TextStyle(fontSize: 16),
                     ),
                     Text(
-                      '${player.score}',
+                      '${player.sumOfRevealedCards}',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ],

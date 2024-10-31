@@ -16,6 +16,7 @@ class GameModel with ChangeNotifier {
   final String gameRoomId;
   // Player setup
   final List<Player> players = [];
+  int numberOfDecks = 1;
 
   late int currentPlayerIndex;
   late bool finalTurn;
@@ -78,13 +79,11 @@ class GameModel with ChangeNotifier {
     final int numberOfDecks = numPlayers > 2 ? 2 : 1;
     cardsDeckPile = generateDeck(numberOfDecks: numberOfDecks);
 
-    for (int playerIndex = 0; playerIndex < numPlayers; playerIndex++) {
-      for (int j = 0; j < 9; j++) {
-        players[playerIndex].addCardToHand(
-          cardsDeckPile.removeLast(),
-        ); // Add card to player's hand directly
+    for (final Player player in players) {
+      for (final _ in Iterable.generate(9)) {
+        player.addCardToHand(cardsDeckPile.removeLast());
       }
-      revealInitialCards(playerIndex);
+      player.revealInitialCards();
     }
 
     if (cardsDeckPile.isNotEmpty) {
@@ -216,71 +215,6 @@ class GameModel with ChangeNotifier {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
     );
-  }
-
-  void revealInitialCards(int playerIndex) {
-    players[playerIndex].cardVisibility[4] = true; // Access visibility directly
-    players[playerIndex].cardVisibility[7] = true; // Access visibility directly
-  }
-
-  int calculatePlayerScore(int playerIndex) {
-    int score = 0;
-    List<bool> markedForZeroScore =
-        List.filled(players[playerIndex].hand.length, false);
-
-    List<List<int>> checkingIndices = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      // [0, 4, 8], // Diagonal from top-left to bottom-right
-      // [2, 4, 6], // Diagonal from top-right to bottom-left
-    ];
-
-    for (final List<int> indices in checkingIndices) {
-      markIfSameRank(players[playerIndex].hand, markedForZeroScore, indices);
-    }
-
-    for (int i = 0; i < players[playerIndex].hand.length; i++) {
-      if (players[playerIndex].cardVisibility[i] &&
-          !players[playerIndex].hand[i].partOfSet) {
-        score += players[playerIndex].hand[i].value;
-      }
-    }
-
-    return score;
-  }
-
-  void markIfSameRank(
-    List<PlayingCard> hand,
-    List<bool> markedForZeroScore,
-    List<int> indices,
-  ) {
-    if (indices.length == 3 &&
-        areAllTheSameRankAndNotAlreadyUsed(
-          hand[indices[0]],
-          hand[indices[1]],
-          hand[indices[2]],
-        )) {
-      for (int index in indices) {
-        hand[index].partOfSet = true;
-      }
-    }
-  }
-
-  bool areAllTheSameRankAndNotAlreadyUsed(
-    PlayingCard card1,
-    PlayingCard card2,
-    PlayingCard card3,
-  ) {
-    return !(card1.partOfSet || card2.partOfSet || card3.partOfSet) &&
-        areAllTheSameRank(card1.rank, card2.rank, card3.rank);
-  }
-
-  bool areAllTheSameRank(String rank1, String rank2, String rank3) {
-    return rank1 == rank2 && rank2 == rank3;
   }
 
   bool areAllCardRevealed(final int playerIndex) {

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
 class PlayerHeader extends StatelessWidget {
-  const PlayerHeader({super.key, required this.name, required this.score});
+  const PlayerHeader({
+    super.key,
+    required this.name,
+    required this.sumOfRevealedCards,
+  });
   final String name;
-  final int score;
+  final int sumOfRevealedCards;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +24,7 @@ class PlayerHeader extends StatelessWidget {
           ),
         ),
         Text(
-          score.toString(),
+          sumOfRevealedCards.toString(),
           style: TextStyle(
             color: Colors.white.withAlpha(150),
             fontSize: 30.0,
