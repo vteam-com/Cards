@@ -244,7 +244,7 @@ class GameScreenState extends State<GameScreen> {
     bool dense = false,
   }) {
     /// Name of the currently active player.
-    String playersName = gameModel.activePlayerName;
+    String playersName = gameModel.getPlayerName(gameModel.currentPlayerIndex);
 
     /// Name of the player the active player needs to beat in the final round (if applicable).
     String playerAttackerName =

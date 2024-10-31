@@ -32,46 +32,52 @@ class CardPiles extends StatelessWidget {
   }
 
   Widget _buildPileUnplayedCards() {
-    return SizedBox(
-      width: 150,
-      child: GestureDetector(
-        onTap: onPickedFromDrawPile,
-        child: Stack(
-          alignment: Alignment.center,
-          children: List.generate(cardsInDrawPile.length, (index) {
-            double offset = index * 0.5; // Offset for stacking effect
-            return Positioned(
-              left: offset,
-              top: offset,
-              child: PlayingCardWidget(
-                card: cardsInDrawPile[index],
-                revealed: false,
-              ),
-            );
-          }),
+    return Tooltip(
+      message: '${cardsInDrawPile.length} cards',
+      child: SizedBox(
+        width: 150,
+        child: GestureDetector(
+          onTap: onPickedFromDrawPile,
+          child: Stack(
+            alignment: Alignment.center,
+            children: List.generate(cardsInDrawPile.length, (index) {
+              double offset = index * 0.5; // Offset for stacking effect
+              return Positioned(
+                left: offset,
+                top: offset,
+                child: PlayingCardWidget(
+                  card: cardsInDrawPile[index],
+                  revealed: false,
+                ),
+              );
+            }),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildPileDiscard() {
-    return SizedBox(
-      width: 150, // Adjust the width based on the discard pile size
-      child: GestureDetector(
-        onTap: onPickedFromDiscardPile,
-        child: Stack(
-          alignment: Alignment.center,
-          children: List.generate(cardsDiscardPile.length, (index) {
-            double offset = index * 0.5; // Offset for stacking effect
-            return Positioned(
-              left: offset,
-              top: offset,
-              child: PlayingCardWidget(
-                card: cardsDiscardPile[index],
-                revealed: true,
-              ),
-            );
-          }),
+    return Tooltip(
+      message: '${cardsDiscardPile.length} cards',
+      child: SizedBox(
+        width: 150, // Adjust the width based on the discard pile size
+        child: GestureDetector(
+          onTap: onPickedFromDiscardPile,
+          child: Stack(
+            alignment: Alignment.center,
+            children: List.generate(cardsDiscardPile.length, (index) {
+              double offset = index * 0.5; // Offset for stacking effect
+              return Positioned(
+                left: offset,
+                top: offset,
+                child: PlayingCardWidget(
+                  card: cardsDiscardPile[index],
+                  revealed: true,
+                ),
+              );
+            }),
+          ),
         ),
       ),
     );

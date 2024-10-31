@@ -20,7 +20,7 @@ void main() {
     test('drawCard from discard pile updates game state', () {
       // On start up 18 cards were distributed to the players, and the first card of the deck is flipped in the discarded pile.
       expect(
-        gameModel.cardsDeckDiscarded.length,
+        gameModel.deck.cardsDeckDiscarded.length,
         1,
         reason: 'Discard pile should have 1 card in it',
       );
@@ -33,7 +33,7 @@ void main() {
 
       // Assert
       expect(
-        gameModel.cardsDeckDiscarded.isEmpty,
+        gameModel.deck.cardsDeckDiscarded.isEmpty,
         true,
         reason: 'Discard pile should be empty',
       );

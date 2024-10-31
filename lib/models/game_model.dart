@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cards/models/deck.dart';
 import 'package:cards/models/player.dart';
 import 'package:cards/screens/game_over_screen.dart';
 import 'package:cards/widgets/playing_card.dart';
@@ -14,17 +15,11 @@ class GameModel with ChangeNotifier {
     initializeGame();
   }
   final String gameRoomId;
-  // Player setup
   final List<Player> players = [];
-  int numberOfDecks = 1;
-
+  final Deck deck = Deck();
   late int currentPlayerIndex;
-  late bool finalTurn;
   late int playerIndexOfAttacker;
-
-  // Game state initialization
-  List<PlayingCard> cardsDeckPile = [];
-  List<PlayingCard> cardsDeckDiscarded = [];
+  late bool finalTurn;
 
   // Private field to hold the state
   CurrentPlayerStates _currentPlayerStates =
@@ -76,18 +71,20 @@ class GameModel with ChangeNotifier {
     finalTurn = false;
     playerIndexOfAttacker = -1;
 
-    final int numberOfDecks = numPlayers > 2 ? 2 : 1;
-    cardsDeckPile = generateDeck(numberOfDecks: numberOfDecks);
+    // Calculate number of decks
+    // 1 deck for 2 & 3 players, 2 decks for 4 to 5 players, 3 decks for 6 to 7 players, etc.
+    final int numDecks = (numPlayers - 2) ~/ 2;
+    deck.shuffle(numberOfDecks: 1 + numDecks);
 
     for (final Player player in players) {
       for (final _ in Iterable.generate(9)) {
-        player.addCardToHand(cardsDeckPile.removeLast());
+        player.addCardToHand(deck.cardsDeckPile.removeLast());
       }
       player.revealInitialCards();
     }
 
-    if (cardsDeckPile.isNotEmpty) {
-      cardsDeckDiscarded.add(cardsDeckPile.removeLast());
+    if (deck.cardsDeckPile.isNotEmpty) {
+      deck.cardsDeckDiscarded.add(deck.cardsDeckPile.removeLast());
     }
 
     notifyListeners();
@@ -99,11 +96,11 @@ class GameModel with ChangeNotifier {
       return;
     }
 
-    if (fromDiscardPile && cardsDeckDiscarded.isNotEmpty) {
-      cardPickedUpFromDeckOrDiscarded = cardsDeckDiscarded.removeLast();
+    if (fromDiscardPile && deck.cardsDeckDiscarded.isNotEmpty) {
+      cardPickedUpFromDeckOrDiscarded = deck.cardsDeckDiscarded.removeLast();
       currentPlayerStates = CurrentPlayerStates.flipAndSwap;
-    } else if (!fromDiscardPile && cardsDeckPile.isNotEmpty) {
-      cardPickedUpFromDeckOrDiscarded = cardsDeckPile.removeLast();
+    } else if (!fromDiscardPile && deck.cardsDeckPile.isNotEmpty) {
+      cardPickedUpFromDeckOrDiscarded = deck.cardsDeckPile.removeLast();
       currentPlayerStates = CurrentPlayerStates.keepOrDiscard;
     } else {
       showTurnNotification(context, 'No cards available to draw!');
@@ -120,7 +117,7 @@ class GameModel with ChangeNotifier {
 
     PlayingCard cardToSwap =
         players[playerIndex].hand[gridIndex]; // Access player's hand directly
-    cardsDeckDiscarded.add(cardToSwap);
+    deck.cardsDeckDiscarded.add(cardToSwap);
 
     players[playerIndex].hand[gridIndex] =
         cardPickedUpFromDeckOrDiscarded!; // Access player's hand directly
@@ -252,11 +249,13 @@ class GameModel with ChangeNotifier {
     prefs.setInt('playerIndexOfAttacker', playerIndexOfAttacker);
     prefs.setString(
       'cardsDeckPile',
-      jsonEncode(cardsDeckPile.map((card) => card.toString()).toList()),
+      jsonEncode(deck.cardsDeckPile.map((card) => card.toString()).toList()),
     );
     prefs.setString(
       'cardsDeckDiscarded',
-      jsonEncode(cardsDeckDiscarded.map((card) => card.toString()).toList()),
+      jsonEncode(
+        deck.cardsDeckDiscarded.map((card) => card.toString()).toList(),
+      ),
     );
     // Consider saving other game state variables like cardsDeckPile, cardsDeckDiscarded, etc. as needed
   }

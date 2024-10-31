@@ -89,7 +89,7 @@ class PlayerZoneCTA extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                gameModel.cardsDeckDiscarded
+                gameModel.deck.cardsDeckDiscarded
                     .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
                 gameModel.cardPickedUpFromDeckOrDiscarded = null;
                 gameModel.currentPlayerStates = CurrentPlayerStates.flipOneCard;
@@ -142,8 +142,9 @@ class PlayerZoneCTA extends StatelessWidget {
         FittedBox(
           fit: BoxFit.scaleDown,
           child: CardPiles(
-            cardsInDrawPile: context.watch<GameModel>().cardsDeckPile,
-            cardsDiscardPile: context.watch<GameModel>().cardsDeckDiscarded,
+            cardsInDrawPile: context.watch<GameModel>().deck.cardsDeckPile,
+            cardsDiscardPile:
+                context.watch<GameModel>().deck.cardsDeckDiscarded,
             onPickedFromDrawPile: () {
               final gameModel = context.read<GameModel>();
               gameModel.drawCard(context, fromDiscardPile: false);

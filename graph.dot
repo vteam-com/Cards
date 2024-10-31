@@ -6,6 +6,7 @@ digraph "" {
   "/lib/firebase_options_private.dart" [label="firebase_options_private"];
   "/lib/firebase_options.dart" [label="firebase_options"];
   "/lib/models/game_model.dart" [label="game_model"];
+  "/lib/models/deck.dart" [label="deck"];
   "/lib/models/player.dart" [label="player"];
   "/lib/screens/game_screen.dart" [label="game_screen"];
   "/lib/screens/game_over_screen.dart" [label="game_over_screen"];
@@ -37,6 +38,7 @@ digraph "" {
       subgraph "cluster~/lib/models" {
         label="models";
         "/lib/models/game_model.dart";
+        "/lib/models/deck.dart";
         "/lib/models/player.dart";
       }
       subgraph "cluster~/lib/screens" {
@@ -63,9 +65,11 @@ digraph "" {
     }
   }
   "/test/game_model_test.dart" -> "/lib/models/game_model.dart";
+  "/lib/models/game_model.dart" -> "/lib/models/deck.dart";
   "/lib/models/game_model.dart" -> "/lib/models/player.dart";
   "/lib/models/game_model.dart" -> "/lib/screens/game_over_screen.dart";
   "/lib/models/game_model.dart" -> "/lib/widgets/playing_card.dart";
+  "/lib/models/deck.dart" -> "/lib/widgets/playing_card.dart";
   "/lib/models/player.dart" -> "/lib/widgets/playing_card.dart";
   "/lib/screens/game_screen.dart" -> "/lib/models/game_model.dart";
   "/lib/screens/game_screen.dart" -> "/lib/screens/screen.dart";
