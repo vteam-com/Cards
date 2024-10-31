@@ -63,12 +63,9 @@ class GameModel with ChangeNotifier {
 
   /// Checks if all players have revealed all their cards.
   bool areAllCardsFromHandsRevealed() {
-    for (int playerIndex = 0; playerIndex < numPlayers; playerIndex++) {
-      if (!areAllCardRevealed(playerIndex)) {
-        return false;
-      }
-    }
-    return true;
+    return cardVisibility.every(
+      (playerVisibility) => playerVisibility.every((visible) => visible),
+    );
   }
 
   /// Initializes the game by setting up the decks, hands, and visibility.

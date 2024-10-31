@@ -44,20 +44,26 @@
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M103.88,-517C103.88,-517 36.12,-517 36.12,-517 30.12,-517 24.12,-511 24.12,-505 24.12,-505 24.12,-493 24.12,-493 24.12,-487 30.12,-481 36.12,-481 36.12,-481 103.88,-481 103.88,-481 109.88,-481 115.88,-487 115.88,-493 115.88,-493 115.88,-505 115.88,-505 115.88,-511 109.88,-517 103.88,-517"/>
 <text text-anchor="middle" x="70" y="-493.75" font-family="Arial" font-size="15.00">widget_test</text>
 </g>
-<!-- /lib/firebase_options.dart -->
+<!-- /lib/firebase_options_private.dart -->
 <g id="node2" class="node">
+<title>/lib/firebase_options_private.dart</title>
+<path fill="Lavender" stroke="black" stroke-width="1.3" d="M306.38,-517C306.38,-517 151.62,-517 151.62,-517 145.62,-517 139.62,-511 139.62,-505 139.62,-505 139.62,-493 139.62,-493 139.62,-487 145.62,-481 151.62,-481 151.62,-481 306.38,-481 306.38,-481 312.38,-481 318.38,-487 318.38,-493 318.38,-493 318.38,-505 318.38,-505 318.38,-511 312.38,-517 306.38,-517"/>
+<text text-anchor="middle" x="229" y="-493.75" font-family="Arial" font-size="15.00">firebase_options_private</text>
+</g>
+<!-- /lib/firebase_options.dart -->
+<g id="node3" class="node">
 <title>/lib/firebase_options.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M253.75,-434C253.75,-434 152.25,-434 152.25,-434 146.25,-434 140.25,-428 140.25,-422 140.25,-422 140.25,-410 140.25,-410 140.25,-404 146.25,-398 152.25,-398 152.25,-398 253.75,-398 253.75,-398 259.75,-398 265.75,-404 265.75,-410 265.75,-410 265.75,-422 265.75,-422 265.75,-428 259.75,-434 253.75,-434"/>
 <text text-anchor="middle" x="203" y="-410.75" font-family="Arial" font-size="15.00">firebase_options</text>
 </g>
 <!-- /lib/models/game_model.dart -->
-<g id="node3" class="node">
+<g id="node4" class="node">
 <title>/lib/models/game_model.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M666.12,-284C666.12,-284 587.88,-284 587.88,-284 581.88,-284 575.88,-278 575.88,-272 575.88,-272 575.88,-260 575.88,-260 575.88,-254 581.88,-248 587.88,-248 587.88,-248 666.12,-248 666.12,-248 672.12,-248 678.12,-254 678.12,-260 678.12,-260 678.12,-272 678.12,-272 678.12,-278 672.12,-284 666.12,-284"/>
 <text text-anchor="middle" x="627" y="-260.75" font-family="Arial" font-size="15.00">game_model</text>
 </g>
 <!-- /lib/models/player.dart -->
-<g id="node4" class="node">
+<g id="node5" class="node">
 <title>/lib/models/player.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M666.25,-212C666.25,-212 633.75,-212 633.75,-212 627.75,-212 621.75,-206 621.75,-200 621.75,-200 621.75,-188 621.75,-188 621.75,-182 627.75,-176 633.75,-176 633.75,-176 666.25,-176 666.25,-176 672.25,-176 678.25,-182 678.25,-188 678.25,-188 678.25,-200 678.25,-200 678.25,-206 672.25,-212 666.25,-212"/>
 <text text-anchor="middle" x="650" y="-188.75" font-family="Arial" font-size="15.00">player</text>
@@ -69,7 +75,7 @@
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="643.97,-224.57 643.77,-213.97 637.32,-222.38 643.97,-224.57"/>
 </g>
 <!-- /lib/screens/game_over_screen.dart -->
-<g id="node6" class="node">
+<g id="node7" class="node">
 <title>/lib/screens/game_over_screen.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M540.12,-434C540.12,-434 419.88,-434 419.88,-434 413.88,-434 407.88,-428 407.88,-422 407.88,-422 407.88,-410 407.88,-410 407.88,-404 413.88,-398 419.88,-398 419.88,-398 540.12,-398 540.12,-398 546.12,-398 552.12,-404 552.12,-410 552.12,-410 552.12,-422 552.12,-422 552.12,-428 546.12,-434 540.12,-434"/>
 <text text-anchor="middle" x="480" y="-410.75" font-family="Arial" font-size="15.00">game_over_screen</text>
@@ -99,25 +105,25 @@
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="746.67,-77.37 753.51,-69.28 743.12,-71.33 746.67,-77.37"/>
 </g>
 <!-- /lib/screens/game_screen.dart -->
-<g id="node5" class="node">
+<g id="node6" class="node">
 <title>/lib/screens/game_screen.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M495.38,-359C495.38,-359 412.62,-359 412.62,-359 406.62,-359 400.62,-353 400.62,-347 400.62,-347 400.62,-335 400.62,-335 400.62,-329 406.62,-323 412.62,-323 412.62,-323 495.38,-323 495.38,-323 501.38,-323 507.38,-329 507.38,-335 507.38,-335 507.38,-347 507.38,-347 507.38,-353 501.38,-359 495.38,-359"/>
 <text text-anchor="middle" x="454" y="-335.75" font-family="Arial" font-size="15.00">game_screen</text>
 </g>
 <!-- /lib/screens/game_screen.dart&#45;&gt;/lib/models/game_model.dart -->
-<g id="edge7" class="edge">
+<g id="edge5" class="edge">
 <title>/lib/screens/game_screen.dart&#45;&gt;/lib/models/game_model.dart</title>
 <path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M507.77,-330C530.36,-325.35 553.75,-319.79 564,-315 576.59,-309.12 589.06,-300.4 599.54,-292"/>
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="601.61,-294.83 607.04,-285.73 597.12,-289.45 601.61,-294.83"/>
 </g>
 <!-- /lib/screens/screen.dart -->
-<g id="node8" class="node">
+<g id="node9" class="node">
 <title>/lib/screens/screen.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M424.5,-284C424.5,-284 387.5,-284 387.5,-284 381.5,-284 375.5,-278 375.5,-272 375.5,-272 375.5,-260 375.5,-260 375.5,-254 381.5,-248 387.5,-248 387.5,-248 424.5,-248 424.5,-248 430.5,-248 436.5,-254 436.5,-260 436.5,-260 436.5,-272 436.5,-272 436.5,-278 430.5,-284 424.5,-284"/>
 <text text-anchor="middle" x="406" y="-260.75" font-family="Arial" font-size="15.00">screen</text>
 </g>
 <!-- /lib/screens/game_screen.dart&#45;&gt;/lib/screens/screen.dart -->
-<g id="edge5" class="edge">
+<g id="edge6" class="edge">
 <title>/lib/screens/game_screen.dart&#45;&gt;/lib/screens/screen.dart</title>
 <path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M442.62,-322.7C437.05,-314.22 430.2,-303.8 423.93,-294.28"/>
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="426.96,-292.51 418.54,-286.07 421.11,-296.35 426.96,-292.51"/>
@@ -129,7 +135,7 @@
 <text text-anchor="middle" x="995" y="-335.75" font-family="Arial" font-size="15.00">player_zone</text>
 </g>
 <!-- /lib/screens/game_screen.dart&#45;&gt;/lib/widgets/player_zone.dart -->
-<g id="edge6" class="edge">
+<g id="edge7" class="edge">
 <title>/lib/screens/game_screen.dart&#45;&gt;/lib/widgets/player_zone.dart</title>
 <path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M507.65,-355.39C559.3,-368.45 639.85,-386.74 711,-394 734.99,-396.45 904.41,-399.01 928,-394 944.88,-390.42 960.25,-379.15 972.01,-367.91"/>
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="974.4,-370.47 978.88,-360.87 969.39,-365.58 974.4,-370.47"/>
@@ -141,7 +147,7 @@
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="679.46,-219.37 670.37,-213.93 674.08,-223.85 679.46,-219.37"/>
 </g>
 <!-- /lib/screens/setup_screen.dart -->
-<g id="node7" class="node">
+<g id="node8" class="node">
 <title>/lib/screens/setup_screen.dart</title>
 <path fill="Lavender" stroke="black" stroke-width="1.3" d="M378,-434C378,-434 296,-434 296,-434 290,-434 284,-428 284,-422 284,-422 284,-410 284,-410 284,-404 290,-398 296,-398 296,-398 378,-398 378,-398 384,-398 390,-404 390,-410 390,-410 390,-422 390,-422 390,-428 384,-434 378,-434"/>
 <text text-anchor="middle" x="337" y="-410.75" font-family="Arial" font-size="15.00">setup_screen</text>
@@ -189,28 +195,22 @@
 <polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="1080.57,-370.89 1083.49,-360.71 1074.85,-366.85 1080.57,-370.89"/>
 </g>
 <!-- /lib/main.dart -->
-<g id="node9" class="node">
+<g id="node10" class="node">
 <title>/lib/main.dart</title>
-<path fill="Lavender" stroke="black" stroke-width="1.3" d="M285,-517C285,-517 255,-517 255,-517 249,-517 243,-511 243,-505 243,-505 243,-493 243,-493 243,-487 249,-481 255,-481 255,-481 285,-481 285,-481 291,-481 297,-487 297,-493 297,-493 297,-505 297,-505 297,-511 291,-517 285,-517"/>
-<text text-anchor="middle" x="270" y="-493.75" font-family="Arial" font-size="15.00">main</text>
+<path fill="Lavender" stroke="black" stroke-width="1.3" d="M378,-517C378,-517 348,-517 348,-517 342,-517 336,-511 336,-505 336,-505 336,-493 336,-493 336,-487 342,-481 348,-481 348,-481 378,-481 378,-481 384,-481 390,-487 390,-493 390,-493 390,-505 390,-505 390,-511 384,-517 378,-517"/>
+<text text-anchor="middle" x="363" y="-493.75" font-family="Arial" font-size="15.00">main</text>
 </g>
 <!-- /lib/main.dart&#45;&gt;/lib/firebase_options.dart -->
 <g id="edge14" class="edge">
 <title>/lib/main.dart&#45;&gt;/lib/firebase_options.dart</title>
-<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M255.79,-480.82C246.79,-469.94 234.97,-455.66 224.8,-443.36"/>
-<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="227.74,-441.42 218.67,-435.95 222.35,-445.89 227.74,-441.42"/>
+<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M341.45,-480.68C336.89,-477.71 331.95,-474.95 327,-473 304.02,-463.94 294.97,-474.07 272,-465 257.79,-459.39 243.66,-450.34 231.93,-441.6"/>
+<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="234.28,-439 224.24,-435.63 229.99,-444.53 234.28,-439"/>
 </g>
 <!-- /lib/main.dart&#45;&gt;/lib/screens/setup_screen.dart -->
 <g id="edge15" class="edge">
 <title>/lib/main.dart&#45;&gt;/lib/screens/setup_screen.dart</title>
-<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M284.21,-480.82C293.21,-469.94 305.03,-455.66 315.2,-443.36"/>
-<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="317.65,-445.89 321.33,-435.95 312.26,-441.42 317.65,-445.89"/>
-</g>
-<!-- /lib/firebase_options_.dart -->
-<g id="node10" class="node">
-<title>/lib/firebase_options_.dart</title>
-<path fill="Lavender" stroke="black" stroke-width="1.3" d="M812.88,-517C812.88,-517 703.12,-517 703.12,-517 697.12,-517 691.12,-511 691.12,-505 691.12,-505 691.12,-493 691.12,-493 691.12,-487 697.12,-481 703.12,-481 703.12,-481 812.88,-481 812.88,-481 818.88,-481 824.88,-487 824.88,-493 824.88,-493 824.88,-505 824.88,-505 824.88,-511 818.88,-517 812.88,-517"/>
-<text text-anchor="middle" x="758" y="-493.75" font-family="Arial" font-size="15.00">firebase_options_</text>
+<path fill="none" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" d="M357.49,-480.82C354.2,-470.58 349.94,-457.33 346.16,-445.55"/>
+<polygon fill="#aabbaa" fill-opacity="0.533333" stroke="#aabbaa" stroke-width="1.3" stroke-opacity="0.533333" points="349.59,-444.76 343.2,-436.31 342.92,-446.9 349.59,-444.76"/>
 </g>
 <!-- /lib/widgets/blink.dart -->
 <g id="node11" class="node">

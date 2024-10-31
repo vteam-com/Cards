@@ -1,8 +1,8 @@
+import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/player_zone.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/game_model.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -25,7 +25,7 @@ class GameScreenState extends State<GameScreen> {
   @override
   void didChangeDependencies() {
     // Initialize keys based on number of players
-    final gameModel = Provider.of<GameModel>(context);
+    final GameModel gameModel = Provider.of<GameModel>(context);
     _playerKeys = List.generate(gameModel.numPlayers, (index) => GlobalKey());
     super.didChangeDependencies();
   }
@@ -48,7 +48,7 @@ class GameScreenState extends State<GameScreen> {
         return Screen(
           title: '',
           backButton: true,
-          child: adaptiveLayout(
+          child: _adaptiveLayout(
             context,
             gameModel,
             width,
@@ -58,21 +58,35 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget adaptiveLayout(
+  /// Adapts the layout based on the screen width.
+  ///
+  /// Determines whether to use the desktop/tablet layout or the phone layout
+  /// based on the provided `width`.  Sets the `phoneLayout` flag accordingly,
+  /// which is used to adjust scrolling behavior.
+  ///
+  /// Args:
+  ///   context: The BuildContext for the widget.
+  ///   gameModel: The GameModel providing game state data.
+  ///   width: The width of the screen.
+  ///
+  /// Returns:
+  ///   The appropriate layout widget based on the screen width.
+  Widget _adaptiveLayout(
     BuildContext context,
     GameModel gameModel,
     final double width,
   ) {
     // DESKTOP or TABLET
     if (width >= ResponsiveBreakpoints.desktop ||
-        width >= ResponsiveBreakpoints.phone) {
+        width >= ResponsiveBreakpoints.tablet) {
+      // Use tablet breakpoint here
       phoneLayout = false;
-      return layoutForDesktop(context, gameModel);
+      return _layoutForDesktop(context, gameModel);
     }
 
     // PHONE
     phoneLayout = true;
-    return layoutForPhone(context, gameModel);
+    return _layoutForPhone(context, gameModel);
   }
 
   void _scrollToActivePlayer(final GameModel gameModel) {
@@ -113,18 +127,33 @@ class GameScreenState extends State<GameScreen> {
     });
   }
 
-  Widget layoutForDesktop(BuildContext context, GameModel gameModel) {
+  /// Builds the layout for desktop-sized screens.
+  ///
+  /// This layout arranges the player zones in a horizontally wrapping layout
+  /// within a scrollable area. A banner is displayed at the top, providing
+  /// game information.
+  ///
+  /// Args:
+  ///   context: The BuildContext for the widget.
+  ///   gameModel: The GameModel providing game state data.
+  ///
+  /// Returns:
+  ///   A Column widget containing the banner and scrollable player zones.
+  Widget _layoutForDesktop(BuildContext context, GameModel gameModel) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          banner(gameModel),
+          _banner(gameModel), // Display the game banner
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
               child: SingleChildScrollView(
-                controller: _scrollController,
-                child: buildPlayers(context, gameModel),
+                controller: _scrollController, // Controller for scrolling
+                child: _buildPlayersWrapLayout(
+                  context,
+                  gameModel,
+                ), // Player zones in a wrap layout
               ),
             ),
           ),
@@ -133,24 +162,38 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget layoutForPhone(BuildContext context, GameModel gameModel) {
+  /// Builds the layout for phone-sized screens.
+  ///
+  /// This layout arranges the player zones vertically within a scrollable column.
+  /// A dense banner is displayed at the top, providing game information.
+  ///
+  /// Args:
+  ///   context: The BuildContext for the widget.
+  ///   gameModel: The GameModel providing game state data.
+  ///
+  /// Returns:
+  ///   A Column widget containing the banner and scrollable player zones.
+  Widget _layoutForPhone(BuildContext context, GameModel gameModel) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        banner(gameModel, dense: true),
+        _banner(gameModel, dense: true), // Display a compact banner
         Expanded(
           child: SingleChildScrollView(
-            controller: _scrollController,
+            controller: _scrollController, // Controller for scrolling
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: List.generate(gameModel.numPlayers, (index) {
                 return Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(
+                    8.0,
+                  ), // Add padding around each player zone
                   child: PlayerZone(
-                    key: _playerKeys[index],
-                    gameModel: gameModel,
-                    index: index,
-                    smallDevice: true,
+                    key: _playerKeys[
+                        index], // Key for identifying the player zone
+                    gameModel: gameModel, // Game state data
+                    index: index, // Index of the player
+                    smallDevice: true, // Indicate that this is a small device
                   ),
                 );
               }),
@@ -161,75 +204,67 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget buildPlayers(BuildContext context, GameModel gameModel) {
+  /// Builds a horizontally wrapping layout for displaying player zones.
+  ///
+  /// This method generates a list of [PlayerZone] widgets, one for each player
+  /// in the game. These widgets are then arranged in a [Wrap] layout, allowing
+  /// them to wrap onto multiple rows if necessary, depending on the available
+  /// screen width.  Spacing is added between the player zones for visual clarity.
+  ///
+  /// Args:
+  ///   context: The BuildContext for the widget.
+  ///   gameModel: The GameModel providing game state data.
+  ///
+  /// Returns:
+  ///   A Wrap widget containing the player zones.
+  Widget _buildPlayersWrapLayout(BuildContext context, GameModel gameModel) {
     return Wrap(
-      spacing: 40.0,
-      runSpacing: 40.0,
+      spacing: 40.0, // Horizontal spacing between player zones
+      runSpacing: 40.0, // Vertical spacing between rows of player zones
       children: List.generate(gameModel.numPlayers, (index) {
         return PlayerZone(
-          key: _playerKeys[index],
-          gameModel: gameModel,
-          index: index,
-          smallDevice: false,
+          key: _playerKeys[index], // Key for identifying the player zone
+          gameModel: gameModel, // Game state data
+          index: index, // Index of the player
+          smallDevice: false, // Indicate that this is not a small device
         );
       }),
     );
   }
 
-  Widget banner(
+  /// Displays a banner message indicating the current player's turn and game status.
+  ///
+  /// The banner highlights the active player's name and, if applicable, the name of
+  /// the player they need to beat in the final round.  The game room ID is also displayed.
+  ///
+  /// The `dense` parameter controls the font size and padding, allowing for a more compact
+  /// banner on smaller screens.
+  Widget _banner(
     GameModel gameModel, {
     bool dense = false,
   }) {
+    /// Name of the currently active player.
     String playersName = gameModel.activePlayerName;
-    String inputText =
-        'It\'s your turn $playersName. Room: ${gameModel.gameRoomId}';
+
+    /// Name of the player the active player needs to beat in the final round (if applicable).
     String playerAttackerName =
         gameModel.getPlayerName(gameModel.playerIndexOfAttacker);
 
+    /// Base text for the banner message.
+    String inputText =
+        'It\'s your turn $playersName. Room: ${gameModel.gameRoomId}';
+
+    /// Modifies the banner text if it's the final turn, indicating who the active player
+    /// needs to beat.
     if (gameModel.finalTurn) {
       inputText =
           'Final Round. $inputText. You have to beat $playerAttackerName';
     }
 
+    /// Keywords to highlight in the banner text.
     List<String> keywords = [playersName, playerAttackerName];
 
-    List<TextSpan> generateStyledText(String text, List<String> keywords) {
-      List<TextSpan> spans = [];
-      int start = 0;
-      final textLower = text.toLowerCase();
-
-      for (final keyword in keywords) {
-        final keywordLower = keyword.toLowerCase();
-        int index = textLower.indexOf(keywordLower, start);
-
-        while (index >= 0) {
-          if (index > start) {
-            // Add normal text before the keyword
-            spans.add(TextSpan(text: text.substring(start, index)));
-          }
-          // Add the keyword with bold style
-          spans.add(
-            TextSpan(
-              text: text.substring(index, index + keyword.length),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: dense ? 16 : 20,
-              ),
-            ),
-          );
-          start = index + keyword.length;
-          index = textLower.indexOf(keywordLower, start);
-        }
-      }
-
-      // Add remaining text
-      if (start < text.length) {
-        spans.add(TextSpan(text: text.substring(start)));
-      }
-
-      return spans;
-    }
-
+    /// Returns the styled banner widget.
     return Container(
       padding: EdgeInsets.all(dense ? 4 : 16),
       decoration: BoxDecoration(
@@ -246,4 +281,45 @@ class GameScreenState extends State<GameScreen> {
       ),
     );
   }
+}
+
+/// Generates a list of TextSpans to style. Keywords are bolded.
+///
+/// Iterates through the keywords and applies bold styling to each occurrence within
+/// the input text.  The remaining text maintains the default style.
+List<TextSpan> generateStyledText(String text, List<String> keywords) {
+  List<TextSpan> spans = [];
+  int start = 0;
+  final textLower = text.toLowerCase();
+
+  for (final keyword in keywords) {
+    final keywordLower = keyword.toLowerCase();
+    int index = textLower.indexOf(keywordLower, start);
+
+    while (index >= 0) {
+      if (index > start) {
+        // Add normal text before the keyword
+        spans.add(TextSpan(text: text.substring(start, index)));
+      }
+      // Add the keyword with bold style
+      spans.add(
+        TextSpan(
+          text: text.substring(index, index + keyword.length),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+      );
+      start = index + keyword.length;
+      index = textLower.indexOf(keywordLower, start);
+    }
+  }
+
+  // Add remaining text
+  if (start < text.length) {
+    spans.add(TextSpan(text: text.substring(start)));
+  }
+
+  return spans;
 }
