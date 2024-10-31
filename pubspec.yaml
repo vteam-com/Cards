@@ -33,6 +33,7 @@ dependencies:
   firebase_database: ^11.1.4
   flutter:
     sdk: flutter
+  mockito: ^5.4.4
   provider: ^6.0.0 # or another sta
   shared_preferences: ^2.3.2
   url_launcher: ^6.3.1

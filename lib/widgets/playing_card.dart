@@ -9,6 +9,11 @@ class PlayingCard {
   final String rank;
   final int value;
   bool partOfSet;
+
+  @override
+  String toString() {
+    return '$rank of $suit';
+  }
 }
 
 List<PlayingCard> generateDeck({int numberOfDecks = 1}) {
