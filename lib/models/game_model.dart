@@ -24,7 +24,6 @@ class GameModel with ChangeNotifier {
   // Game state initialization
   List<PlayingCard> cardsDeckPile = [];
   List<PlayingCard> cardsDeckDiscarded = [];
-  List<List<bool>> cardVisibility = [];
 
   // Private field to hold the state
   CurrentPlayerStates _currentPlayerStates =
@@ -62,9 +61,12 @@ class GameModel with ChangeNotifier {
 
   /// Checks if all players have revealed all their cards.
   bool areAllCardsFromHandsRevealed() {
-    return cardVisibility.every(
-      (playerVisibility) => playerVisibility.every((visible) => visible),
-    );
+    for (int playerIndex = 0; playerIndex < numPlayers; playerIndex++) {
+      if (!areAllCardRevealed(playerIndex)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /// Initializes the game by setting up the decks, hands, and visibility.
@@ -76,14 +78,11 @@ class GameModel with ChangeNotifier {
     final int numberOfDecks = numPlayers > 2 ? 2 : 1;
     cardsDeckPile = generateDeck(numberOfDecks: numberOfDecks);
 
-    cardVisibility = List.generate(numPlayers, (_) => []);
-
     for (int playerIndex = 0; playerIndex < numPlayers; playerIndex++) {
       for (int j = 0; j < 9; j++) {
-        players[playerIndex].hand.add(
-              cardsDeckPile.removeLast(),
-            ); // Add card to player's hand directly
-        cardVisibility[playerIndex].add(false);
+        players[playerIndex].addCardToHand(
+          cardsDeckPile.removeLast(),
+        ); // Add card to player's hand directly
       }
       revealInitialCards(playerIndex);
     }
@@ -136,10 +135,9 @@ class GameModel with ChangeNotifier {
   }
 
   void revealAllRemainingCardsFor(int playerIndex) {
-    for (int i = 0; i < cardVisibility[playerIndex].length; i++) {
-      if (!cardVisibility[playerIndex][i]) {
-        cardVisibility[playerIndex][i] = true;
-      }
+    final Player player = players[playerIndex];
+    for (int indexCard = 0; indexCard < player.hand.length; indexCard++) {
+      player.cardVisibility[indexCard] = true;
     }
     notifyListeners();
   }
@@ -178,11 +176,11 @@ class GameModel with ChangeNotifier {
     int cardIndex,
   ) {
     if (currentPlayerStates != CurrentPlayerStates.flipOneCard ||
-        cardVisibility[playerIndex][cardIndex]) {
+        players[playerIndex].cardVisibility[cardIndex]) {
       return false;
     }
 
-    cardVisibility[playerIndex][cardIndex] = true;
+    players[playerIndex].cardVisibility[cardIndex] = true;
     currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
     finalizeAction(context);
     return true;
@@ -197,7 +195,7 @@ class GameModel with ChangeNotifier {
       return false;
     }
 
-    cardVisibility[playerIndex][cardIndex] = true;
+    players[playerIndex].cardVisibility[cardIndex] = true;
     swapCard(playerIndex, cardIndex);
     currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
     finalizeAction(context);
@@ -221,14 +219,8 @@ class GameModel with ChangeNotifier {
   }
 
   void revealInitialCards(int playerIndex) {
-    cardVisibility[playerIndex][4] = true;
-    cardVisibility[playerIndex][7] = true;
-    // cardVisibility[playerIndex][2] = true;
-    // cardVisibility[playerIndex][3] = true;
-    // cardVisibility[playerIndex][4] = true;
-    // cardVisibility[playerIndex][5] = true;
-    // cardVisibility[playerIndex][7] = true;
-    // cardVisibility[playerIndex][8] = true;
+    players[playerIndex].cardVisibility[4] = true; // Access visibility directly
+    players[playerIndex].cardVisibility[7] = true; // Access visibility directly
   }
 
   int calculatePlayerScore(int playerIndex) {
@@ -252,7 +244,7 @@ class GameModel with ChangeNotifier {
     }
 
     for (int i = 0; i < players[playerIndex].hand.length; i++) {
-      if (cardVisibility[playerIndex][i] &&
+      if (players[playerIndex].cardVisibility[i] &&
           !players[playerIndex].hand[i].partOfSet) {
         score += players[playerIndex].hand[i].value;
       }
@@ -292,7 +284,9 @@ class GameModel with ChangeNotifier {
   }
 
   bool areAllCardRevealed(final int playerIndex) {
-    return (cardVisibility[playerIndex].every((visible) => visible));
+    return players[playerIndex]
+        .cardVisibility
+        .every((visible) => visible); // Access visibility directly
   }
 
   void advanceToNextPlayer(BuildContext context) {
@@ -313,10 +307,23 @@ class GameModel with ChangeNotifier {
       'playerHands',
       serializeHands(players.map((p) => p.hand).toList()),
     );
-    prefs.setString('cardVisibility', serializeVisibility(cardVisibility));
+    prefs.setString(
+      'cardVisibility',
+      serializeVisibility(
+        players.map((p) => p.cardVisibility).toList(),
+      ),
+    ); // Fix: Save cardVisibility per player
     prefs.setInt('currentPlayerIndex', currentPlayerIndex);
     prefs.setBool('finalTurn', finalTurn);
     prefs.setInt('playerIndexOfAttacker', playerIndexOfAttacker);
+    prefs.setString(
+      'cardsDeckPile',
+      jsonEncode(cardsDeckPile.map((card) => card.toString()).toList()),
+    );
+    prefs.setString(
+      'cardsDeckDiscarded',
+      jsonEncode(cardsDeckDiscarded.map((card) => card.toString()).toList()),
+    );
     // Consider saving other game state variables like cardsDeckPile, cardsDeckDiscarded, etc. as needed
   }
 
