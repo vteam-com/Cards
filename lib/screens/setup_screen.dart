@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
-import 'package:cards/widgets/list_players.dart';
-import 'package:cards/widgets/text_url.dart';
+import 'package:cards/widgets/players_in_room_widget.dart';
+import 'package:cards/widgets/text_url_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -99,7 +99,7 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
                     fontStyle: FontStyle.italic,
                   ),
                 ),
-                const TextWithLink(
+                const TextWithLinkWidget(
                   text: 'Learn more',
                   linkText: 'Wikipedia',
                   url: 'https://en.wikipedia.org/wiki/Golf_(card_game)',
@@ -135,7 +135,7 @@ class PlayerSetupScreenState extends State<PlayerSetupScreen> {
                 SizedBox(
                   width: 400,
                   height: 300,
-                  child: PlayerListWidget(
+                  child: PlayersInRoomWidget(
                     playerNames: _playerNames,
                     onRemovePlayer: (String nameToRemove) {
                       removePlayer(nameToRemove);

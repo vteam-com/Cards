@@ -6,24 +6,24 @@ digraph "" {
   "/lib/firebase_options_private.dart" [label="firebase_options_private"];
   "/lib/firebase_options.dart" [label="firebase_options"];
   "/lib/models/game_model.dart" [label="game_model"];
+  "/lib/models/game_over_dialog.dart" [label="game_over_dialog"];
   "/lib/models/player_model.dart" [label="player_model"];
   "/lib/models/card_model.dart" [label="card_model"];
   "/lib/models/deck_model.dart" [label="deck_model"];
   "/lib/screens/game_screen.dart" [label="game_screen"];
-  "/lib/screens/game_over_screen.dart" [label="game_over_screen"];
   "/lib/screens/setup_screen.dart" [label="setup_screen"];
   "/lib/screens/screen.dart" [label="screen"];
   "/lib/main.dart" [label="main"];
-  "/lib/widgets/blink.dart" [label="blink"];
-  "/lib/widgets/list_players.dart" [label="list_players"];
-  "/lib/widgets/playing_card_widget.dart" [label="playing_card_widget"];
-  "/lib/widgets/table_surface.dart" [label="table_surface"];
-  "/lib/widgets/blinking_text.dart" [label="blinking_text"];
-  "/lib/widgets/player_zone.dart" [label="player_zone"];
-  "/lib/widgets/card_piles.dart" [label="card_piles"];
-  "/lib/widgets/player_zone_cta.dart" [label="player_zone_cta"];
-  "/lib/widgets/player_header.dart" [label="player_header"];
-  "/lib/widgets/text_url.dart" [label="text_url"];
+  "/lib/widgets/player_zone_cta_widget.dart" [label="player_zone_cta_widget"];
+  "/lib/widgets/table_surface_painter.dart" [label="table_surface_painter"];
+  "/lib/widgets/card_widget.dart" [label="card_widget"];
+  "/lib/widgets/player_header_widget.dart" [label="player_header_widget"];
+  "/lib/widgets/players_in_room_widget.dart" [label="players_in_room_widget"];
+  "/lib/widgets/player_zone_widget.dart" [label="player_zone_widget"];
+  "/lib/widgets/card_piles_widget.dart" [label="card_piles_widget"];
+  "/lib/widgets/text_url_widget.dart" [label="text_url_widget"];
+  "/lib/widgets/blink_widget.dart" [label="blink_widget"];
+  "/lib/widgets/blinking_text_widget.dart" [label="blinking_text_widget"];
   subgraph "cluster~" {
     label="cards";
     subgraph "cluster~/test" {
@@ -38,6 +38,7 @@ digraph "" {
       subgraph "cluster~/lib/models" {
         label="models";
         "/lib/models/game_model.dart";
+        "/lib/models/game_over_dialog.dart";
         "/lib/models/player_model.dart";
         "/lib/models/card_model.dart";
         "/lib/models/deck_model.dart";
@@ -45,57 +46,56 @@ digraph "" {
       subgraph "cluster~/lib/screens" {
         label="screens";
         "/lib/screens/game_screen.dart";
-        "/lib/screens/game_over_screen.dart";
         "/lib/screens/setup_screen.dart";
         "/lib/screens/screen.dart";
       }
       subgraph "cluster~/lib/widgets" {
         label="widgets";
-        "/lib/widgets/blink.dart";
-        "/lib/widgets/list_players.dart";
-        "/lib/widgets/playing_card_widget.dart";
-        "/lib/widgets/table_surface.dart";
-        "/lib/widgets/blinking_text.dart";
-        "/lib/widgets/player_zone.dart";
-        "/lib/widgets/card_piles.dart";
-        "/lib/widgets/player_zone_cta.dart";
-        "/lib/widgets/player_header.dart";
-        "/lib/widgets/text_url.dart";
+        "/lib/widgets/player_zone_cta_widget.dart";
+        "/lib/widgets/table_surface_painter.dart";
+        "/lib/widgets/card_widget.dart";
+        "/lib/widgets/player_header_widget.dart";
+        "/lib/widgets/players_in_room_widget.dart";
+        "/lib/widgets/player_zone_widget.dart";
+        "/lib/widgets/card_piles_widget.dart";
+        "/lib/widgets/text_url_widget.dart";
+        "/lib/widgets/blink_widget.dart";
+        "/lib/widgets/blinking_text_widget.dart";
       }
     }
   }
   "/test/game_model_test.dart" -> "/lib/models/game_model.dart";
   "/lib/models/game_model.dart" -> "/lib/models/deck_model.dart";
+  "/lib/models/game_model.dart" -> "/lib/models/game_over_dialog.dart";
   "/lib/models/game_model.dart" -> "/lib/models/player_model.dart";
-  "/lib/models/game_model.dart" -> "/lib/screens/game_over_screen.dart";
   "/lib/models/game_model.dart" -> "/lib/models/deck_model.dart" [style=dashed];
   "/lib/models/game_model.dart" -> "/lib/models/player_model.dart" [style=dashed];
+  "/lib/models/game_over_dialog.dart" -> "/lib/models/player_model.dart";
   "/lib/models/player_model.dart" -> "/lib/models/card_model.dart";
   "/lib/models/player_model.dart" -> "/lib/models/card_model.dart" [style=dashed];
   "/lib/models/deck_model.dart" -> "/lib/models/card_model.dart";
   "/lib/models/deck_model.dart" -> "/lib/models/card_model.dart" [style=dashed];
   "/lib/screens/game_screen.dart" -> "/lib/models/game_model.dart";
   "/lib/screens/game_screen.dart" -> "/lib/screens/screen.dart";
-  "/lib/screens/game_screen.dart" -> "/lib/widgets/player_zone.dart";
-  "/lib/screens/game_over_screen.dart" -> "/lib/models/player_model.dart";
+  "/lib/screens/game_screen.dart" -> "/lib/widgets/player_zone_widget.dart";
   "/lib/screens/setup_screen.dart" -> "/lib/models/game_model.dart";
   "/lib/screens/setup_screen.dart" -> "/lib/screens/game_screen.dart";
   "/lib/screens/setup_screen.dart" -> "/lib/screens/screen.dart";
-  "/lib/screens/setup_screen.dart" -> "/lib/widgets/list_players.dart";
-  "/lib/screens/setup_screen.dart" -> "/lib/widgets/text_url.dart";
+  "/lib/screens/setup_screen.dart" -> "/lib/widgets/players_in_room_widget.dart";
+  "/lib/screens/setup_screen.dart" -> "/lib/widgets/text_url_widget.dart";
   "/lib/main.dart" -> "/lib/firebase_options.dart";
   "/lib/main.dart" -> "/lib/screens/setup_screen.dart";
-  "/lib/widgets/playing_card_widget.dart" -> "/lib/models/card_model.dart";
-  "/lib/widgets/blinking_text.dart" -> "/lib/widgets/blink.dart";
-  "/lib/widgets/player_zone.dart" -> "/lib/models/game_model.dart";
-  "/lib/widgets/player_zone.dart" -> "/lib/widgets/player_header.dart";
-  "/lib/widgets/player_zone.dart" -> "/lib/widgets/player_zone_cta.dart";
-  "/lib/widgets/player_zone.dart" -> "/lib/widgets/playing_card_widget.dart";
-  "/lib/widgets/card_piles.dart" -> "/lib/models/card_model.dart";
-  "/lib/widgets/card_piles.dart" -> "/lib/widgets/playing_card_widget.dart";
-  "/lib/widgets/player_zone_cta.dart" -> "/lib/models/game_model.dart";
-  "/lib/widgets/player_zone_cta.dart" -> "/lib/widgets/blink.dart";
-  "/lib/widgets/player_zone_cta.dart" -> "/lib/widgets/blinking_text.dart";
-  "/lib/widgets/player_zone_cta.dart" -> "/lib/widgets/card_piles.dart";
-  "/lib/widgets/player_zone_cta.dart" -> "/lib/widgets/playing_card_widget.dart";
+  "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/models/game_model.dart";
+  "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/widgets/blink_widget.dart";
+  "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/widgets/blinking_text_widget.dart";
+  "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/widgets/card_piles_widget.dart";
+  "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/widgets/card_widget.dart";
+  "/lib/widgets/card_widget.dart" -> "/lib/models/card_model.dart";
+  "/lib/widgets/player_zone_widget.dart" -> "/lib/models/game_model.dart";
+  "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/card_widget.dart";
+  "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/player_header_widget.dart";
+  "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/player_zone_cta_widget.dart";
+  "/lib/widgets/card_piles_widget.dart" -> "/lib/models/card_model.dart";
+  "/lib/widgets/card_piles_widget.dart" -> "/lib/widgets/card_widget.dart";
+  "/lib/widgets/blinking_text_widget.dart" -> "/lib/widgets/blink_widget.dart";
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PlayerHeader extends StatelessWidget {
-  const PlayerHeader({
+class PlayerHeaderWidget extends StatelessWidget {
+  const PlayerHeaderWidget({
     super.key,
     required this.name,
     required this.sumOfRevealedCards,

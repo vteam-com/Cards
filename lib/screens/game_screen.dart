@@ -1,6 +1,6 @@
 import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/screen.dart';
-import 'package:cards/widgets/player_zone.dart';
+import 'package:cards/widgets/player_zone_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -188,7 +188,7 @@ class GameScreenState extends State<GameScreen> {
                   padding: const EdgeInsets.all(
                     8.0,
                   ), // Add padding around each player zone
-                  child: PlayerZone(
+                  child: PlayerZoneWidget(
                     key: _playerKeys[
                         index], // Key for identifying the player zone
                     gameModel: gameModel, // Game state data
@@ -206,7 +206,7 @@ class GameScreenState extends State<GameScreen> {
 
   /// Builds a horizontally wrapping layout for displaying player zones.
   ///
-  /// This method generates a list of [PlayerZone] widgets, one for each player
+  /// This method generates a list of [PlayerZoneWidget] widgets, one for each player
   /// in the game. These widgets are then arranged in a [Wrap] layout, allowing
   /// them to wrap onto multiple rows if necessary, depending on the available
   /// screen width.  Spacing is added between the player zones for visual clarity.
@@ -222,7 +222,7 @@ class GameScreenState extends State<GameScreen> {
       spacing: 40.0, // Horizontal spacing between player zones
       runSpacing: 40.0, // Vertical spacing between rows of player zones
       children: List.generate(gameModel.numPlayers, (index) {
-        return PlayerZone(
+        return PlayerZoneWidget(
           key: _playerKeys[index], // Key for identifying the player zone
           gameModel: gameModel, // Game state data
           indexOfPlayer: index, // Index of the player

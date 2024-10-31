@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'package:cards/models/game_model.dart';
-import 'package:cards/widgets/player_header.dart';
-import 'package:cards/widgets/player_zone_cta.dart';
-import 'package:cards/widgets/playing_card_widget.dart';
+import 'package:cards/widgets/card_widget.dart';
+import 'package:cards/widgets/player_header_widget.dart';
+import 'package:cards/widgets/player_zone_cta_widget.dart';
 import 'package:flutter/material.dart';
 
-class PlayerZone extends StatelessWidget {
-  const PlayerZone({
+class PlayerZoneWidget extends StatelessWidget {
+  const PlayerZoneWidget({
     super.key,
     required this.gameModel,
     required this.indexOfPlayer,
@@ -41,7 +41,7 @@ class PlayerZone extends StatelessWidget {
             //
             // Header
             //
-            PlayerHeader(
+            PlayerHeaderWidget(
               name: player.name,
               sumOfRevealedCards: player.sumOfRevealedCards,
             ),
@@ -52,7 +52,7 @@ class PlayerZone extends StatelessWidget {
             //
             // CTA
             //
-            PlayerZoneCTA(
+            PlayerZoneCtaWidget(
               playerIndex: indexOfPlayer,
               isActivePlayer: isActivePlayer,
               gameModel: gameModel,
@@ -141,7 +141,7 @@ class PlayerZone extends StatelessWidget {
       onTap: () {
         gameModel.revealCard(context, playerIndex, gridIndex);
       },
-      child: PlayingCardWidget(
+      child: CardWidget(
         card: card,
         revealed: isVisible,
       ),

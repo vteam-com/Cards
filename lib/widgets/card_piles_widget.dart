@@ -1,9 +1,9 @@
 import 'package:cards/models/card_model.dart';
-import 'package:cards/widgets/playing_card_widget.dart';
+import 'package:cards/widgets/card_widget.dart';
 import 'package:flutter/material.dart';
 
-class CardPiles extends StatelessWidget {
-  const CardPiles({
+class CardPilesWidget extends StatelessWidget {
+  const CardPilesWidget({
     super.key,
     required this.cardsInDrawPile,
     required this.cardsDiscardPile,
@@ -45,7 +45,7 @@ class CardPiles extends StatelessWidget {
               return Positioned(
                 left: offset,
                 top: offset,
-                child: PlayingCardWidget(
+                child: CardWidget(
                   card: cardsInDrawPile[index],
                   revealed: false,
                 ),
@@ -71,7 +71,7 @@ class CardPiles extends StatelessWidget {
               return Positioned(
                 left: offset,
                 top: offset,
-                child: PlayingCardWidget(
+                child: CardWidget(
                   card: cardsDiscardPile[index],
                   revealed: true,
                 ),

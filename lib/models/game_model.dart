@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:cards/models/deck_model.dart';
+import 'package:cards/models/game_over_dialog.dart';
 import 'package:cards/models/player_model.dart';
-import 'package:cards/screens/game_over_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PlayerListWidget extends StatelessWidget {
-  const PlayerListWidget({
+class PlayersInRoomWidget extends StatelessWidget {
+  const PlayersInRoomWidget({
     super.key,
     required this.playerNames,
     required this.onRemovePlayer,

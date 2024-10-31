@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Blink extends StatefulWidget {
-  const Blink({
+class BlinkWidget extends StatefulWidget {
+  const BlinkWidget({
     super.key,
     required this.child,
     this.duration = const Duration(seconds: 2),
@@ -10,10 +10,11 @@ class Blink extends StatefulWidget {
   final Duration duration;
 
   @override
-  BlinkState createState() => BlinkState();
+  BlinkWidgetState createState() => BlinkWidgetState();
 }
 
-class BlinkState extends State<Blink> with SingleTickerProviderStateMixin {
+class BlinkWidgetState extends State<BlinkWidget>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _animation;
 

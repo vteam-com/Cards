@@ -1,8 +1,8 @@
-import 'package:cards/widgets/blink.dart';
+import 'package:cards/widgets/blink_widget.dart';
 import 'package:flutter/material.dart';
 
-class BlinkingText extends StatelessWidget {
-  const BlinkingText({
+class BlinkingTextWidget extends StatelessWidget {
+  const BlinkingTextWidget({
     super.key,
     required this.text,
     this.style,
@@ -12,7 +12,7 @@ class BlinkingText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Blink(
+    return BlinkWidget(
       child: Text(
         textAlign: TextAlign.right,
         text,

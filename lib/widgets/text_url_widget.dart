@@ -2,8 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class TextWithLink extends StatelessWidget {
-  const TextWithLink({
+class TextWithLinkWidget extends StatelessWidget {
+  const TextWithLinkWidget({
     super.key,
     required this.text,
     required this.linkText,

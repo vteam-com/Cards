@@ -1,13 +1,13 @@
 import 'package:cards/models/game_model.dart';
-import 'package:cards/widgets/blink.dart';
-import 'package:cards/widgets/blinking_text.dart';
-import 'package:cards/widgets/card_piles.dart';
-import 'package:cards/widgets/playing_card_widget.dart';
+import 'package:cards/widgets/blink_widget.dart';
+import 'package:cards/widgets/blinking_text_widget.dart';
+import 'package:cards/widgets/card_piles_widget.dart';
+import 'package:cards/widgets/card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PlayerZoneCTA extends StatelessWidget {
-  const PlayerZoneCTA({
+class PlayerZoneCtaWidget extends StatelessWidget {
+  const PlayerZoneCtaWidget({
     super.key,
     required this.playerIndex,
     required this.isActivePlayer,
@@ -48,7 +48,7 @@ class PlayerZoneCTA extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Expanded(
-          child: Blink(
+          child: BlinkWidget(
             child: ElevatedButton(
               child: const Text(
                 'Keep',
@@ -69,7 +69,7 @@ class PlayerZoneCTA extends StatelessWidget {
         ),
         FittedBox(
           fit: BoxFit.cover,
-          child: PlayingCardWidget(
+          child: CardWidget(
             card: gameModel.cardPickedUpFromDeckOrDiscarded!,
             revealed: true,
           ),
@@ -78,7 +78,7 @@ class PlayerZoneCTA extends StatelessWidget {
           width: 10,
         ),
         Expanded(
-          child: Blink(
+          child: BlinkWidget(
             child: ElevatedButton(
               child: const Text(
                 'Discard',
@@ -112,7 +112,7 @@ class PlayerZoneCTA extends StatelessWidget {
         const SizedBox(
           width: 10,
         ),
-        PlayingCardWidget(
+        CardWidget(
           card: gameModel.cardPickedUpFromDeckOrDiscarded!,
           revealed: true,
         ),
@@ -141,7 +141,7 @@ class PlayerZoneCTA extends StatelessWidget {
         ),
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: CardPiles(
+          child: CardPilesWidget(
             cardsInDrawPile: context.watch<GameModel>().deck.cardsDeckPile,
             cardsDiscardPile:
                 context.watch<GameModel>().deck.cardsDeckDiscarded,
@@ -176,7 +176,7 @@ Widget buildMiniInstructions(bool isActivePlayer, String text) {
   );
 
   if (isActivePlayer) {
-    return BlinkingText(text: text, style: style);
+    return BlinkingTextWidget(text: text, style: style);
   } else {
     return Text(text, style: style);
   }
