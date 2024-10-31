@@ -1,10 +1,7 @@
 import 'dart:math';
-
 import 'package:cards/models/game_model.dart';
-import 'package:cards/models/player.dart';
 import 'package:cards/widgets/player_header.dart';
 import 'package:cards/widgets/player_zone_cta.dart';
-import 'package:cards/widgets/playing_card.dart';
 import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +19,7 @@ class PlayerZone extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isActivePlayer = gameModel.currentPlayerIndex == indexOfPlayer;
-    final Player player = gameModel.players[indexOfPlayer];
+    final PlayerModel player = gameModel.players[indexOfPlayer];
 
     return Container(
       width: min(400, MediaQuery.of(context).size.width),
@@ -139,7 +136,7 @@ class PlayerZone extends StatelessWidget {
   ) {
     final bool isVisible =
         gameModel.players[playerIndex].cardVisibility[gridIndex];
-    final PlayingCard card = gameModel.players[playerIndex].hand[gridIndex];
+    final CardModel card = gameModel.players[playerIndex].hand[gridIndex];
     return GestureDetector(
       onTap: () {
         gameModel.revealCard(context, playerIndex, gridIndex);

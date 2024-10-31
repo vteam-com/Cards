@@ -1,9 +1,9 @@
-import 'package:cards/widgets/playing_card.dart';
+import 'package:cards/models/card_model.dart';
 import 'package:flutter/material.dart';
 
 /// A widget that displays a playing card or a placeholder.
 class PlayingCardWidget extends StatelessWidget {
-  /// Creates a [PlayingCardWidget] with a [PlayingCard] card.
+  /// Creates a [PlayingCardWidget] with a [CardModel] card.
   /// If the card is null, a placeholder is shown.
   const PlayingCardWidget({
     super.key,
@@ -12,7 +12,7 @@ class PlayingCardWidget extends StatelessWidget {
   });
 
   /// The playing card to be displayed.
-  final PlayingCard card;
+  final CardModel card;
   final bool revealed;
 
   @override

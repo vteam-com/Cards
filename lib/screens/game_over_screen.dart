@@ -1,9 +1,9 @@
-import 'package:cards/models/player.dart';
+import 'package:cards/models/player_model.dart';
 import 'package:flutter/material.dart';
 
 void showGameOverDialog(
   BuildContext context,
-  List<Player> players,
+  List<PlayerModel> players,
   VoidCallback initializeGame,
 ) {
   // sort from lowest to hightest score

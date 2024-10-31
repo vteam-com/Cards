@@ -1,22 +1,24 @@
 import 'dart:convert';
-import 'package:cards/models/deck.dart';
-import 'package:cards/models/player.dart';
+import 'package:cards/models/deck_model.dart';
+import 'package:cards/models/player_model.dart';
 import 'package:cards/screens/game_over_screen.dart';
-import 'package:cards/widgets/playing_card.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+export 'package:cards/models/deck_model.dart';
+export 'package:cards/models/player_model.dart';
 
 class GameModel with ChangeNotifier {
   GameModel({required final List<String> names, required this.gameRoomId}) {
     // Initialize players from the list of names
     for (final String name in names) {
-      players.add(Player(name: name));
+      players.add(PlayerModel(name: name));
     }
     initializeGame();
   }
   final String gameRoomId;
-  final List<Player> players = [];
-  final Deck deck = Deck();
+  final List<PlayerModel> players = [];
+  final DeckModel deck = DeckModel();
   late int currentPlayerIndex;
   late int playerIndexOfAttacker;
   late bool finalTurn;
@@ -24,6 +26,8 @@ class GameModel with ChangeNotifier {
   // Private field to hold the state
   CurrentPlayerStates _currentPlayerStates =
       CurrentPlayerStates.pickCardFromPiles;
+  // Public getter to access the current player states
+  CurrentPlayerStates get currentPlayerStates => _currentPlayerStates;
 
   String getPlayerName(final int index) {
     if (index == -1) {
@@ -31,9 +35,6 @@ class GameModel with ChangeNotifier {
     }
     return players[index].name;
   }
-
-  // Public getter to access the current player states
-  CurrentPlayerStates get currentPlayerStates => _currentPlayerStates;
 
   // Public setter to modify the current player states
   set currentPlayerStates(CurrentPlayerStates value) {
@@ -44,26 +45,9 @@ class GameModel with ChangeNotifier {
     }
   }
 
-  PlayingCard? cardPickedUpFromDeckOrDiscarded;
+  CardModel? cardPickedUpFromDeckOrDiscarded;
 
   int get numPlayers => players.length;
-
-  String get activePlayerName {
-    if (currentPlayerIndex >= 0 && currentPlayerIndex < players.length) {
-      return players[currentPlayerIndex].name;
-    }
-    return '';
-  }
-
-  /// Checks if all players have revealed all their cards.
-  bool areAllCardsFromHandsRevealed() {
-    for (int playerIndex = 0; playerIndex < numPlayers; playerIndex++) {
-      if (!areAllCardRevealed(playerIndex)) {
-        return false;
-      }
-    }
-    return true;
-  }
 
   /// Initializes the game by setting up the decks, hands, and visibility.
   void initializeGame() {
@@ -76,7 +60,7 @@ class GameModel with ChangeNotifier {
     final int numDecks = (numPlayers - 2) ~/ 2;
     deck.shuffle(numberOfDecks: 1 + numDecks);
 
-    for (final Player player in players) {
+    for (final PlayerModel player in players) {
       for (final _ in Iterable.generate(9)) {
         player.addCardToHand(deck.cardsDeckPile.removeLast());
       }
@@ -115,7 +99,7 @@ class GameModel with ChangeNotifier {
       return;
     }
 
-    PlayingCard cardToSwap =
+    CardModel cardToSwap =
         players[playerIndex].hand[gridIndex]; // Access player's hand directly
     deck.cardsDeckDiscarded.add(cardToSwap);
 
@@ -126,12 +110,12 @@ class GameModel with ChangeNotifier {
     saveGameState();
   }
 
-  bool validGridIndex(List<PlayingCard> hand, int index) {
+  bool validGridIndex(List<CardModel> hand, int index) {
     return index >= 0 && index < hand.length;
   }
 
   void revealAllRemainingCardsFor(int playerIndex) {
-    final Player player = players[playerIndex];
+    final PlayerModel player = players[playerIndex];
     for (int indexCard = 0; indexCard < player.hand.length; indexCard++) {
       player.cardVisibility[indexCard] = true;
     }
@@ -220,6 +204,16 @@ class GameModel with ChangeNotifier {
         .every((visible) => visible); // Access visibility directly
   }
 
+  /// Checks if all players have revealed all their cards.
+  bool areAllCardsFromHandsRevealed() {
+    for (int playerIndex = 0; playerIndex < numPlayers; playerIndex++) {
+      if (!areAllCardRevealed(playerIndex)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void advanceToNextPlayer(BuildContext context) {
     if (finalTurn == false) {
       if (areAllCardRevealed(currentPlayerIndex)) {
@@ -260,7 +254,7 @@ class GameModel with ChangeNotifier {
     // Consider saving other game state variables like cardsDeckPile, cardsDeckDiscarded, etc. as needed
   }
 
-  String serializeHands(List<List<PlayingCard>> hands) {
+  String serializeHands(List<List<CardModel>> hands) {
     return jsonEncode(
       hands.map((hand) {
         return hand
@@ -276,10 +270,10 @@ class GameModel with ChangeNotifier {
     );
   }
 
-  List<List<PlayingCard>> deserializeHands(String data) {
-    return (jsonDecode(data) as List).map<List<PlayingCard>>((hand) {
-      return (hand as List).map<PlayingCard>((cardData) {
-        return PlayingCard(
+  List<List<CardModel>> deserializeHands(String data) {
+    return (jsonDecode(data) as List).map<List<CardModel>>((hand) {
+      return (hand as List).map<CardModel>((cardData) {
+        return CardModel(
           suit: cardData['suit'],
           rank: cardData['rank'],
           value: cardData['value'],

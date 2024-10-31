@@ -1,4 +1,4 @@
-import 'package:cards/widgets/playing_card.dart';
+import 'package:cards/models/card_model.dart';
 import 'package:cards/widgets/playing_card_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +11,8 @@ class CardPiles extends StatelessWidget {
     required this.onPickedFromDiscardPile,
   });
 
-  final List<PlayingCard> cardsInDrawPile;
-  final List<PlayingCard> cardsDiscardPile;
+  final List<CardModel> cardsInDrawPile;
+  final List<CardModel> cardsDiscardPile;
   final VoidCallback onPickedFromDrawPile;
   final VoidCallback onPickedFromDiscardPile;
 

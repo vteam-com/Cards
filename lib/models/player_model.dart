@@ -1,13 +1,14 @@
-import 'package:cards/widgets/playing_card.dart';
+import 'package:cards/models/card_model.dart';
+export 'package:cards/models/card_model.dart';
 
-class Player {
-  Player({required this.name});
+class PlayerModel {
+  PlayerModel({required this.name});
   final String name;
   int get sumOfRevealedCards => _getSumOfCardsInHand();
-  List<PlayingCard> hand = [];
+  List<CardModel> hand = [];
   List<bool> cardVisibility = [];
 
-  void addCardToHand(PlayingCard card) {
+  void addCardToHand(CardModel card) {
     hand.add(card);
     cardVisibility.add(false);
   }
@@ -46,7 +47,7 @@ class Player {
   }
 
   void markIfSameRank(
-    List<PlayingCard> hand,
+    List<CardModel> hand,
     List<bool> markedForZeroScore,
     List<int> indices,
   ) {
@@ -63,9 +64,9 @@ class Player {
   }
 
   bool areAllTheSameRankAndNotAlreadyUsed(
-    PlayingCard card1,
-    PlayingCard card2,
-    PlayingCard card3,
+    CardModel card1,
+    CardModel card2,
+    CardModel card3,
   ) {
     return !(card1.partOfSet || card2.partOfSet || card3.partOfSet) &&
         areAllTheSameRank(card1.rank, card2.rank, card3.rank);
