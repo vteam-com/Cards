@@ -166,9 +166,15 @@ class GameModel with ChangeNotifier {
       return;
     }
 
-    CardModel cardToSwap = players[playerIndex].hand[gridIndex];
-    deck.cardsDeckDiscarded.add(cardToSwap);
+    // do the swap
+    CardModel cardToSwapFromPlayer = players[playerIndex].hand[gridIndex];
+    // add to discard pile
+    deck.cardsDeckDiscarded.add(cardToSwapFromPlayer);
+
+    // replace players card in their 3x3 with the selected card
     players[playerIndex].hand[gridIndex] = selectedCard!;
+
+    // No card selected anymore
     selectedCard = null;
   }
 
@@ -233,10 +239,10 @@ class GameModel with ChangeNotifier {
         players[playerIndex].cardVisibility[cardIndex]) {
       return false;
     }
-
+    // reveal the card
     players[playerIndex].cardVisibility[cardIndex] = true;
-    gameState = GameStates.pickCardFromPiles;
-    finalizeAction(context);
+
+    moveToNextPlayer(context);
     return true;
   }
 
@@ -252,13 +258,9 @@ class GameModel with ChangeNotifier {
 
     players[playerIndex].cardVisibility[cardIndex] = true;
     swapCard(playerIndex, cardIndex);
-    finalizeAction(context);
-    return true;
-  }
 
-  /// Finalizes the current player's action and advances to the next player.
-  void finalizeAction(BuildContext context) {
-    advanceToNextPlayer(context);
+    moveToNextPlayer(context);
+    return true;
   }
 
   /// Checks if the current player can perform an action.
@@ -289,7 +291,7 @@ class GameModel with ChangeNotifier {
   }
 
   /// Advances the game to the next player's turn.
-  void advanceToNextPlayer(BuildContext context) {
+  void moveToNextPlayer(BuildContext context) {
     if (isFinalTurn == false) {
       if (areAllCardRevealed(playerIdPlaying)) {
         playerIdAttacking = playerIdPlaying;
