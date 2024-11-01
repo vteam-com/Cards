@@ -7,10 +7,11 @@ class DeckModel {
   factory DeckModel.fromJson(Map<String, dynamic> json) {
     return DeckModel(json['numberOfDecks'])
       ..cardsDeckPile = List<CardModel>.from(
-        json['cardsDeckPile'].map((card) => CardModel.fromJson(card)),
+        json['cardsDeckPile']?.map((card) => CardModel.fromJson(card)) ?? [],
       )
       ..cardsDeckDiscarded = List<CardModel>.from(
-        json['cardsDeckDiscarded'].map((card) => CardModel.fromJson(card)),
+        json['cardsDeckDiscarded']?.map((card) => CardModel.fromJson(card)) ??
+            [],
       );
   }
   int numberOfDecks = 0;

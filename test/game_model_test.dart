@@ -13,8 +13,11 @@ void main() {
 
     setUp(() {
       mockContext = MockBuildContext();
-      gameModel =
-          GameModel(names: ['Player 1', 'Player 2'], gameRoomId: 'testRoom');
+      gameModel = GameModel(
+        names: ['Player 1', 'Player 2'],
+        gameRoomId: 'testRoom',
+        newGame: true,
+      );
     });
 
     test('drawCard from discard pile updates game state', () {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
@@ -7,7 +8,6 @@ import 'package:cards/widgets/players_in_room_widget.dart';
 import 'package:cards/widgets/text_url_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -18,7 +18,6 @@ class StartScreen extends StatefulWidget {
 
 class StartScreenState extends State<StartScreen> {
   late StreamSubscription _streamSubscription;
-  String joiningAs = '';
 
   final TextEditingController _controllerRoom = TextEditingController(
     text: 'Banana', // Default player names
@@ -26,46 +25,40 @@ class StartScreenState extends State<StartScreen> {
   final String _errorTextRoom = '';
 
   final TextEditingController _controllerName = TextEditingController(
-    text: 'PowerRanger', // Default player names
+    text: '', // Default player names
   );
   final String _errorTextName = '';
 
   List<String> _playerNames = [];
+  String get playerName => _controllerName.text.trim();
 
   @override
   void initState() {
     super.initState();
-    _streamSubscription =
-        FirebaseDatabase.instance.ref().onValue.listen((event) {
-      final DataSnapshot snapshot = event.snapshot;
-      final Object? data = snapshot.value;
-      if (data != null) {
-        if (data is Map<Object?, Object?>) {
-          final room = data['rooms'] as Map<Object?, Object?>;
-          final room1 = room['room1'] as Map<Object?, Object?>;
-          final players = room1['players'] as List<Object?>;
 
-          setState(() {
-            _playerNames = [];
-            for (final Object? playerName in players) {
-              if (playerName != null) {
-                var name = playerName as String;
-                _playerNames.add(name);
+    useFirebase().then((_) {
+      _streamSubscription =
+          FirebaseDatabase.instance.ref().onValue.listen((event) {
+        final DataSnapshot snapshot = event.snapshot;
+        final Object? data = snapshot.value;
+        if (data != null) {
+          if (data is Map<Object?, Object?>) {
+            final room = data['rooms'] as Map<Object?, Object?>;
+            final room1 = room['room1'] as Map<Object?, Object?>;
+            final players = room1['players'] as List<Object?>;
+
+            setState(() {
+              _playerNames = [];
+              for (final Object? playerName in players) {
+                if (playerName != null) {
+                  var name = playerName as String;
+                  _playerNames.add(name);
+                }
               }
-            }
-          });
-        } else if (data is List<dynamic>) {
-          // Handle List data
-        } else if (data is String) {
-          // Handle String data
-        } else if (data is num) {
-          // Handle Number data
-        } else if (data is bool) {
-          // Handle Boolean data
-        } else {
-          // Handle null or other unexpected types
+            });
+          }
         }
-      }
+      });
     });
   }
 
@@ -80,92 +73,71 @@ class StartScreenState extends State<StartScreen> {
     return Screen(
       backButton: false,
       title: '9 Cards Golf',
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            constraints: const BoxConstraints(
-              maxWidth: 600,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Spacer(),
-                Text(
-                  'Players swap cards in their grid to score as low as possible. Lining up three of the same rank in a row or column counts as zero. Anyone can end a round by “closing,” but if someone scores lower, the closer’s points double!\n',
-                  style: TextStyle(
-                    color: Colors.green.shade100,
-                    fontSize: 20,
-                    fontStyle: FontStyle.italic,
+      child: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              constraints: const BoxConstraints(
+                maxWidth: 600,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 40),
+                  Text(
+                    'Players swap cards in their grid to score as low as possible. Lining up three of the same rank in a row or column counts as zero. Anyone can end a round by “closing,” but if someone scores lower, the closer’s points double!\n',
+                    style: TextStyle(
+                      color: Colors.green.shade100,
+                      fontSize: 20,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
-                ),
-                const TextWithLinkWidget(
-                  text: 'Learn more',
-                  linkText: 'Wikipedia',
-                  url: 'https://en.wikipedia.org/wiki/Golf_(card_game)',
-                ),
-                const Spacer(),
-                editBox('Room', _controllerRoom, _errorTextRoom),
-                const SizedBox(height: 20),
-                if (joiningAs.isEmpty)
+                  const TextWithLinkWidget(
+                    text: 'Learn more',
+                    linkText: 'Wikipedia',
+                    url: 'https://en.wikipedia.org/wiki/Golf_(card_game)',
+                  ),
+                  const SizedBox(height: 40),
+
+                  //
+                  // Input Room name
+                  //
+
+                  editBox('Room', _controllerRoom, _errorTextRoom),
+
+                  const SizedBox(height: 20),
+
+                  //
+                  // Input your name
+                  //
                   editBox('Name', _controllerName, _errorTextName),
-                const SizedBox(height: 40),
-                if (joiningAs.isEmpty)
-                  Material(
-                    elevation: 125,
-                    shadowColor: Colors.black,
-                    borderRadius: BorderRadius.circular(20),
-                    child: TextButton(
-                      onPressed: () {
-                        joinGame(context);
+
+                  const SizedBox(height: 40),
+
+                  //
+                  // Join Game | Start Game
+                  //
+                  actionButton(),
+
+                  const SizedBox(height: 40),
+
+                  //
+                  // List of joined players
+                  //
+                  SizedBox(
+                    width: 400,
+                    height: 300,
+                    child: PlayersInRoomWidget(
+                      playerNames: _playerNames,
+                      onRemovePlayer: (String nameToRemove) {
+                        removePlayer(nameToRemove);
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Join Game',
-                          style: TextStyle(
-                            color: Colors.green.shade900,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
                     ),
                   ),
-                const SizedBox(height: 40),
-                SizedBox(
-                  width: 400,
-                  height: 300,
-                  child: PlayersInRoomWidget(
-                    playerNames: _playerNames,
-                    onRemovePlayer: (String nameToRemove) {
-                      removePlayer(nameToRemove);
-                    },
-                  ),
-                ),
-                const SizedBox(height: 40),
-                if (_playerNames.length > 1)
-                  Material(
-                    elevation: 125,
-                    shadowColor: Colors.black,
-                    borderRadius: BorderRadius.circular(20),
-                    child: TextButton(
-                      onPressed: () {
-                        startGame(context);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Start Game',
-                          style: TextStyle(
-                            color: Colors.green.shade900,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                const Spacer(),
-              ],
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ),
@@ -208,9 +180,12 @@ class StartScreenState extends State<StartScreen> {
                 fontWeight: FontWeight.bold,
               ),
               decoration: InputDecoration(
-                hintText: label,
+                hintText: 'Type your $label here',
                 errorText: errorStatus.isEmpty ? null : errorStatus,
               ),
+              onSubmitted: (String _) => setState(() {
+                // update UI
+              }),
             ),
           ),
         ],
@@ -223,13 +198,14 @@ class StartScreenState extends State<StartScreen> {
 
     _playerNames.add(nameOfPersonJoining);
     pushPlayersNamesToFirebase();
-    joiningAs = nameOfPersonJoining;
   }
 
   void pushPlayersNamesToFirebase() {
-    final refPlayers =
-        FirebaseDatabase.instance.ref().child('rooms/room1/players');
-    refPlayers.set(_playerNames);
+    useFirebase().then((_) {
+      final refPlayers =
+          FirebaseDatabase.instance.ref().child('rooms/room1/players');
+      refPlayers.set(_playerNames);
+    });
   }
 
   void removePlayer(final String nameToRemove) {
@@ -237,17 +213,16 @@ class StartScreenState extends State<StartScreen> {
     pushPlayersNamesToFirebase();
   }
 
-  void startGame(BuildContext context) {
+  void startGame(BuildContext context, bool joinExistingGame) {
+    final newGame = GameModel(
+      names: _playerNames,
+      gameRoomId: _controllerRoom.text.trim(),
+      newGame: true,
+    );
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChangeNotifierProvider(
-          create: (_) => GameModel(
-            names: _playerNames,
-            gameRoomId: _controllerRoom.text.trim(),
-          ),
-          child: const GameScreen(),
-        ),
+        builder: (context) => GameScreen(gameModel: newGame),
       ),
     );
   }
@@ -264,5 +239,48 @@ class StartScreenState extends State<StartScreen> {
         .toList();
 
     return names;
+  }
+
+  Widget actionButton() {
+    if (playerName.isEmpty) {
+      return const Text('Please enter your name above ⬆');
+    }
+    bool isPartOfTheList = _playerNames.contains(playerName);
+
+    String label = isPartOfTheList == false
+        ? 'Join Game'
+        : _playerNames.length > 1
+            ? 'Start Game'
+            : 'Waiting for players';
+
+    return Material(
+      elevation: 125,
+      shadowColor: Colors.black,
+      borderRadius: BorderRadius.circular(20),
+      child: TextButton(
+        onPressed: () {
+          if (isPartOfTheList) {
+            if (_playerNames.length > 1) {
+              startGame(
+                context,
+                true,
+              );
+            }
+          } else {
+            joinGame(context);
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.green.shade900,
+              fontSize: 20,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

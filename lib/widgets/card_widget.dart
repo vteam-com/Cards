@@ -5,14 +5,20 @@ import 'package:flutter/material.dart';
 class CardWidget extends StatelessWidget {
   /// Creates a [CardWidget] with a [CardModel] card.
   /// If the card is null, a placeholder is shown.
-  const CardWidget({
+  CardWidget({
     super.key,
-    required this.card,
+    CardModel? card,
     this.revealed = false,
-  });
+  }) {
+    if (card == null) {
+      this.card = CardModel(suit: '?', rank: '?', value: 0);
+    } else {
+      this.card = card;
+    }
+  }
 
   /// The playing card to be displayed.
-  final CardModel card;
+  late final CardModel card;
   final bool revealed;
 
   @override

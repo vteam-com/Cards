@@ -20,8 +20,8 @@ class Screen extends StatelessWidget {
   const Screen({
     super.key,
     required this.title,
-    required this.child,
     required this.backButton,
+    required this.child,
   });
   final String title;
   final Widget child;
@@ -40,7 +40,13 @@ class Screen extends StatelessWidget {
               ),
             ),
             child: SizedBox.expand(
-              child: child,
+              child: DefaultTextStyle(
+                style: TextStyle(
+                  color: Colors.green.shade100,
+                  fontSize: 20,
+                ), // Your default style
+                child: child,
+              ),
             ),
           ),
           SafeArea(

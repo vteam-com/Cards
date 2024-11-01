@@ -4,7 +4,6 @@ import 'package:cards/widgets/blinking_text_widget.dart';
 import 'package:cards/widgets/card_piles_widget.dart';
 import 'package:cards/widgets/card_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class PlayerZoneCtaWidget extends StatelessWidget {
   const PlayerZoneCtaWidget({
@@ -67,13 +66,14 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         const SizedBox(
           width: 10,
         ),
-        FittedBox(
-          fit: BoxFit.cover,
-          child: CardWidget(
-            card: gameModel.cardPickedUpFromDeckOrDiscarded!,
-            revealed: true,
+        if (gameModel.cardPickedUpFromDeckOrDiscarded != null)
+          FittedBox(
+            fit: BoxFit.cover,
+            child: CardWidget(
+              card: gameModel.cardPickedUpFromDeckOrDiscarded!,
+              revealed: true,
+            ),
           ),
-        ),
         const SizedBox(
           width: 10,
         ),
@@ -113,7 +113,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           width: 10,
         ),
         CardWidget(
-          card: gameModel.cardPickedUpFromDeckOrDiscarded!,
+          card: gameModel.cardPickedUpFromDeckOrDiscarded,
           revealed: true,
         ),
       ],
@@ -142,15 +142,12 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         FittedBox(
           fit: BoxFit.scaleDown,
           child: CardPilesWidget(
-            cardsInDrawPile: context.watch<GameModel>().deck.cardsDeckPile,
-            cardsDiscardPile:
-                context.watch<GameModel>().deck.cardsDeckDiscarded,
+            cardsInDrawPile: gameModel.deck.cardsDeckPile,
+            cardsDiscardPile: gameModel.deck.cardsDeckDiscarded,
             onPickedFromDrawPile: () {
-              final gameModel = context.read<GameModel>();
               gameModel.drawCard(context, fromDiscardPile: false);
             },
             onPickedFromDiscardPile: () {
-              final gameModel = context.read<GameModel>();
               gameModel.drawCard(context, fromDiscardPile: true);
             },
           ),

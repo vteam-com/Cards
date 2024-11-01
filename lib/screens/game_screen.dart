@@ -1,17 +1,22 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/player_zone_widget.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  const GameScreen({super.key, required this.gameModel});
 
+  final GameModel gameModel;
   @override
   GameScreenState createState() => GameScreenState();
 }
 
 class GameScreenState extends State<GameScreen> {
+  late StreamSubscription _streamSubscription;
   late ScrollController _scrollController;
   List<GlobalKey> _playerKeys = [];
   bool phoneLayout = false;
@@ -19,43 +24,56 @@ class GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    initFirebaseListen();
     _scrollController = ScrollController();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // Initialize keys based on number of players
-    final GameModel gameModel = Provider.of<GameModel>(context);
-    _playerKeys = List.generate(gameModel.numPlayers, (index) => GlobalKey());
-    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToActivePlayer(widget.gameModel);
+    });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _streamSubscription.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GameModel>(
-      builder: (final BuildContext context, final GameModel gameModel, _) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _scrollToActivePlayer(gameModel);
-        });
-
-        final double width = MediaQuery.of(context).size.width;
-        return Screen(
-          title: '',
-          backButton: true,
-          child: _adaptiveLayout(
-            context,
-            gameModel,
-            width,
-          ),
-        );
-      },
+    final double width = MediaQuery.of(context).size.width;
+    return Screen(
+      title: '',
+      backButton: true,
+      child: _adaptiveLayout(
+        context,
+        widget.gameModel,
+        width,
+      ),
     );
+  }
+
+  void initFirebaseListen() {
+    _streamSubscription = FirebaseDatabase.instance
+        .ref('rooms/room1/state')
+        .onValue
+        .listen((event) {
+      final DataSnapshot snapshot = event.snapshot;
+      final Object? data = snapshot.value;
+      if (data != null) {
+        // Convert the data to a Map<String, dynamic>
+        String jsonData = jsonEncode(data);
+        Map<String, dynamic> mapData = jsonDecode(jsonData);
+        widget.gameModel.fromJson(mapData);
+        setState(() {
+          _playerKeys = List.generate(
+            widget.gameModel.numPlayers,
+            (index) => GlobalKey(),
+          );
+
+          // update UI
+        });
+      }
+    });
   }
 
   /// Adapts the layout based on the screen width.
@@ -252,7 +270,7 @@ class GameScreenState extends State<GameScreen> {
 
     /// Base text for the banner message.
     String inputText =
-        'It\'s your turn $playersName. Room: ${gameModel.gameRoomId}';
+        'In ${gameModel.gameRoomId} room: It\'s your turn $playersName. Room: ';
 
     /// Modifies the banner text if it's the final turn, indicating who the active player
     /// needs to beat.

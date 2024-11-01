@@ -9,9 +9,10 @@ digraph "" {
   "/lib/models/game_over_dialog.dart" [label="game_over_dialog"];
   "/lib/models/player_model.dart" [label="player_model"];
   "/lib/models/card_model.dart" [label="card_model"];
+  "/lib/models/backend_model.dart" [label="backend_model"];
   "/lib/models/deck_model.dart" [label="deck_model"];
   "/lib/screens/game_screen.dart" [label="game_screen"];
-  "/lib/screens/setup_screen.dart" [label="setup_screen"];
+  "/lib/screens/start_screen.dart" [label="start_screen"];
   "/lib/screens/screen.dart" [label="screen"];
   "/lib/main.dart" [label="main"];
   "/lib/widgets/player_zone_cta_widget.dart" [label="player_zone_cta_widget"];
@@ -41,12 +42,13 @@ digraph "" {
         "/lib/models/game_over_dialog.dart";
         "/lib/models/player_model.dart";
         "/lib/models/card_model.dart";
+        "/lib/models/backend_model.dart";
         "/lib/models/deck_model.dart";
       }
       subgraph "cluster~/lib/screens" {
         label="screens";
         "/lib/screens/game_screen.dart";
-        "/lib/screens/setup_screen.dart";
+        "/lib/screens/start_screen.dart";
         "/lib/screens/screen.dart";
       }
       subgraph "cluster~/lib/widgets" {
@@ -65,6 +67,7 @@ digraph "" {
     }
   }
   "/test/game_model_test.dart" -> "/lib/models/game_model.dart";
+  "/lib/models/game_model.dart" -> "/lib/models/backend_model.dart";
   "/lib/models/game_model.dart" -> "/lib/models/deck_model.dart";
   "/lib/models/game_model.dart" -> "/lib/models/game_over_dialog.dart";
   "/lib/models/game_model.dart" -> "/lib/models/player_model.dart";
@@ -73,18 +76,19 @@ digraph "" {
   "/lib/models/game_over_dialog.dart" -> "/lib/models/player_model.dart";
   "/lib/models/player_model.dart" -> "/lib/models/card_model.dart";
   "/lib/models/player_model.dart" -> "/lib/models/card_model.dart" [style=dashed];
+  "/lib/models/backend_model.dart" -> "/lib/firebase_options_private.dart";
   "/lib/models/deck_model.dart" -> "/lib/models/card_model.dart";
   "/lib/models/deck_model.dart" -> "/lib/models/card_model.dart" [style=dashed];
   "/lib/screens/game_screen.dart" -> "/lib/models/game_model.dart";
   "/lib/screens/game_screen.dart" -> "/lib/screens/screen.dart";
   "/lib/screens/game_screen.dart" -> "/lib/widgets/player_zone_widget.dart";
-  "/lib/screens/setup_screen.dart" -> "/lib/models/game_model.dart";
-  "/lib/screens/setup_screen.dart" -> "/lib/screens/game_screen.dart";
-  "/lib/screens/setup_screen.dart" -> "/lib/screens/screen.dart";
-  "/lib/screens/setup_screen.dart" -> "/lib/widgets/players_in_room_widget.dart";
-  "/lib/screens/setup_screen.dart" -> "/lib/widgets/text_url_widget.dart";
-  "/lib/main.dart" -> "/lib/firebase_options.dart";
-  "/lib/main.dart" -> "/lib/screens/setup_screen.dart";
+  "/lib/screens/start_screen.dart" -> "/lib/models/backend_model.dart";
+  "/lib/screens/start_screen.dart" -> "/lib/models/game_model.dart";
+  "/lib/screens/start_screen.dart" -> "/lib/screens/game_screen.dart";
+  "/lib/screens/start_screen.dart" -> "/lib/screens/screen.dart";
+  "/lib/screens/start_screen.dart" -> "/lib/widgets/players_in_room_widget.dart";
+  "/lib/screens/start_screen.dart" -> "/lib/widgets/text_url_widget.dart";
+  "/lib/main.dart" -> "/lib/screens/start_screen.dart";
   "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/models/game_model.dart";
   "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/widgets/blink_widget.dart";
   "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/widgets/blinking_text_widget.dart";

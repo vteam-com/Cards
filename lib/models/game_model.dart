@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/deck_model.dart';
 import 'package:cards/models/game_over_dialog.dart';
 import 'package:cards/models/player_model.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,12 +14,15 @@ class GameModel with ChangeNotifier {
   GameModel({
     required this.gameRoomId,
     required final List<String> names,
+    bool newGame = false,
   }) {
     // Initialize players from the list of names
     for (final String name in names) {
       players.add(PlayerModel(name: name));
     }
-    initializeGame();
+    if (newGame) {
+      initializeGame();
+    }
   }
 
   final String gameRoomId;
@@ -30,8 +35,7 @@ class GameModel with ChangeNotifier {
   late bool finalTurn;
 
   // Private field to hold the state
-  CurrentPlayerStates _currentPlayerStates =
-      CurrentPlayerStates.pickCardFromPiles;
+  CurrentPlayerStates _currentPlayerStates = CurrentPlayerStates.notStarted;
   // Public getter to access the current player states
   CurrentPlayerStates get currentPlayerStates => _currentPlayerStates;
 
@@ -40,7 +44,12 @@ class GameModel with ChangeNotifier {
     if (_currentPlayerStates != value) {
       _currentPlayerStates = value;
 
-      notifyListeners();
+      if (backendReady) {
+        final refPlayers =
+            FirebaseDatabase.instance.ref().child('rooms/room1/state');
+        refPlayers.set(this.toJson());
+      }
+      // notifyListeners();
     }
   }
 
@@ -54,16 +63,15 @@ class GameModel with ChangeNotifier {
     currentPlayerIndex = json['currentPlayerIndex'];
     playerIndexOfAttacker = json['playerIndexOfAttacker'];
     finalTurn = json['finalTurn'];
-    currentPlayerStates = CurrentPlayerStates.values.firstWhere(
+    _currentPlayerStates = CurrentPlayerStates.values.firstWhere(
       (e) => e.toString() == json['currentPlayerStates'],
       orElse: () => CurrentPlayerStates.pickCardFromPiles,
     ); // Use a safe default value
 
+    cardPickedUpFromDeckOrDiscarded = null; // Explicitly handle null
     if (json['cardPickedUpFromDeckOrDiscarded'] != null) {
       cardPickedUpFromDeckOrDiscarded =
           CardModel.fromJson(json['cardPickedUpFromDeckOrDiscarded']);
-    } else {
-      cardPickedUpFromDeckOrDiscarded = null; // Explicitly handle null
     }
   }
 
@@ -113,7 +121,7 @@ class GameModel with ChangeNotifier {
       deck.cardsDeckDiscarded.add(deck.cardsDeckPile.removeLast());
     }
 
-    notifyListeners();
+    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
   }
 
   void drawCard(BuildContext context, {required bool fromDiscardPile}) {
@@ -131,7 +139,7 @@ class GameModel with ChangeNotifier {
     } else {
       showTurnNotification(context, 'No cards available to draw!');
     }
-    notifyListeners();
+    // notifyListeners();
   }
 
   void swapCard(int playerIndex, int gridIndex) {
@@ -161,7 +169,7 @@ class GameModel with ChangeNotifier {
     for (int indexCard = 0; indexCard < player.hand.length; indexCard++) {
       player.cardVisibility[indexCard] = true;
     }
-    notifyListeners();
+    // notifyListeners();
   }
 
   void revealCard(BuildContext context, int playerIndex, int cardIndex) {
@@ -227,7 +235,7 @@ class GameModel with ChangeNotifier {
   void finalizeAction(BuildContext context) {
     advanceToNextPlayer(context);
     saveGameState();
-    notifyListeners();
+    // notifyListeners();
   }
 
   bool canCurrentPlayerAct(int playerIndex) {
@@ -336,7 +344,7 @@ class GameModel with ChangeNotifier {
 
   void triggerStartForRound(BuildContext context) {
     finalTurn = true;
-    notifyListeners();
+    // notifyListeners();
   }
 }
 
@@ -347,6 +355,7 @@ void showTurnNotification(BuildContext context, String message) {
 }
 
 enum CurrentPlayerStates {
+  notStarted,
   pickCardFromPiles,
   keepOrDiscard,
   flipOneCard,
