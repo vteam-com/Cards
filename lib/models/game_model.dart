@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/deck_model.dart';
 import 'package:cards/models/game_over_dialog.dart';
@@ -258,44 +257,6 @@ class GameModel with ChangeNotifier {
     }
     playerIdPlaying = (playerIdPlaying + 1) % players.length;
     gameState = GameStates.pickCardFromPiles;
-  }
-
-  String serializeHands(List<List<CardModel>> hands) {
-    return jsonEncode(
-      hands.map((hand) {
-        return hand
-            .map(
-              (card) => {
-                'suit': card.suit,
-                'rank': card.rank,
-                'value': card.value,
-              },
-            )
-            .toList();
-      }).toList(),
-    );
-  }
-
-  List<List<CardModel>> deserializeHands(String data) {
-    return (jsonDecode(data) as List).map<List<CardModel>>((hand) {
-      return (hand as List).map<CardModel>((cardData) {
-        return CardModel(
-          suit: cardData['suit'],
-          rank: cardData['rank'],
-          value: cardData['value'],
-        );
-      }).toList();
-    }).toList();
-  }
-
-  String serializeVisibility(List<List<bool>> visibility) {
-    return jsonEncode(visibility);
-  }
-
-  List<List<bool>> deserializeVisibility(String data) {
-    return (jsonDecode(data) as List).map<List<bool>>((visibilityList) {
-      return List<bool>.from(visibilityList);
-    }).toList();
   }
 
   String getGameStateAsString() {
