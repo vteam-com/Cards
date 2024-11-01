@@ -109,7 +109,7 @@ class GameScreenState extends State<GameScreen> {
 
   void _scrollToActivePlayer(final GameModel gameModel) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final int playerIndex = gameModel.currentPlayerIndex;
+      final int playerIndex = gameModel.playerIdPlaying;
       if (playerIndex < _playerKeys.length) {
         final RenderBox? containerBox =
             context.findRenderObject() as RenderBox?;
@@ -262,11 +262,11 @@ class GameScreenState extends State<GameScreen> {
     bool dense = false,
   }) {
     /// Name of the currently active player.
-    String playersName = gameModel.getPlayerName(gameModel.currentPlayerIndex);
+    String playersName = gameModel.getPlayerName(gameModel.playerIdPlaying);
 
     /// Name of the player the active player needs to beat in the final round (if applicable).
     String playerAttackerName =
-        gameModel.getPlayerName(gameModel.playerIndexOfAttacker);
+        gameModel.getPlayerName(gameModel.playerIdAttacking);
 
     /// Base text for the banner message.
     String inputText =
@@ -274,7 +274,7 @@ class GameScreenState extends State<GameScreen> {
 
     /// Modifies the banner text if it's the final turn, indicating who the active player
     /// needs to beat.
-    if (gameModel.finalTurn) {
+    if (gameModel.isFinalTurn) {
       inputText =
           'Final Round. $inputText. You have to beat $playerAttackerName';
     }

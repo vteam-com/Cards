@@ -18,7 +18,7 @@ class PlayerZoneWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isActivePlayer = gameModel.currentPlayerIndex == indexOfPlayer;
+    final bool isPlayerPlaying = gameModel.playerIdPlaying == indexOfPlayer;
     final PlayerModel player = gameModel.players[indexOfPlayer];
 
     return Container(
@@ -28,8 +28,8 @@ class PlayerZoneWidget extends StatelessWidget {
         color: Colors.green.shade800.withAlpha(100),
         borderRadius: BorderRadius.circular(20.0),
         border: Border.all(
-          color: isActivePlayer ? Colors.yellow : Colors.transparent,
-          width: isActivePlayer ? 4.0 : 12.0,
+          color: isPlayerPlaying ? Colors.yellow : Colors.transparent,
+          width: isPlayerPlaying ? 4.0 : 12.0,
         ),
       ),
       child: SingleChildScrollView(
@@ -54,7 +54,7 @@ class PlayerZoneWidget extends StatelessWidget {
             //
             PlayerZoneCtaWidget(
               playerIndex: indexOfPlayer,
-              isActivePlayer: isActivePlayer,
+              isActivePlayer: isPlayerPlaying,
               gameModel: gameModel,
             ),
             Divider(

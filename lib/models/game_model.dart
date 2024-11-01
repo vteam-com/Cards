@@ -28,9 +28,9 @@ class GameModel with ChangeNotifier {
   // all things related to game state that needs to be shared/synced across all players
   final List<PlayerModel> players = [];
   DeckModel deck = DeckModel(1);
-  late int currentPlayerIndex;
-  late int playerIndexOfAttacker;
-  late bool finalTurn;
+  int playerIdPlaying = 0;
+  int playerIdAttacking = -1;
+  bool get isFinalTurn => playerIdAttacking != -1;
 
   // Private field to hold the state
   CurrentPlayerStates _currentPlayerStates = CurrentPlayerStates.notStarted;
@@ -57,9 +57,8 @@ class GameModel with ChangeNotifier {
       players.add(PlayerModel.fromJson(playerJson));
     }
     deck = DeckModel.fromJson(json['deck']);
-    currentPlayerIndex = json['currentPlayerIndex'];
-    playerIndexOfAttacker = json['playerIndexOfAttacker'];
-    finalTurn = json['finalTurn'];
+    playerIdPlaying = json['playerIdPlaying'];
+    playerIdAttacking = json['playerIdAttacking'];
     _currentPlayerStates = CurrentPlayerStates.values.firstWhere(
       (e) => e.toString() == json['currentPlayerStates'],
       orElse: () => CurrentPlayerStates.pickCardFromPiles,
@@ -76,9 +75,8 @@ class GameModel with ChangeNotifier {
     return {
       'players': players.map((player) => player.toJson()).toList(),
       'deck': deck.toJson(),
-      'currentPlayerIndex': currentPlayerIndex,
-      'playerIndexOfAttacker': playerIndexOfAttacker,
-      'finalTurn': finalTurn,
+      'playerIdPlaying': playerIdPlaying,
+      'playerIdAttacking': playerIdAttacking,
       'currentPlayerStates': currentPlayerStates.toString(),
       'cardPickedUpFromDeckOrDiscarded':
           cardPickedUpFromDeckOrDiscarded?.toJson(),
@@ -98,9 +96,8 @@ class GameModel with ChangeNotifier {
 
   /// Initializes the game by setting up the decks, hands, and visibility.
   void initializeGame() {
-    currentPlayerIndex = 0;
-    finalTurn = false;
-    playerIndexOfAttacker = -1;
+    playerIdPlaying = 0;
+    playerIdAttacking = -1;
 
     // Calculate number of decks
     // 1 deck for 2 & 3 players, 2 decks for 4 to 5 players, 3 decks for 6 to 7 players, etc.
@@ -174,7 +171,7 @@ class GameModel with ChangeNotifier {
 
     if (handleFlipOneCardState(context, playerIndex, cardIndex) ||
         handleFlipAndSwapState(context, playerIndex, cardIndex)) {
-      if (this.finalTurn) {
+      if (this.isFinalTurn) {
         revealAllRemainingCardsFor(playerIndex);
         if (areAllCardsFromHandsRevealed()) {
           endGame(context);
@@ -230,7 +227,7 @@ class GameModel with ChangeNotifier {
   }
 
   bool canCurrentPlayerAct(int playerIndex) {
-    return currentPlayerIndex == playerIndex;
+    return playerIdPlaying == playerIndex;
   }
 
   void notifyCardUnavailable(BuildContext context, String message) {
@@ -256,13 +253,12 @@ class GameModel with ChangeNotifier {
   }
 
   void advanceToNextPlayer(BuildContext context) {
-    if (finalTurn == false) {
-      if (areAllCardRevealed(currentPlayerIndex)) {
-        playerIndexOfAttacker = currentPlayerIndex;
-        finalTurn = true;
+    if (isFinalTurn == false) {
+      if (areAllCardRevealed(playerIdPlaying)) {
+        playerIdAttacking = playerIdPlaying;
       }
     }
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    playerIdPlaying = (playerIdPlaying + 1) % players.length;
     currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
   }
 
