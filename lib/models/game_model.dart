@@ -5,8 +5,6 @@ import 'package:cards/models/game_over_dialog.dart';
 import 'package:cards/models/player_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 export 'package:cards/models/deck_model.dart';
 export 'package:cards/models/player_model.dart';
 
@@ -155,7 +153,6 @@ class GameModel with ChangeNotifier {
         cardPickedUpFromDeckOrDiscarded!; // Access player's hand directly
 
     cardPickedUpFromDeckOrDiscarded = null;
-    saveGameState();
   }
 
   bool validGridIndex(List<CardModel> hand, int index) {
@@ -230,7 +227,6 @@ class GameModel with ChangeNotifier {
 
   void finalizeAction(BuildContext context) {
     advanceToNextPlayer(context);
-    saveGameState();
   }
 
   bool canCurrentPlayerAct(int playerIndex) {
@@ -263,40 +259,11 @@ class GameModel with ChangeNotifier {
     if (finalTurn == false) {
       if (areAllCardRevealed(currentPlayerIndex)) {
         playerIndexOfAttacker = currentPlayerIndex;
-        triggerStartForRound(context);
+        finalTurn = true;
       }
     }
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
-  }
-
-  Future<void> saveGameState() async {
-    final prefs = await SharedPreferences.getInstance();
-    // Directly access the player's hand from the players list
-    prefs.setString(
-      'playerHands',
-      serializeHands(players.map((p) => p.hand).toList()),
-    );
-    prefs.setString(
-      'cardVisibility',
-      serializeVisibility(
-        players.map((p) => p.cardVisibility).toList(),
-      ),
-    ); // Fix: Save cardVisibility per player
-    prefs.setInt('currentPlayerIndex', currentPlayerIndex);
-    prefs.setBool('finalTurn', finalTurn);
-    prefs.setInt('playerIndexOfAttacker', playerIndexOfAttacker);
-    prefs.setString(
-      'cardsDeckPile',
-      jsonEncode(deck.cardsDeckPile.map((card) => card.toString()).toList()),
-    );
-    prefs.setString(
-      'cardsDeckDiscarded',
-      jsonEncode(
-        deck.cardsDeckDiscarded.map((card) => card.toString()).toList(),
-      ),
-    );
-    // Consider saving other game state variables like cardsDeckPile, cardsDeckDiscarded, etc. as needed
   }
 
   String serializeHands(List<List<CardModel>> hands) {
@@ -335,10 +302,6 @@ class GameModel with ChangeNotifier {
     return (jsonDecode(data) as List).map<List<bool>>((visibilityList) {
       return List<bool>.from(visibilityList);
     }).toList();
-  }
-
-  void triggerStartForRound(BuildContext context) {
-    finalTurn = true;
   }
 }
 
