@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cards/models/game_model.dart';
+import 'package:cards/models/game_over_dialog.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/player_zone_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -88,6 +89,13 @@ class GameScreenState extends State<GameScreen> {
             widget.gameModel.numPlayers,
             (index) => GlobalKey(),
           );
+          if (widget.gameModel.gameState == GameStates.gameOver) {
+            showGameOverDialog(
+              context,
+              widget.gameModel.players,
+              widget.gameModel.initializeGame,
+            );
+          }
         });
       }
     });

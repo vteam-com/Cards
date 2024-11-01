@@ -1,6 +1,5 @@
 import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/deck_model.dart';
-import 'package:cards/models/game_over_dialog.dart';
 import 'package:cards/models/player_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -209,24 +208,13 @@ class GameModel with ChangeNotifier {
       if (this.isFinalTurn) {
         revealAllRemainingCardsFor(playerIndex);
         if (areAllCardsFromHandsRevealed()) {
-          endGame(context);
+          gameState = GameStates.gameOver;
         }
       }
       return;
     }
 
     notifyCardUnavailable(context, 'Not allowed at the moment!');
-  }
-
-  /// Ends the game and displays the game over dialog.
-  ///
-  /// [context] is the BuildContext used for displaying the dialog.
-  void endGame(BuildContext context) {
-    showGameOverDialog(
-      context,
-      players,
-      initializeGame,
-    );
   }
 
   /// Handles the logic for flipping a card during the 'flipOneCard' game state.

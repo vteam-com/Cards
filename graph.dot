@@ -69,7 +69,6 @@ digraph "" {
   "/test/game_model_test.dart" -> "/lib/models/game_model.dart";
   "/lib/models/game_model.dart" -> "/lib/models/backend_model.dart";
   "/lib/models/game_model.dart" -> "/lib/models/deck_model.dart";
-  "/lib/models/game_model.dart" -> "/lib/models/game_over_dialog.dart";
   "/lib/models/game_model.dart" -> "/lib/models/player_model.dart";
   "/lib/models/game_model.dart" -> "/lib/models/deck_model.dart" [style=dashed];
   "/lib/models/game_model.dart" -> "/lib/models/player_model.dart" [style=dashed];
@@ -80,6 +79,7 @@ digraph "" {
   "/lib/models/deck_model.dart" -> "/lib/models/card_model.dart";
   "/lib/models/deck_model.dart" -> "/lib/models/card_model.dart" [style=dashed];
   "/lib/screens/game_screen.dart" -> "/lib/models/game_model.dart";
+  "/lib/screens/game_screen.dart" -> "/lib/models/game_over_dialog.dart";
   "/lib/screens/game_screen.dart" -> "/lib/screens/screen.dart";
   "/lib/screens/game_screen.dart" -> "/lib/widgets/player_zone_widget.dart";
   "/lib/screens/start_screen.dart" -> "/lib/models/backend_model.dart";
