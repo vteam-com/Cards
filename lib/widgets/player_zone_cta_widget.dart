@@ -26,14 +26,14 @@ class PlayerZoneCtaWidget extends StatelessWidget {
 
   Widget buildContent(BuildContext context) {
     if (isActivePlayer) {
-      switch (gameModel.currentPlayerStates) {
-        case CurrentPlayerStates.keepOrDiscard:
+      switch (gameModel.gameState) {
+        case GameStates.keepOrDiscard:
           return ctaKeepOrDiscard();
-        case CurrentPlayerStates.flipAndSwap:
+        case GameStates.flipAndSwap:
           return ctaSwapWithKeptCard();
-        case CurrentPlayerStates.flipOneCard:
+        case GameStates.flipOneCard:
           return ctaFlipOneOfYourHiddenCards();
-        case CurrentPlayerStates.pickCardFromPiles:
+        case GameStates.pickCardFromPiles:
         default:
           return ctaPickCardFromPiles(context);
       }
@@ -58,7 +58,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                gameModel.currentPlayerStates = CurrentPlayerStates.flipAndSwap;
+                gameModel.gameState = GameStates.flipAndSwap;
               },
             ),
           ),
@@ -66,11 +66,11 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         const SizedBox(
           width: 10,
         ),
-        if (gameModel.cardPickedUpFromDeckOrDiscarded != null)
+        if (gameModel.selectedCard != null)
           FittedBox(
             fit: BoxFit.cover,
             child: CardWidget(
-              card: gameModel.cardPickedUpFromDeckOrDiscarded!,
+              card: gameModel.selectedCard!,
               revealed: true,
             ),
           ),
@@ -89,10 +89,9 @@ class PlayerZoneCtaWidget extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                gameModel.deck.cardsDeckDiscarded
-                    .add(gameModel.cardPickedUpFromDeckOrDiscarded!);
-                gameModel.cardPickedUpFromDeckOrDiscarded = null;
-                gameModel.currentPlayerStates = CurrentPlayerStates.flipOneCard;
+                gameModel.deck.cardsDeckDiscarded.add(gameModel.selectedCard!);
+                gameModel.selectedCard = null;
+                gameModel.gameState = GameStates.flipOneCard;
               },
             ),
           ),
@@ -113,7 +112,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           width: 10,
         ),
         CardWidget(
-          card: gameModel.cardPickedUpFromDeckOrDiscarded,
+          card: gameModel.selectedCard,
           revealed: true,
         ),
       ],

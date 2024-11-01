@@ -33,14 +33,14 @@ class GameModel with ChangeNotifier {
   bool get isFinalTurn => playerIdAttacking != -1;
 
   // Private field to hold the state
-  CurrentPlayerStates _currentPlayerStates = CurrentPlayerStates.notStarted;
+  GameStates _gameState = GameStates.notStarted;
   // Public getter to access the current player states
-  CurrentPlayerStates get currentPlayerStates => _currentPlayerStates;
+  GameStates get gameState => _gameState;
 
   // Public setter to modify the current player states
-  set currentPlayerStates(CurrentPlayerStates value) {
-    if (_currentPlayerStates != value) {
-      _currentPlayerStates = value;
+  set gameState(GameStates value) {
+    if (_gameState != value) {
+      _gameState = value;
 
       if (backendReady) {
         final refPlayers =
@@ -59,15 +59,14 @@ class GameModel with ChangeNotifier {
     deck = DeckModel.fromJson(json['deck']);
     playerIdPlaying = json['playerIdPlaying'];
     playerIdAttacking = json['playerIdAttacking'];
-    _currentPlayerStates = CurrentPlayerStates.values.firstWhere(
-      (e) => e.toString() == json['currentPlayerStates'],
-      orElse: () => CurrentPlayerStates.pickCardFromPiles,
+    _gameState = GameStates.values.firstWhere(
+      (e) => e.toString() == json['state'],
+      orElse: () => GameStates.pickCardFromPiles,
     ); // Use a safe default value
 
-    cardPickedUpFromDeckOrDiscarded = null; // Explicitly handle null
-    if (json['cardPickedUpFromDeckOrDiscarded'] != null) {
-      cardPickedUpFromDeckOrDiscarded =
-          CardModel.fromJson(json['cardPickedUpFromDeckOrDiscarded']);
+    selectedCard = null; // Explicitly handle null
+    if (json['selectedCard'] != null) {
+      selectedCard = CardModel.fromJson(json['selectedCard']);
     }
   }
 
@@ -77,9 +76,8 @@ class GameModel with ChangeNotifier {
       'deck': deck.toJson(),
       'playerIdPlaying': playerIdPlaying,
       'playerIdAttacking': playerIdAttacking,
-      'currentPlayerStates': currentPlayerStates.toString(),
-      'cardPickedUpFromDeckOrDiscarded':
-          cardPickedUpFromDeckOrDiscarded?.toJson(),
+      'state': gameState.toString(),
+      'selectedCard': selectedCard?.toJson(),
     };
   }
 
@@ -90,7 +88,7 @@ class GameModel with ChangeNotifier {
     return players[index].name;
   }
 
-  CardModel? cardPickedUpFromDeckOrDiscarded;
+  CardModel? selectedCard;
 
   int get numPlayers => players.length;
 
@@ -115,28 +113,28 @@ class GameModel with ChangeNotifier {
       deck.cardsDeckDiscarded.add(deck.cardsDeckPile.removeLast());
     }
 
-    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
+    gameState = GameStates.pickCardFromPiles;
   }
 
   void drawCard(BuildContext context, {required bool fromDiscardPile}) {
-    if (currentPlayerStates != CurrentPlayerStates.pickCardFromPiles) {
+    if (gameState != GameStates.pickCardFromPiles) {
       showTurnNotification(context, "It's not your turn!");
       return;
     }
 
     if (fromDiscardPile && deck.cardsDeckDiscarded.isNotEmpty) {
-      cardPickedUpFromDeckOrDiscarded = deck.cardsDeckDiscarded.removeLast();
-      currentPlayerStates = CurrentPlayerStates.flipAndSwap;
+      selectedCard = deck.cardsDeckDiscarded.removeLast();
+      gameState = GameStates.flipAndSwap;
     } else if (!fromDiscardPile && deck.cardsDeckPile.isNotEmpty) {
-      cardPickedUpFromDeckOrDiscarded = deck.cardsDeckPile.removeLast();
-      currentPlayerStates = CurrentPlayerStates.keepOrDiscard;
+      selectedCard = deck.cardsDeckPile.removeLast();
+      gameState = GameStates.keepOrDiscard;
     } else {
       showTurnNotification(context, 'No cards available to draw!');
     }
   }
 
   void swapCard(int playerIndex, int gridIndex) {
-    if (cardPickedUpFromDeckOrDiscarded == null ||
+    if (selectedCard == null ||
         !validGridIndex(players[playerIndex].hand, gridIndex)) {
       // Access player's hand directly
       return;
@@ -147,9 +145,9 @@ class GameModel with ChangeNotifier {
     deck.cardsDeckDiscarded.add(cardToSwap);
 
     players[playerIndex].hand[gridIndex] =
-        cardPickedUpFromDeckOrDiscarded!; // Access player's hand directly
+        selectedCard!; // Access player's hand directly
 
-    cardPickedUpFromDeckOrDiscarded = null;
+    selectedCard = null;
   }
 
   bool validGridIndex(List<CardModel> hand, int index) {
@@ -196,13 +194,13 @@ class GameModel with ChangeNotifier {
     int playerIndex,
     int cardIndex,
   ) {
-    if (currentPlayerStates != CurrentPlayerStates.flipOneCard ||
+    if (gameState != GameStates.flipOneCard ||
         players[playerIndex].cardVisibility[cardIndex]) {
       return false;
     }
 
     players[playerIndex].cardVisibility[cardIndex] = true;
-    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
+    gameState = GameStates.pickCardFromPiles;
     finalizeAction(context);
     return true;
   }
@@ -212,7 +210,7 @@ class GameModel with ChangeNotifier {
     int playerIndex,
     int cardIndex,
   ) {
-    if (currentPlayerStates != CurrentPlayerStates.flipAndSwap) {
+    if (gameState != GameStates.flipAndSwap) {
       return false;
     }
 
@@ -259,7 +257,7 @@ class GameModel with ChangeNotifier {
       }
     }
     playerIdPlaying = (playerIdPlaying + 1) % players.length;
-    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
+    gameState = GameStates.pickCardFromPiles;
   }
 
   String serializeHands(List<List<CardModel>> hands) {
@@ -307,7 +305,7 @@ void showTurnNotification(BuildContext context, String message) {
   );
 }
 
-enum CurrentPlayerStates {
+enum GameStates {
   notStarted,
   pickCardFromPiles,
   keepOrDiscard,

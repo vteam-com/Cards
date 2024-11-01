@@ -28,8 +28,8 @@ void main() {
         reason: 'Discard pile should have 1 card in it',
       );
 
-      gameModel.currentPlayerStates = CurrentPlayerStates
-          .pickCardFromPiles; // Set the state to allow drawing
+      gameModel.gameState =
+          GameStates.pickCardFromPiles; // Set the state to allow drawing
 
       // Act
       gameModel.drawCard(mockContext, fromDiscardPile: true);
@@ -42,14 +42,14 @@ void main() {
       );
 
       expect(
-        gameModel.cardPickedUpFromDeckOrDiscarded,
+        gameModel.selectedCard,
         isNotNull,
         reason: 'A card should have been picked up',
       );
 
       expect(
-        gameModel.currentPlayerStates,
-        CurrentPlayerStates.flipAndSwap,
+        gameModel.gameState,
+        GameStates.flipAndSwap,
         reason: 'State should have changed to flipAndSwap',
       );
     });
