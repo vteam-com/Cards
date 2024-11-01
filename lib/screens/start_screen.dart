@@ -8,6 +8,7 @@ import 'package:cards/widgets/players_in_room_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 /// The initial screen presented to the user, allowing them to join or start a game.
 ///
@@ -30,7 +31,7 @@ class StartScreenState extends State<StartScreen> {
 
   /// Controller for the room name text field.
   final TextEditingController _controllerRoom = TextEditingController(
-    text: 'Kiwi', // Default room name
+    text: 'KIWI', // Default room name
   );
 
   /// Placeholder for room name error text.  Currently unused.
@@ -100,19 +101,7 @@ class StartScreenState extends State<StartScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-                  const SizedBox(
-                    height: 200,
-                    child: Markdown(
-                      selectable: true,
-                      data:
-                          '## Players swap cards in their grid to score as low as possible.'
-                          '\n- Lining up three of the same rank in a row or column counts as zero.'
-                          '\n- Anyone can end a round by “closing,” but if someone scores lower, the closer’s points are doubled!'
-                          '\n'
-                          '\n'
-                          'Learn more [Wikipedia](https://en.wikipedia.org/wiki/Golf_(card_game))',
-                    ),
-                  ),
+                  gameInstructions(),
                   const SizedBox(height: 40),
                   editBox('Room', _controllerRoom, _errorTextRoom),
                   const SizedBox(height: 20),
@@ -135,6 +124,28 @@ class StartScreenState extends State<StartScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget gameInstructions() {
+    return SizedBox(
+      height: 200,
+      child: Markdown(
+        selectable: true,
+        data: '## Players swap cards in their grid to score as low as possible.'
+            '\n- Lining up three of the same rank in a row or column counts as zero.'
+            '\n- Anyone can end a round by “closing,” but if someone scores lower, the closer’s points are doubled!'
+            '\n'
+            '\n'
+            'Learn more [Wikipedia](https://en.wikipedia.org/wiki/Golf_(card_game))',
+        onTapLink: (text, href, title) {
+          if (href != null) {
+            launchUrlString(
+              href,
+            ); // Use launchUrlString directly with the href string
+          }
+        },
       ),
     );
   }
@@ -187,7 +198,7 @@ class StartScreenState extends State<StartScreen> {
 
   /// Adds the current player to the game.
   void joinGame(BuildContext context) {
-    String nameOfPersonJoining = playerName;
+    String nameOfPersonJoining = playerName.toUpperCase();
     _playerNames.add(nameOfPersonJoining);
     pushPlayersNamesToFirebase();
   }
@@ -212,7 +223,7 @@ class StartScreenState extends State<StartScreen> {
   void startGame(BuildContext context) {
     final newGame = GameModel(
       names: _playerNames,
-      gameRoomId: _controllerRoom.text.trim(),
+      gameRoomId: _controllerRoom.text.trim().toUpperCase(),
       isNewGame: true,
     );
     Navigator.push(
@@ -228,7 +239,7 @@ class StartScreenState extends State<StartScreen> {
     if (playerName.isEmpty) {
       return const Text('Please enter your name above ⬆');
     }
-    bool isPartOfTheList = _playerNames.contains(playerName);
+    bool isPartOfTheList = _playerNames.contains(playerName.toUpperCase());
 
     String label = isPartOfTheList
         ? (_playerNames.length > 1 ? 'Start Game' : 'Waiting for players')
