@@ -49,7 +49,6 @@ class GameModel with ChangeNotifier {
             FirebaseDatabase.instance.ref().child('rooms/room1/state');
         refPlayers.set(this.toJson());
       }
-      // notifyListeners();
     }
   }
 
@@ -139,7 +138,6 @@ class GameModel with ChangeNotifier {
     } else {
       showTurnNotification(context, 'No cards available to draw!');
     }
-    // notifyListeners();
   }
 
   void swapCard(int playerIndex, int gridIndex) {
@@ -169,7 +167,6 @@ class GameModel with ChangeNotifier {
     for (int indexCard = 0; indexCard < player.hand.length; indexCard++) {
       player.cardVisibility[indexCard] = true;
     }
-    // notifyListeners();
   }
 
   void revealCard(BuildContext context, int playerIndex, int cardIndex) {
@@ -227,7 +224,6 @@ class GameModel with ChangeNotifier {
 
     players[playerIndex].cardVisibility[cardIndex] = true;
     swapCard(playerIndex, cardIndex);
-    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
     finalizeAction(context);
     return true;
   }
@@ -235,7 +231,6 @@ class GameModel with ChangeNotifier {
   void finalizeAction(BuildContext context) {
     advanceToNextPlayer(context);
     saveGameState();
-    // notifyListeners();
   }
 
   bool canCurrentPlayerAct(int playerIndex) {
@@ -271,8 +266,8 @@ class GameModel with ChangeNotifier {
         triggerStartForRound(context);
       }
     }
-    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    currentPlayerStates = CurrentPlayerStates.pickCardFromPiles;
   }
 
   Future<void> saveGameState() async {
@@ -344,7 +339,6 @@ class GameModel with ChangeNotifier {
 
   void triggerStartForRound(BuildContext context) {
     finalTurn = true;
-    // notifyListeners();
   }
 }
 
