@@ -9,14 +9,14 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PlayerSetupScreen extends StatefulWidget {
-  const PlayerSetupScreen({super.key});
+class StartScreen extends StatefulWidget {
+  const StartScreen({super.key});
 
   @override
-  PlayerSetupScreenState createState() => PlayerSetupScreenState();
+  StartScreenState createState() => StartScreenState();
 }
 
-class PlayerSetupScreenState extends State<PlayerSetupScreen> {
+class StartScreenState extends State<StartScreen> {
   late StreamSubscription _streamSubscription;
   String joiningAs = '';
 
