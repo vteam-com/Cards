@@ -28,7 +28,7 @@ class PlayersInRoomWidget extends StatelessWidget {
             return ListTile(
               title: Text(
                 nameOfPlayerJoinedAlready,
-                style: const TextStyle(color: Colors.black, fontSize: 20),
+                style: const TextStyle(fontSize: 20),
               ),
               trailing: IconButton(
                 icon: const Icon(Icons.remove_circle, color: Colors.red),

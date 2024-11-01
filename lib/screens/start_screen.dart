@@ -5,9 +5,9 @@ import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/players_in_room_widget.dart';
-import 'package:cards/widgets/text_url_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -78,6 +78,7 @@ class StartScreenState extends State<StartScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
+              width: 600,
               constraints: const BoxConstraints(
                 maxWidth: 600,
               ),
@@ -85,18 +86,18 @@ class StartScreenState extends State<StartScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-                  Text(
-                    'Players swap cards in their grid to score as low as possible. Lining up three of the same rank in a row or column counts as zero. Anyone can end a round by “closing,” but if someone scores lower, the closer’s points double!\n',
-                    style: TextStyle(
-                      color: Colors.green.shade100,
-                      fontSize: 20,
-                      fontStyle: FontStyle.italic,
+                  const SizedBox(
+                    height: 200,
+                    child: Markdown(
+                      selectable: true,
+                      data:
+                          '## Players swap cards in their grid to score as low as possible.'
+                          '\n- Lining up three of the same rank in a row or column counts as zero.'
+                          '\n- Anyone can end a round by “closing,” but if someone scores lower, the closer’s points are doubled!'
+                          '\n'
+                          '\n'
+                          'Learn more [Wikipedia](https://en.wikipedia.org/wiki/Golf_(card_game))',
                     ),
-                  ),
-                  const TextWithLinkWidget(
-                    text: 'Learn more',
-                    linkText: 'Wikipedia',
-                    url: 'https://en.wikipedia.org/wiki/Golf_(card_game)',
                   ),
                   const SizedBox(height: 40),
 
@@ -260,31 +261,25 @@ class StartScreenState extends State<StartScreen> {
             ? 'Start Game'
             : 'Waiting for players';
 
-    return Material(
-      elevation: 125,
-      shadowColor: Colors.black,
-      borderRadius: BorderRadius.circular(20),
-      child: TextButton(
-        onPressed: () {
-          if (isPartOfTheList) {
-            if (_playerNames.length > 1) {
-              startGame(
-                context,
-                true,
-              );
-            }
-          } else {
-            joinGame(context);
+    return ElevatedButton(
+      onPressed: () {
+        if (isPartOfTheList) {
+          if (_playerNames.length > 1) {
+            startGame(
+              context,
+              true,
+            );
           }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: Colors.green.shade900,
-              fontSize: 20,
-            ),
+        } else {
+          joinGame(context);
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 20,
           ),
         ),
       ),
