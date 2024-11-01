@@ -102,15 +102,14 @@ class StartScreenState extends State<StartScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 40),
                   gameInstructions(),
                   const SizedBox(height: 40),
                   editBox('Room', _controllerRoom, _errorTextRoom),
                   const SizedBox(height: 20),
                   editBox('Name', _controllerName, _errorTextName),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   actionButton(),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   SizedBox(
                     width: 400,
                     height: 300,
@@ -120,7 +119,6 @@ class StartScreenState extends State<StartScreen> {
                       onRemovePlayer: removePlayer,
                     ),
                   ),
-                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -135,15 +133,20 @@ class StartScreenState extends State<StartScreen> {
       height: 200,
       child: Markdown(
         selectable: true,
-        data: '## Players swap cards in their grid to score as low as possible.'
-            '\n- Lining up three of the same rank in a row or column counts as zero.'
-            '\n- Anyone can end a round by “closing,” but if someone scores lower, the closer’s points are doubled!'
+        data: '### Game Rules'
+            '\n- Aim for the lowest possible score.'
+            '\n- Choose a card from either the Deck or Discard pile.'
+            '\n- Swap the chosen card with a card in your 3x3 grid, or discard it and flip over one of your face-down cards.'
+            '\n- Three cards of the same rank in a row or column score zero.'
+            '\n- The first player to reveal all nine cards challenges others, claiming the lowest score.'
+            '\n- If someone else has an equal or lower score, the challenger doubles their points!'
+            '\n- Players are eliminated after busting 100 points.'
             '\n'
             '\n'
             'Learn more [Wikipedia](https://en.wikipedia.org/wiki/Golf_(card_game))',
-        onTapLink: (text, href, title) {
+        onTapLink: (text, href, title) async {
           if (href != null) {
-            launchUrlString(
+            await launchUrlString(
               href,
             ); // Use launchUrlString directly with the href string
           }
@@ -160,7 +163,6 @@ class StartScreenState extends State<StartScreen> {
   ) {
     return Container(
       width: 400,
-      height: 100,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.green.shade100,
@@ -244,7 +246,9 @@ class StartScreenState extends State<StartScreen> {
     bool isPartOfTheList = _playerNames.contains(playerName.toUpperCase());
 
     String label = isPartOfTheList
-        ? (_playerNames.length > 1 ? 'Start Game' : 'Waiting for players')
+        ? (_playerNames.length > 1
+            ? 'Start Game'
+            : 'Waiting for players to join')
         : 'Join Game';
     return ElevatedButton(
       onPressed: () {
