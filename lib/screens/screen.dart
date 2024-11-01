@@ -30,6 +30,18 @@ class Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: backButton
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            : null,
+        title:
+            Text(title, style: TextStyle(color: Colors.yellow.withAlpha(200))),
+      ),
       body: Stack(
         children: [
           DecoratedBox(
@@ -47,32 +59,6 @@ class Screen extends StatelessWidget {
                 ), // Your default style
                 child: child,
               ),
-            ),
-          ),
-          SafeArea(
-            child: Row(
-              children: [
-                if (backButton)
-                  IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                const SizedBox(
-                  width: 20,
-                ),
-                Expanded(
-                  child: Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white, fontSize: 24),
-                  ),
-                ),
-              ],
             ),
           ),
         ],

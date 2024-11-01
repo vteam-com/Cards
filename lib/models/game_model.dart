@@ -297,6 +297,26 @@ class GameModel with ChangeNotifier {
       return List<bool>.from(visibilityList);
     }).toList();
   }
+
+  String getGameStateAsString() {
+    /// Name of the currently active player.
+    String playersName = getPlayerName(playerIdPlaying);
+
+    /// Name of the player the active player needs to beat in the final round (if applicable).
+    String playerAttackerName = getPlayerName(playerIdAttacking);
+
+    /// Base text for the banner message.
+    String inputText = 'It\'s your turn $playersName';
+
+    /// Modifies the banner text if it's the final turn, indicating who the active player
+    /// needs to beat.
+    if (isFinalTurn) {
+      inputText =
+          'Final Round. $inputText. You have to beat $playerAttackerName';
+    }
+
+    return inputText;
+  }
 }
 
 void showTurnNotification(BuildContext context, String message) {

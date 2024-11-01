@@ -50,11 +50,10 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           child: BlinkWidget(
             child: ElevatedButton(
               child: const Text(
-                'Keep',
+                '\nKeep\n',
                 style: TextStyle(
-                  fontSize: 14,
+                  // fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
                 ),
               ),
               onPressed: () {
@@ -81,11 +80,10 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           child: BlinkWidget(
             child: ElevatedButton(
               child: const Text(
-                'Discard',
+                '\nDiscard\n',
                 style: TextStyle(
-                  fontSize: 14,
+                  // fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
                 ),
               ),
               onPressed: () {
