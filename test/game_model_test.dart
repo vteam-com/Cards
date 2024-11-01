@@ -16,7 +16,7 @@ void main() {
       gameModel = GameModel(
         names: ['Player 1', 'Player 2'],
         gameRoomId: 'testRoom',
-        newGame: true,
+        isNewGame: true,
       );
     });
 

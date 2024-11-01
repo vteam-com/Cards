@@ -9,7 +9,15 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+/// The initial screen presented to the user, allowing them to join or start a game.
+///
+/// Users can enter their name and a room name. If the room exists, they can
+/// join it; otherwise, a new room is created. The screen displays a list of
+/// players currently in the room.  Once at least two players have joined, the
+/// game can be started.  The screen also provides a brief explanation of the
+/// game's rules.
 class StartScreen extends StatefulWidget {
+  /// Creates the Start Screen widget.
   const StartScreen({super.key});
 
   @override
@@ -17,45 +25,53 @@ class StartScreen extends StatefulWidget {
 }
 
 class StartScreenState extends State<StartScreen> {
+  /// Subscription to the Firebase Realtime Database.
   late StreamSubscription _streamSubscription;
 
+  /// Controller for the room name text field.
   final TextEditingController _controllerRoom = TextEditingController(
-    text: 'Banana', // Default player names
+    text: 'Kiwi', // Default room name
   );
+
+  /// Placeholder for room name error text.  Currently unused.
   final String _errorTextRoom = '';
 
-  final TextEditingController _controllerName = TextEditingController(
-    text: '', // Default player names
-  );
+  /// Controller for the player name text field.
+  final TextEditingController _controllerName = TextEditingController();
+
+  /// Placeholder for player name error text. Currently unused.
   final String _errorTextName = '';
 
+  /// List of player names currently in the room.
   List<String> _playerNames = [];
+
+  /// Returns the trimmed player name entered by the user.
   String get playerName => _controllerName.text.trim();
 
   @override
   void initState() {
     super.initState();
 
+    // Set up the Firebase listener after ensuring Firebase is initialized.
     useFirebase().then((_) {
       _streamSubscription =
           FirebaseDatabase.instance.ref().onValue.listen((event) {
         final DataSnapshot snapshot = event.snapshot;
         final Object? data = snapshot.value;
-        if (data != null) {
-          if (data is Map<Object?, Object?>) {
-            final room = data['rooms'] as Map<Object?, Object?>;
-            final room1 = room['room1'] as Map<Object?, Object?>;
-            final players = room1['players'] as List<Object?>;
 
-            setState(() {
-              _playerNames = [];
-              for (final Object? playerName in players) {
-                if (playerName != null) {
-                  var name = playerName as String;
-                  _playerNames.add(name);
-                }
+        // Safely access and update the player list from the Firebase snapshot.
+        if (data != null && data is Map) {
+          final room = data['rooms'] as Map?;
+          if (room != null) {
+            final room1 = room['room1'] as Map?;
+            if (room1 != null) {
+              final players = room1['players'] as List?;
+              if (players != null) {
+                setState(() {
+                  _playerNames = players.cast<String>().toList();
+                });
               }
-            });
+            }
           }
         }
       });
@@ -64,6 +80,7 @@ class StartScreenState extends State<StartScreen> {
 
   @override
   void dispose() {
+    // Cancel the Firebase subscription to prevent leaks.
     _streamSubscription.cancel();
     super.dispose();
   }
@@ -77,11 +94,8 @@ class StartScreenState extends State<StartScreen> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Container(
-              width: 600,
-              constraints: const BoxConstraints(
-                maxWidth: 600,
-              ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -100,41 +114,19 @@ class StartScreenState extends State<StartScreen> {
                     ),
                   ),
                   const SizedBox(height: 40),
-
-                  //
-                  // Input Room name
-                  //
-
                   editBox('Room', _controllerRoom, _errorTextRoom),
-
                   const SizedBox(height: 20),
-
-                  //
-                  // Input your name
-                  //
                   editBox('Name', _controllerName, _errorTextName),
-
                   const SizedBox(height: 40),
-
-                  //
-                  // Join Game | Start Game
-                  //
                   actionButton(),
-
                   const SizedBox(height: 40),
-
-                  //
-                  // List of joined players
-                  //
                   SizedBox(
                     width: 400,
                     height: 300,
                     child: PlayersInRoomWidget(
                       name: playerName,
                       playerNames: _playerNames,
-                      onRemovePlayer: (String nameToRemove) {
-                        removePlayer(nameToRemove);
-                      },
+                      onRemovePlayer: removePlayer,
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -147,6 +139,7 @@ class StartScreenState extends State<StartScreen> {
     );
   }
 
+  /// Widget for creating labeled text input fields.
   Widget editBox(
     final String label,
     final TextEditingController controller,
@@ -170,30 +163,21 @@ class StartScreenState extends State<StartScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(
-            width: 20,
-          ),
+          const SizedBox(width: 20),
           Expanded(
-            child: Expanded(
-              child: TextField(
-                controller: controller,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Type your $label here',
-                  hintStyle: TextStyle(color: Colors.black.withAlpha(100)),
-                  errorText: errorStatus.isEmpty ? null : errorStatus,
-                ),
-                onSubmitted: (String _) => setState(() {
-                  // update UI
-                }),
-                onChanged: (String _) => setState(() {
-                  // update UI
-                }),
+            child: TextField(
+              controller: controller,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
+              decoration: InputDecoration(
+                hintText: 'Type your $label here',
+                hintStyle: TextStyle(color: Colors.black.withAlpha(100)),
+                errorText: errorStatus.isEmpty ? null : errorStatus,
+              ),
+              onChanged: (_) => setState(() {}),
             ),
           ),
         ],
@@ -201,31 +185,35 @@ class StartScreenState extends State<StartScreen> {
     );
   }
 
+  /// Adds the current player to the game.
   void joinGame(BuildContext context) {
-    String nameOfPersonJoining = _controllerName.text.trim();
-
+    String nameOfPersonJoining = playerName;
     _playerNames.add(nameOfPersonJoining);
     pushPlayersNamesToFirebase();
   }
 
+  /// Updates the player list in Firebase.
   void pushPlayersNamesToFirebase() {
     useFirebase().then((_) {
-      final refPlayers =
-          FirebaseDatabase.instance.ref().child('rooms/room1/players');
-      refPlayers.set(_playerNames);
+      FirebaseDatabase.instance
+          .ref()
+          .child('rooms/room1/players')
+          .set(_playerNames);
     });
   }
 
+  /// Removes a player from the game.
   void removePlayer(final String nameToRemove) {
     _playerNames = _playerNames.where((name) => name != nameToRemove).toList();
     pushPlayersNamesToFirebase();
   }
 
-  void startGame(BuildContext context, bool joinExistingGame) {
+  /// Starts the game and navigates to the game screen.
+  void startGame(BuildContext context) {
     final newGame = GameModel(
       names: _playerNames,
       gameRoomId: _controllerRoom.text.trim(),
-      newGame: true,
+      isNewGame: true,
     );
     Navigator.push(
       context,
@@ -235,40 +223,21 @@ class StartScreenState extends State<StartScreen> {
     );
   }
 
-  List<String> parsePlayerNames(String input) {
-    if (input.isEmpty) {
-      return [];
-    }
-
-    // Split by spaces, commas, or semicolons and remove empty entries
-    List<String> names = input
-        .split(RegExp(r'[ ,;]+'))
-        .where((name) => name.isNotEmpty)
-        .toList();
-
-    return names;
-  }
-
+  /// Widget for the "Join Game" or "Start Game" button.
   Widget actionButton() {
     if (playerName.isEmpty) {
       return const Text('Please enter your name above ⬆');
     }
     bool isPartOfTheList = _playerNames.contains(playerName);
 
-    String label = isPartOfTheList == false
-        ? 'Join Game'
-        : _playerNames.length > 1
-            ? 'Start Game'
-            : 'Waiting for players';
-
+    String label = isPartOfTheList
+        ? (_playerNames.length > 1 ? 'Start Game' : 'Waiting for players')
+        : 'Join Game';
     return ElevatedButton(
       onPressed: () {
         if (isPartOfTheList) {
           if (_playerNames.length > 1) {
-            startGame(
-              context,
-              true,
-            );
+            startGame(context);
           }
         } else {
           joinGame(context);
@@ -278,9 +247,7 @@ class StartScreenState extends State<StartScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Text(
           label,
-          style: const TextStyle(
-            fontSize: 20,
-          ),
+          style: const TextStyle(fontSize: 20),
         ),
       ),
     );

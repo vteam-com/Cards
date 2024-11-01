@@ -8,35 +8,50 @@ export 'package:cards/models/deck_model.dart';
 export 'package:cards/models/player_model.dart';
 
 class GameModel with ChangeNotifier {
+  /// Creates a new game model.
+  ///
+  /// [gameRoomId] is the ID of the room this game is in.
+  /// [names] is the list of player names.
+  /// [isNewGame] indicates whether this is a new game or joining an existing one.
   GameModel({
     required this.gameRoomId,
     required final List<String> names,
-    bool newGame = false,
+    bool isNewGame = false,
   }) {
     // Initialize players from the list of names
     for (final String name in names) {
       players.add(PlayerModel(name: name));
     }
-    if (newGame) {
+    if (isNewGame) {
       initializeGame();
     }
   }
 
+  /// The ID of the game room.
   final String gameRoomId;
 
-  // all things related to game state that needs to be shared/synced across all players
+  /// List of players in the game.
   final List<PlayerModel> players = [];
+
+  /// The deck of cards used in the game.
   DeckModel deck = DeckModel(1);
+
+  /// The index of the player currently playing.
   int playerIdPlaying = 0;
+
+  /// The index of the player being attacked in the final turn. -1 if not the final turn.
   int playerIdAttacking = -1;
+
+  /// Whether the game is in the final turn.
   bool get isFinalTurn => playerIdAttacking != -1;
 
-  // Private field to hold the state
+  /// The current state of the game.
   GameStates _gameState = GameStates.notStarted;
-  // Public getter to access the current player states
+
+  /// The current state of the game.
   GameStates get gameState => _gameState;
 
-  // Public setter to modify the current player states
+  /// Sets the game state and updates the database if backend is ready.
   set gameState(GameStates value) {
     if (_gameState != value) {
       _gameState = value;
@@ -49,9 +64,16 @@ class GameModel with ChangeNotifier {
     }
   }
 
+  /// The card currently selected by the player.
+  CardModel? selectedCard;
+
+  /// The number of players in the game.
+  int get numPlayers => players.length;
+
+  /// Updates the game model from a JSON object.
   void fromJson(Map<String, dynamic> json) {
     final List<dynamic> playersJson = json['players'];
-    players.clear(); // Clear existing players
+    players.clear();
     for (final playerJson in playersJson) {
       players.add(PlayerModel.fromJson(playerJson));
     }
@@ -61,14 +83,15 @@ class GameModel with ChangeNotifier {
     _gameState = GameStates.values.firstWhere(
       (e) => e.toString() == json['state'],
       orElse: () => GameStates.pickCardFromPiles,
-    ); // Use a safe default value
+    );
 
-    selectedCard = null; // Explicitly handle null
+    selectedCard = null;
     if (json['selectedCard'] != null) {
       selectedCard = CardModel.fromJson(json['selectedCard']);
     }
   }
 
+  /// Converts the game model to a JSON object.
   Map<String, dynamic> toJson() {
     return {
       'players': players.map((player) => player.toJson()).toList(),
@@ -80,6 +103,7 @@ class GameModel with ChangeNotifier {
     };
   }
 
+  /// Returns the name of the player at the given index.
   String getPlayerName(final int index) {
     if (index < 0 || index >= players.length) {
       return 'No one';
@@ -87,20 +111,16 @@ class GameModel with ChangeNotifier {
     return players[index].name;
   }
 
-  CardModel? selectedCard;
-
-  int get numPlayers => players.length;
-
-  /// Initializes the game by setting up the decks, hands, and visibility.
+  /// Initializes the game state, including dealing cards and setting the initial game state.
   void initializeGame() {
     playerIdPlaying = 0;
     playerIdAttacking = -1;
 
-    // Calculate number of decks
-    // 1 deck for 2 & 3 players, 2 decks for 4 to 5 players, 3 decks for 6 to 7 players, etc.
+    // Calculate number of decks based on number of players.
     final int numDecks = (numPlayers - 2) ~/ 2;
     deck.shuffle(numberOfDecks: 1 + numDecks);
 
+    // Deal 9 cards to each player and reveal the initial 3.
     for (final PlayerModel player in players) {
       for (final _ in Iterable.generate(9)) {
         player.addCardToHand(deck.cardsDeckPile.removeLast());
@@ -108,13 +128,17 @@ class GameModel with ChangeNotifier {
       player.revealInitialCards();
     }
 
+    // Add a card to the discard pile if the deck is not empty.
     if (deck.cardsDeckPile.isNotEmpty) {
       deck.cardsDeckDiscarded.add(deck.cardsDeckPile.removeLast());
     }
-
     gameState = GameStates.pickCardFromPiles;
   }
 
+  /// Allows a player to draw a card, either from the discard pile or the deck.
+  ///
+  /// [context] is the BuildContext used for displaying snackbar messages.
+  /// [fromDiscardPile] indicates whether to draw from the discard pile or the deck.
   void drawCard(BuildContext context, {required bool fromDiscardPile}) {
     if (gameState != GameStates.pickCardFromPiles) {
       showTurnNotification(context, "It's not your turn!");
@@ -132,27 +156,30 @@ class GameModel with ChangeNotifier {
     }
   }
 
+  /// Swaps the selected card with a card in the player's hand.
+  ///
+  /// [playerIndex] is the index of the player whose hand is being modified.
+  /// [gridIndex] is the index of the card in the player's hand to swap.
   void swapCard(int playerIndex, int gridIndex) {
     if (selectedCard == null ||
         !validGridIndex(players[playerIndex].hand, gridIndex)) {
-      // Access player's hand directly
       return;
     }
 
-    CardModel cardToSwap =
-        players[playerIndex].hand[gridIndex]; // Access player's hand directly
+    CardModel cardToSwap = players[playerIndex].hand[gridIndex];
     deck.cardsDeckDiscarded.add(cardToSwap);
-
-    players[playerIndex].hand[gridIndex] =
-        selectedCard!; // Access player's hand directly
-
+    players[playerIndex].hand[gridIndex] = selectedCard!;
     selectedCard = null;
   }
 
+  /// Checks if the given grid index is valid for the given hand.
   bool validGridIndex(List<CardModel> hand, int index) {
     return index >= 0 && index < hand.length;
   }
 
+  /// Reveals all remaining cards for the specified player.
+  ///
+  /// [playerIndex] is the index of the player whose cards should be revealed.
   void revealAllRemainingCardsFor(int playerIndex) {
     final PlayerModel player = players[playerIndex];
     for (int indexCard = 0; indexCard < player.hand.length; indexCard++) {
@@ -160,6 +187,11 @@ class GameModel with ChangeNotifier {
     }
   }
 
+  /// Handles revealing a card, either for flipping or swapping.
+  ///
+  /// [context] is the BuildContext used for displaying snackbar messages.
+  /// [playerIndex] is the index of the player revealing the card.
+  /// [cardIndex] is the index of the card being revealed.
   void revealCard(BuildContext context, int playerIndex, int cardIndex) {
     if (!canCurrentPlayerAct(playerIndex)) {
       notifyCardUnavailable(context, 'Wait your turn!');
@@ -180,6 +212,9 @@ class GameModel with ChangeNotifier {
     notifyCardUnavailable(context, 'Not allowed at the moment!');
   }
 
+  /// Ends the game and displays the game over dialog.
+  ///
+  /// [context] is the BuildContext used for displaying the dialog.
   void endGame(BuildContext context) {
     showGameOverDialog(
       context,
@@ -188,6 +223,7 @@ class GameModel with ChangeNotifier {
     );
   }
 
+  /// Handles the logic for flipping a card during the 'flipOneCard' game state.
   bool handleFlipOneCardState(
     BuildContext context,
     int playerIndex,
@@ -204,6 +240,7 @@ class GameModel with ChangeNotifier {
     return true;
   }
 
+  /// Handles the logic for flipping and swapping a card during the 'flipAndSwap' game state.
   bool handleFlipAndSwapState(
     BuildContext context,
     int playerIndex,
@@ -219,24 +256,26 @@ class GameModel with ChangeNotifier {
     return true;
   }
 
+  /// Finalizes the current player's action and advances to the next player.
   void finalizeAction(BuildContext context) {
     advanceToNextPlayer(context);
   }
 
+  /// Checks if the current player can perform an action.
   bool canCurrentPlayerAct(int playerIndex) {
     return playerIdPlaying == playerIndex;
   }
 
+  /// Displays a snackbar message indicating that a card is unavailable.
   void notifyCardUnavailable(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
     );
   }
 
+  /// Checks if all cards are revealed for a specific player.
   bool areAllCardRevealed(final int playerIndex) {
-    return players[playerIndex]
-        .cardVisibility
-        .every((visible) => visible); // Access visibility directly
+    return players[playerIndex].cardVisibility.every((visible) => visible);
   }
 
   /// Checks if all players have revealed all their cards.
@@ -249,6 +288,7 @@ class GameModel with ChangeNotifier {
     return true;
   }
 
+  /// Advances the game to the next player's turn.
   void advanceToNextPlayer(BuildContext context) {
     if (isFinalTurn == false) {
       if (areAllCardRevealed(playerIdPlaying)) {
@@ -259,18 +299,14 @@ class GameModel with ChangeNotifier {
     gameState = GameStates.pickCardFromPiles;
   }
 
+  /// Returns a string representing the current game state, including the current player's name
+  /// and the attacker's name if it's the final turn.
   String getGameStateAsString() {
-    /// Name of the currently active player.
     String playersName = getPlayerName(playerIdPlaying);
-
-    /// Name of the player the active player needs to beat in the final round (if applicable).
     String playerAttackerName = getPlayerName(playerIdAttacking);
 
-    /// Base text for the banner message.
     String inputText = 'It\'s your turn $playersName';
 
-    /// Modifies the banner text if it's the final turn, indicating who the active player
-    /// needs to beat.
     if (isFinalTurn) {
       inputText =
           'Final Round. $inputText. You have to beat $playerAttackerName';

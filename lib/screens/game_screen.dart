@@ -7,27 +7,49 @@ import 'package:cards/widgets/player_zone_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+/// Widget for the main game screen.
+///
+/// Displays the game board and player information based on the [GameModel]
+/// provided.  Adapts the layout dynamically to accommodate different screen
+/// sizes, using a wrapping layout for larger screens and a vertical column for
+/// smaller screens.  Manages scrolling to keep the active player visible.
+///
+/// Requires a [GameModel] to be passed in during construction.
 class GameScreen extends StatefulWidget {
+  /// Creates a new GameScreen widget.
+  ///
+  /// [gameModel]: The game model providing the game state and player data.
   const GameScreen({super.key, required this.gameModel});
 
+  /// The game model containing the game state and player data.
   final GameModel gameModel;
+
   @override
   GameScreenState createState() => GameScreenState();
 }
 
 class GameScreenState extends State<GameScreen> {
+  /// Stream subscription for listening to changes in the Firebase database.
   late StreamSubscription _streamSubscription;
+
+  /// Scroll controller for managing the scrolling behavior of the player list.
   late ScrollController _scrollController;
+
+  /// List of GlobalKeys for each player widget, used for scrolling.
   List<GlobalKey> _playerKeys = [];
+
+  /// Flag indicating whether the layout is for a phone-sized screen.
   bool phoneLayout = false;
 
   @override
   void initState() {
     super.initState();
-    initFirebaseListen();
+    _initializeFirebaseListener();
     _scrollController = ScrollController();
+
+    /// Scroll to the active player after the layout is built.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToActivePlayer(widget.gameModel);
+      _scrollToActivePlayer();
     });
   }
 
@@ -44,15 +66,12 @@ class GameScreenState extends State<GameScreen> {
     return Screen(
       title: widget.gameModel.getGameStateAsString(),
       backButton: true,
-      child: _adaptiveLayout(
-        context,
-        widget.gameModel,
-        width,
-      ),
+      child: _adaptiveLayout(width),
     );
   }
 
-  void initFirebaseListen() {
+  /// Initializes the Firebase listener for game state updates.
+  void _initializeFirebaseListener() {
     _streamSubscription = FirebaseDatabase.instance
         .ref('rooms/room1/state')
         .onValue
@@ -69,8 +88,6 @@ class GameScreenState extends State<GameScreen> {
             widget.gameModel.numPlayers,
             (index) => GlobalKey(),
           );
-
-          // update UI
         });
       }
     });
@@ -78,38 +95,31 @@ class GameScreenState extends State<GameScreen> {
 
   /// Adapts the layout based on the screen width.
   ///
-  /// Determines whether to use the desktop/tablet layout or the phone layout
-  /// based on the provided `width`.  Sets the `phoneLayout` flag accordingly,
-  /// which is used to adjust scrolling behavior.
+  /// Uses [ResponsiveBreakpoints] to determine the appropriate layout.
+  /// Sets the [phoneLayout flag for adjusting scrolling behavior.
   ///
   /// Args:
-  ///   context: The BuildContext for the widget.
-  ///   gameModel: The GameModel providing game state data.
   ///   width: The width of the screen.
   ///
   /// Returns:
-  ///   The appropriate layout widget based on the screen width.
-  Widget _adaptiveLayout(
-    BuildContext context,
-    GameModel gameModel,
-    final double width,
-  ) {
+  ///   The appropriate layout widget.
+  Widget _adaptiveLayout(final double width) {
     // DESKTOP or TABLET
     if (width >= ResponsiveBreakpoints.desktop ||
         width >= ResponsiveBreakpoints.tablet) {
-      // Use tablet breakpoint here
       phoneLayout = false;
-      return _layoutForDesktop(context, gameModel);
+      return _layoutForDesktop();
     }
 
     // PHONE
     phoneLayout = true;
-    return _layoutForPhone(context, gameModel);
+    return _layoutForPhone();
   }
 
-  void _scrollToActivePlayer(final GameModel gameModel) {
+  /// Scrolls to the currently active player.
+  void _scrollToActivePlayer() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final int playerIndex = gameModel.playerIdPlaying;
+      final int playerIndex = widget.gameModel.playerIdPlaying;
       if (playerIndex < _playerKeys.length) {
         final RenderBox? containerBox =
             context.findRenderObject() as RenderBox?;
@@ -124,17 +134,14 @@ class GameScreenState extends State<GameScreen> {
               playerBox.localToGlobal(Offset.zero).dy - containerOffset;
           final double offset = _scrollController.offset + playerOffset;
 
-          // Calculate maximum scroll extent
+          // Calculate maximum scroll extent and clamp offset
           final double maxScrollExtent =
               _scrollController.position.maxScrollExtent;
-
-          // Ensure offset is within bounds
           final double targetOffset = (offset - (phoneLayout ? 50 : 100)).clamp(
             0.0,
             maxScrollExtent,
           );
 
-          // Animate to the adjusted offset
           _scrollController.animateTo(
             targetOffset,
             duration: const Duration(milliseconds: 500),
@@ -145,59 +152,33 @@ class GameScreenState extends State<GameScreen> {
     });
   }
 
-  /// Builds the layout for desktop-sized screens.
-  ///
-  /// This layout arranges the player zones in a horizontally wrapping layout
-  /// within a scrollable area. A banner is displayed at the top, providing
-  /// game information.
-  ///
-  /// Args:
-  ///   context: The BuildContext for the widget.
-  ///   gameModel: The GameModel providing game state data.
-  ///
-  /// Returns:
-  ///   A Column widget containing the banner and scrollable player zones.
-  Widget _layoutForDesktop(BuildContext context, GameModel gameModel) {
+  /// Builds the layout for desktop/tablet screens.  Uses a horizontal wrapping layout.
+  Widget _layoutForDesktop() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
         child: SingleChildScrollView(
-          controller: _scrollController, // Controller for scrolling
-          child: _buildPlayersWrapLayout(
-            context,
-            gameModel,
-          ), // Player zones in a wrap layout
+          controller: _scrollController,
+          child: _buildPlayersWrapLayout(),
         ),
       ),
     );
   }
 
-  /// Builds the layout for phone-sized screens.
-  ///
-  /// This layout arranges the player zones vertically within a scrollable column.
-  /// A dense banner is displayed at the top, providing game information.
-  ///
-  /// Args:
-  ///   context: The BuildContext for the widget.
-  ///   gameModel: The GameModel providing game state data.
-  ///
-  /// Returns:
-  ///   A Column widget containing the banner and scrollable player zones.
-  Widget _layoutForPhone(BuildContext context, GameModel gameModel) {
+  /// Builds the layout for phone screens.  Uses a vertical column layout.
+  Widget _layoutForPhone() {
     return SingleChildScrollView(
-      controller: _scrollController, // Controller for scrolling
+      controller: _scrollController,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: List.generate(gameModel.numPlayers, (index) {
+        children: List.generate(widget.gameModel.numPlayers, (index) {
           return Padding(
-            padding: const EdgeInsets.all(
-              8.0,
-            ), // Add padding around each player zone
+            padding: const EdgeInsets.all(8.0),
             child: PlayerZoneWidget(
-              key: _playerKeys[index], // Key for identifying the player zone
-              gameModel: gameModel, // Game state data
-              indexOfPlayer: index, // Index of the player
-              smallDevice: true, // Indicate that this is a small device
+              key: _playerKeys[index],
+              gameModel: widget.gameModel,
+              indexOfPlayer: index,
+              smallDevice: true,
             ),
           );
         }),
@@ -205,29 +186,17 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 
-  /// Builds a horizontally wrapping layout for displaying player zones.
-  ///
-  /// This method generates a list of [PlayerZoneWidget] widgets, one for each player
-  /// in the game. These widgets are then arranged in a [Wrap] layout, allowing
-  /// them to wrap onto multiple rows if necessary, depending on the available
-  /// screen width.  Spacing is added between the player zones for visual clarity.
-  ///
-  /// Args:
-  ///   context: The BuildContext for the widget.
-  ///   gameModel: The GameModel providing game state data.
-  ///
-  /// Returns:
-  ///   A Wrap widget containing the player zones.
-  Widget _buildPlayersWrapLayout(BuildContext context, GameModel gameModel) {
+  /// Builds a horizontally wrapping layout of player zones.
+  Widget _buildPlayersWrapLayout() {
     return Wrap(
-      spacing: 40.0, // Horizontal spacing between player zones
-      runSpacing: 40.0, // Vertical spacing between rows of player zones
-      children: List.generate(gameModel.numPlayers, (index) {
+      spacing: 40.0,
+      runSpacing: 40.0,
+      children: List.generate(widget.gameModel.numPlayers, (index) {
         return PlayerZoneWidget(
-          key: _playerKeys[index], // Key for identifying the player zone
-          gameModel: gameModel, // Game state data
-          indexOfPlayer: index, // Index of the player
-          smallDevice: false, // Indicate that this is not a small device
+          key: _playerKeys[index],
+          gameModel: widget.gameModel,
+          indexOfPlayer: index,
+          smallDevice: false,
         );
       }),
     );
