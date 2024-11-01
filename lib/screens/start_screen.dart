@@ -129,6 +129,7 @@ class StartScreenState extends State<StartScreen> {
                     width: 400,
                     height: 300,
                     child: PlayersInRoomWidget(
+                      name: playerName,
                       playerNames: _playerNames,
                       onRemovePlayer: (String nameToRemove) {
                         removePlayer(nameToRemove);
@@ -172,20 +173,26 @@ class StartScreenState extends State<StartScreen> {
             width: 20,
           ),
           Expanded(
-            child: TextField(
-              controller: controller,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+            child: Expanded(
+              child: TextField(
+                controller: controller,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Type your $label here',
+                  hintStyle: TextStyle(color: Colors.black.withAlpha(100)),
+                  errorText: errorStatus.isEmpty ? null : errorStatus,
+                ),
+                onSubmitted: (String _) => setState(() {
+                  // update UI
+                }),
+                onChanged: (String _) => setState(() {
+                  // update UI
+                }),
               ),
-              decoration: InputDecoration(
-                hintText: 'Type your $label here',
-                errorText: errorStatus.isEmpty ? null : errorStatus,
-              ),
-              onSubmitted: (String _) => setState(() {
-                // update UI
-              }),
             ),
           ),
         ],

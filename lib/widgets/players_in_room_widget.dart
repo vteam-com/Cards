@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class PlayersInRoomWidget extends StatelessWidget {
   const PlayersInRoomWidget({
     super.key,
+    required this.name,
     required this.playerNames,
     required this.onRemovePlayer,
   });
 
+  final String name;
   final List<String> playerNames;
   final Function(String) onRemovePlayer;
 
@@ -19,9 +21,13 @@ class PlayersInRoomWidget extends StatelessWidget {
         child: ListView.builder(
           itemCount: playerNames.length,
           itemBuilder: (context, index) {
+            String nameOfPlayerJoinedAlready = playerNames[index];
+            if (nameOfPlayerJoinedAlready == name) {
+              nameOfPlayerJoinedAlready += ' (YOU)';
+            }
             return ListTile(
               title: Text(
-                playerNames[index],
+                nameOfPlayerJoinedAlready,
                 style: const TextStyle(color: Colors.black, fontSize: 20),
               ),
               trailing: IconButton(
