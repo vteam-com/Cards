@@ -73,7 +73,7 @@ class GameScreenState extends State<GameScreen> {
   /// Initializes the Firebase listener for game state updates.
   void _initializeFirebaseListener() {
     _streamSubscription = FirebaseDatabase.instance
-        .ref('rooms/room1/state')
+        .ref('rooms/${widget.gameModel.gameRoomId}/')
         .onValue
         .listen((event) {
       final DataSnapshot snapshot = event.snapshot;

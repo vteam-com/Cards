@@ -58,7 +58,7 @@ class GameModel with ChangeNotifier {
 
       if (backendReady) {
         final refPlayers =
-            FirebaseDatabase.instance.ref().child('rooms/room1/state');
+            FirebaseDatabase.instance.ref().child('rooms/$gameRoomId');
         refPlayers.set(this.toJson());
       }
     }

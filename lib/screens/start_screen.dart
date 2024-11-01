@@ -34,6 +34,8 @@ class StartScreenState extends State<StartScreen> {
     text: 'KIWI', // Default room name
   );
 
+  String get roomId => _controllerRoom.text.trim().toUpperCase();
+
   /// Placeholder for room name error text.  Currently unused.
   final String _errorTextRoom = '';
 
@@ -62,11 +64,11 @@ class StartScreenState extends State<StartScreen> {
 
         // Safely access and update the player list from the Firebase snapshot.
         if (data != null && data is Map) {
-          final room = data['rooms'] as Map?;
-          if (room != null) {
-            final room1 = room['room1'] as Map?;
-            if (room1 != null) {
-              final players = room1['players'] as List?;
+          final rooms = data['rooms'] as Map?;
+          if (rooms != null) {
+            final room = rooms[roomId] as Map?;
+            if (room != null) {
+              final players = room['invitees'] as List?;
               if (players != null) {
                 setState(() {
                   _playerNames = players.cast<String>().toList();
@@ -208,7 +210,7 @@ class StartScreenState extends State<StartScreen> {
     useFirebase().then((_) {
       FirebaseDatabase.instance
           .ref()
-          .child('rooms/room1/players')
+          .child('rooms/$roomId/invitees')
           .set(_playerNames);
     });
   }
@@ -223,7 +225,7 @@ class StartScreenState extends State<StartScreen> {
   void startGame(BuildContext context) {
     final newGame = GameModel(
       names: _playerNames,
-      gameRoomId: _controllerRoom.text.trim().toUpperCase(),
+      gameRoomId: roomId,
       isNewGame: true,
     );
     Navigator.push(
