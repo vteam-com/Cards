@@ -2,6 +2,23 @@ import 'package:cards/models/card_model.dart';
 export 'package:cards/models/card_model.dart';
 
 class PlayerModel {
+  factory PlayerModel.fromJson(Map<String, dynamic> json) {
+    List<CardModel> hand = [];
+    for (var cardJson in json['hand']) {
+      hand.add(CardModel.fromJson(cardJson));
+    }
+
+    List<bool> cardVisibility = [];
+    for (var visibility in json['cardVisibility']) {
+      cardVisibility.add(visibility);
+    }
+
+    return PlayerModel(
+      name: json['name'],
+    )
+      ..hand = hand
+      ..cardVisibility = cardVisibility;
+  }
   PlayerModel({required this.name});
   final String name;
   int get sumOfRevealedCards => _getSumOfCardsInHand();
@@ -74,5 +91,13 @@ class PlayerModel {
 
   bool areAllTheSameRank(String rank1, String rank2, String rank3) {
     return rank1 == rank2 && rank2 == rank3;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'hand': hand.map((CardModel card) => card.toJson()).toList(),
+      'cardVisibility': cardVisibility,
+    };
   }
 }

@@ -9,16 +9,22 @@ export 'package:cards/models/deck_model.dart';
 export 'package:cards/models/player_model.dart';
 
 class GameModel with ChangeNotifier {
-  GameModel({required final List<String> names, required this.gameRoomId}) {
+  GameModel({
+    required this.gameRoomId,
+    required final List<String> names,
+  }) {
     // Initialize players from the list of names
     for (final String name in names) {
       players.add(PlayerModel(name: name));
     }
     initializeGame();
   }
+
   final String gameRoomId;
+
+  // all things related to game state that needs to be shared/synced across all players
   final List<PlayerModel> players = [];
-  final DeckModel deck = DeckModel();
+  DeckModel deck = DeckModel(1);
   late int currentPlayerIndex;
   late int playerIndexOfAttacker;
   late bool finalTurn;
@@ -29,13 +35,6 @@ class GameModel with ChangeNotifier {
   // Public getter to access the current player states
   CurrentPlayerStates get currentPlayerStates => _currentPlayerStates;
 
-  String getPlayerName(final int index) {
-    if (index == -1) {
-      return 'No one';
-    }
-    return players[index].name;
-  }
-
   // Public setter to modify the current player states
   set currentPlayerStates(CurrentPlayerStates value) {
     if (_currentPlayerStates != value) {
@@ -43,6 +42,49 @@ class GameModel with ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  void fromJson(Map<String, dynamic> json) {
+    final List<dynamic> playersJson = json['players'];
+    players.clear(); // Clear existing players
+    for (final playerJson in playersJson) {
+      players.add(PlayerModel.fromJson(playerJson));
+    }
+    deck = DeckModel.fromJson(json['deck']);
+    currentPlayerIndex = json['currentPlayerIndex'];
+    playerIndexOfAttacker = json['playerIndexOfAttacker'];
+    finalTurn = json['finalTurn'];
+    currentPlayerStates = CurrentPlayerStates.values.firstWhere(
+      (e) => e.toString() == json['currentPlayerStates'],
+      orElse: () => CurrentPlayerStates.pickCardFromPiles,
+    ); // Use a safe default value
+
+    if (json['cardPickedUpFromDeckOrDiscarded'] != null) {
+      cardPickedUpFromDeckOrDiscarded =
+          CardModel.fromJson(json['cardPickedUpFromDeckOrDiscarded']);
+    } else {
+      cardPickedUpFromDeckOrDiscarded = null; // Explicitly handle null
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'players': players.map((player) => player.toJson()).toList(),
+      'deck': deck.toJson(),
+      'currentPlayerIndex': currentPlayerIndex,
+      'playerIndexOfAttacker': playerIndexOfAttacker,
+      'finalTurn': finalTurn,
+      'currentPlayerStates': currentPlayerStates.toString(),
+      'cardPickedUpFromDeckOrDiscarded':
+          cardPickedUpFromDeckOrDiscarded?.toJson(),
+    };
+  }
+
+  String getPlayerName(final int index) {
+    if (index < 0 || index >= players.length) {
+      return 'No one';
+    }
+    return players[index].name;
   }
 
   CardModel? cardPickedUpFromDeckOrDiscarded;

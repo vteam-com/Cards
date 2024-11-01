@@ -1,4 +1,12 @@
 class CardModel {
+  factory CardModel.fromJson(Map<String, dynamic> json) {
+    return CardModel(
+      suit: json['suit'],
+      rank: json['rank'],
+      value: json['value'],
+      partOfSet: json['partOfSet'] ?? false,
+    );
+  }
   CardModel({
     required this.suit,
     required this.rank,
@@ -13,6 +21,15 @@ class CardModel {
   @override
   String toString() {
     return '$rank of $suit';
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'suit': suit,
+      'rank': rank,
+      'value': value,
+      'partOfSet': partOfSet,
+    };
   }
 
   static const List<String> suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];

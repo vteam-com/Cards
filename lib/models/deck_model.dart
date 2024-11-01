@@ -2,6 +2,17 @@ import 'package:cards/models/card_model.dart';
 export 'package:cards/models/card_model.dart';
 
 class DeckModel {
+  DeckModel(this.numberOfDecks);
+
+  factory DeckModel.fromJson(Map<String, dynamic> json) {
+    return DeckModel(json['numberOfDecks'])
+      ..cardsDeckPile = List<CardModel>.from(
+        json['cardsDeckPile'].map((card) => CardModel.fromJson(card)),
+      )
+      ..cardsDeckDiscarded = List<CardModel>.from(
+        json['cardsDeckDiscarded'].map((card) => CardModel.fromJson(card)),
+      );
+  }
   int numberOfDecks = 0;
 
   List<CardModel> cardsDeckPile = [];
@@ -32,4 +43,11 @@ class DeckModel {
 
     cardsDeckPile.shuffle();
   }
+
+  Map<String, dynamic> toJson() => {
+        'numberOfDecks': numberOfDecks,
+        'cardsDeckPile': cardsDeckPile.map((card) => card.toJson()).toList(),
+        'cardsDeckDiscarded':
+            cardsDeckDiscarded.map((card) => card.toJson()).toList(),
+      };
 }
