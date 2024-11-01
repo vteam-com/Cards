@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+bool useAnimation = false;
+
 class BlinkWidget extends StatefulWidget {
   const BlinkWidget({
     super.key,
@@ -41,17 +43,20 @@ class BlinkWidgetState extends State<BlinkWidget>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _animation.value, // Use the same animation for scaling
-          child: Opacity(
-            opacity: _animation.value, // _animation.value),
-            child: widget.child,
-          ),
-        );
-      },
-    );
+    if (useAnimation) {
+      return AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _animation.value, // Use the same animation for scaling
+            child: Opacity(
+              opacity: _animation.value, // _animation.value),
+              child: widget.child,
+            ),
+          );
+        },
+      );
+    }
+    return widget.child;
   }
 }
