@@ -36,14 +36,17 @@ class MyApp extends StatelessWidget {
           labelSmall: TextStyle(color: Colors.white),
         ),
         hintColor: Colors.white70, // Hint text color in TextFields
-        inputDecorationTheme: const InputDecorationTheme(
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white.withAlpha(100), // Light gray background
           hintStyle: TextStyle(color: Colors.white70), // Hint text color
           labelStyle: TextStyle(color: Colors.white), // Label text color
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white54),
+            borderSide:
+                BorderSide(color: Colors.green.withAlpha(100), width: 1.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+            borderSide: BorderSide(color: Colors.yellow, width: 4.0),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
