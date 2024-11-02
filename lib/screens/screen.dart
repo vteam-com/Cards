@@ -21,9 +21,11 @@ class Screen extends StatelessWidget {
     super.key,
     required this.title,
     required this.backButton,
+    this.rightText = '',
     required this.child,
   });
   final String title;
+  final String rightText;
   final Widget child;
   final bool backButton;
 
@@ -41,6 +43,13 @@ class Screen extends StatelessWidget {
             : null,
         title:
             Text(title, style: TextStyle(color: Colors.yellow.withAlpha(200))),
+        actions: [
+          Padding(
+            // Add padding to prevent text from being cut off
+            padding: EdgeInsets.only(right: 8.0), // Adjust as needed
+            child: Text(rightText),
+          ),
+        ],
       ),
       body: Stack(
         children: [

@@ -66,6 +66,8 @@ class GameScreenState extends State<GameScreen> {
     final double width = MediaQuery.of(context).size.width;
     return Screen(
       title: widget.gameModel.getGameStateAsString(),
+      rightText:
+          widget.gameModel.getPlayerName(widget.gameModel.playerIdPlaying),
       backButton: true,
       child: _adaptiveLayout(width),
     );
