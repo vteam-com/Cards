@@ -238,10 +238,23 @@ class StartScreenState extends State<StartScreen> {
     );
   }
 
-  /// Adds the current player to the game.
-  void joinGame(final String nameToAdd) {
-    _playerNames.add(nameToAdd.toUpperCase());
-    setPlayersInRoom(roomId, _playerNames);
+  /// Adds the a player or players to a room.
+  ///
+  /// Takes a comma-separated string of names, converts them to uppercase,
+  /// trims whitespace, and adds them to the list of players.  If the list
+  /// already contains the player's name, it does nothing.  Updates the backend
+  /// with the new player list. After successfully adding the player, the player
+  /// name input field is updated to reflect only the first entered name.
+  void joinGame(final String nameOrNamesToAdd) {
+    if (nameOrNamesToAdd.trim().isNotEmpty) {
+      final names = nameOrNamesToAdd.toUpperCase().split(',');
+      for (final name in names) {
+        _playerNames.add(name.trim());
+      }
+
+      setPlayersInRoom(roomId, _playerNames);
+      _controllerName.text = names.first;
+    }
   }
 
   /// Removes a player from the game.
