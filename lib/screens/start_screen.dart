@@ -5,7 +5,6 @@ import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/players_in_room_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -62,6 +61,8 @@ class StartScreenState extends State<StartScreen> {
   void dispose() {
     // Cancel the Firebase subscription to prevent leaks.
     _streamSubscription?.cancel();
+    _controllerRoom.dispose();
+    _controllerName.dispose();
     super.dispose();
   }
 
@@ -90,72 +91,57 @@ class StartScreenState extends State<StartScreen> {
     });
   }
 
-  Widget loading() {
-    return SizedBox(
-      width: 400,
-      height: 400,
-      child: Center(
-        child: const CupertinoActivityIndicator(
-          radius: 40,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Screen(
+      isWaiting: waitingOnFirstBackendData,
       title: '9 Cards Golf',
       child: SingleChildScrollView(
         child: Center(
-          child: waitingOnFirstBackendData
-              ? loading()
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 600),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        gameInstructions(),
-                        const SizedBox(height: 40),
-                        editBox(
-                          'Room',
-                          _controllerRoom,
-                          () {
-                            _controllerRoom.text =
-                                _controllerRoom.text.toUpperCase();
-                            prepareBackEndForRoom(roomId);
-                          },
-                          _errorTextRoom,
-                        ),
-                        const SizedBox(height: 20),
-                        editBox(
-                          'Name',
-                          _controllerName,
-                          () {
-                            _controllerName.text =
-                                _controllerName.text.toUpperCase();
-                            joinGame(_controllerName.text);
-                          },
-                          _errorTextName,
-                        ),
-                        const SizedBox(height: 20),
-                        actionButton(),
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          width: 400,
-                          height: 300,
-                          child: PlayersInRoomWidget(
-                            name: _playerName,
-                            playerNames: _playerNames.toList(),
-                            onRemovePlayer: removePlayer,
-                          ),
-                        ),
-                      ],
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  gameInstructions(),
+                  const SizedBox(height: 40),
+                  editBox(
+                    'Room',
+                    _controllerRoom,
+                    () {
+                      _controllerRoom.text = _controllerRoom.text.toUpperCase();
+                      prepareBackEndForRoom(roomId);
+                    },
+                    _errorTextRoom,
+                  ),
+                  const SizedBox(height: 20),
+                  editBox(
+                    'Name',
+                    _controllerName,
+                    () {
+                      _controllerName.text = _controllerName.text.toUpperCase();
+                      joinGame(_controllerName.text);
+                    },
+                    _errorTextName,
+                  ),
+                  const SizedBox(height: 20),
+                  actionButton(),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: 400,
+                    height: 300,
+                    child: PlayersInRoomWidget(
+                      name: _playerName,
+                      playerNames: _playerNames.toList(),
+                      onRemovePlayer: removePlayer,
                     ),
                   ),
-                ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

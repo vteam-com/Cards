@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ResponsiveBreakpoints {
@@ -23,11 +24,13 @@ class Screen extends StatelessWidget {
     required this.child,
     this.onRefresh,
     this.rightText = '',
+    required this.isWaiting,
   });
   final String title;
   final String rightText;
   final Widget child;
   final Function? onRefresh;
+  final bool isWaiting;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,9 @@ class Screen extends StatelessWidget {
           if (onRefresh != null)
             IconButton(
               icon: const Icon(Icons.refresh),
-              onPressed: onRefresh!(),
+              onPressed: () {
+                onRefresh!();
+              },
             ),
           if (rightText.isNotEmpty)
             Padding(
@@ -66,11 +71,23 @@ class Screen extends StatelessWidget {
                   color: Colors.green.shade100,
                   fontSize: 20,
                 ), // Your default style
-                child: child,
+                child: isWaiting ? _displayWaiting() : child,
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _displayWaiting() {
+    return SizedBox(
+      width: 400,
+      height: 400,
+      child: Center(
+        child: const CupertinoActivityIndicator(
+          radius: 40,
+        ),
       ),
     );
   }

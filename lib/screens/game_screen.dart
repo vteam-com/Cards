@@ -6,7 +6,7 @@ import 'package:cards/models/game_over_dialog.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/player_zone_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 /// Widget for the main game screen.
 ///
@@ -41,6 +41,7 @@ class GameScreenState extends State<GameScreen> {
 
   /// Flag indicating whether the layout is for a phone-sized screen.
   bool phoneLayout = false;
+  bool isReady = false;
 
   @override
   void initState() {
@@ -65,42 +66,63 @@ class GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return Screen(
+      isWaiting: !isReady,
       title: widget.gameModel.getGameStateAsString(),
       rightText:
           widget.gameModel.getPlayerName(widget.gameModel.playerIdPlaying),
-      onRefresh: () {},
+      onRefresh: onRefresh,
       child: _adaptiveLayout(width),
     );
+  }
+
+  void onRefresh() {
+    setState(() {
+      isReady = false;
+      FirebaseDatabase.instance
+          .ref('rooms/${widget.gameModel.gameRoomId}')
+          .get()
+          .then((final DataSnapshot snapshot) {
+        dataSnapshotToGameModel(snapshot);
+      });
+    });
   }
 
   /// Initializes the Firebase listener for game state updates.
   void _initializeFirebaseListener() {
     _streamSubscription = FirebaseDatabase.instance
-        .ref('rooms/${widget.gameModel.gameRoomId}/')
+        .ref('rooms/${widget.gameModel.gameRoomId}')
         .onValue
-        .listen((event) {
-      final DataSnapshot snapshot = event.snapshot;
-      final Object? data = snapshot.value;
-      if (data != null) {
-        // Convert the data to a Map<String, dynamic>
-        String jsonData = jsonEncode(data);
-        Map<String, dynamic> mapData = jsonDecode(jsonData);
-        widget.gameModel.fromJson(mapData);
-        setState(() {
-          _playerKeys = List.generate(
-            widget.gameModel.numPlayers,
-            (index) => GlobalKey(),
-          );
-          if (widget.gameModel.gameState == GameStates.gameOver) {
-            showGameOverDialog(
-              context,
-              widget.gameModel.players,
-              widget.gameModel.initializeGame,
-            );
-          }
-        });
-      }
+        .listen((DatabaseEvent event) {
+      dataSnapshotToGameModel(event.snapshot);
     });
+  }
+
+  void dataSnapshotToGameModel(final DataSnapshot snapshot) {
+    if (!snapshot.exists) {
+      return;
+    }
+
+    final Object? data = snapshot.value;
+    if (data != null) {
+      // Convert the data to a Map<String, dynamic>
+      String jsonData = jsonEncode(data);
+      Map<String, dynamic> mapData = jsonDecode(jsonData);
+      widget.gameModel.fromJson(mapData);
+      setState(() {
+        _playerKeys = List.generate(
+          widget.gameModel.numPlayers,
+          (index) => GlobalKey(),
+        );
+        if (widget.gameModel.gameState == GameStates.gameOver) {
+          showGameOverDialog(
+            context,
+            widget.gameModel.players,
+            widget.gameModel.initializeGame,
+          );
+        }
+      });
+    }
+    isReady = true;
   }
 
   /// Adapts the layout based on the screen width.
