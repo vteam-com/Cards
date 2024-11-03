@@ -68,7 +68,6 @@ class GameScreenState extends State<GameScreen> {
       title: widget.gameModel.getGameStateAsString(),
       rightText:
           widget.gameModel.getPlayerName(widget.gameModel.playerIdPlaying),
-      backButton: false,
       onRefresh: () {},
       child: _adaptiveLayout(width),
     );

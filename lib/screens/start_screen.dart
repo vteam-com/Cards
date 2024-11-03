@@ -105,7 +105,6 @@ class StartScreenState extends State<StartScreen> {
   @override
   Widget build(BuildContext context) {
     return Screen(
-      backButton: false,
       title: '9 Cards Golf',
       child: SingleChildScrollView(
         child: Center(
@@ -261,7 +260,7 @@ class StartScreenState extends State<StartScreen> {
       gameRoomId: roomId,
       isNewGame: true,
     );
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => GameScreen(gameModel: newGame),

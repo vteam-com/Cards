@@ -20,7 +20,6 @@ class Screen extends StatelessWidget {
   const Screen({
     super.key,
     required this.title,
-    required this.backButton,
     required this.child,
     this.onRefresh,
     this.rightText = '',
@@ -28,21 +27,12 @@ class Screen extends StatelessWidget {
   final String title;
   final String rightText;
   final Widget child;
-  final bool backButton;
   final Function? onRefresh;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: backButton
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            : null,
         title: Text(
           title,
           style: TextStyle(color: Colors.yellow.shade100.withAlpha(200)),
