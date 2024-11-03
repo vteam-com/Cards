@@ -5,7 +5,7 @@ import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/players_in_room_widget.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -27,7 +27,7 @@ class StartScreen extends StatefulWidget {
 
 class StartScreenState extends State<StartScreen> {
   /// Subscription to the Firebase Realtime Database.
-  late StreamSubscription _streamSubscription;
+  StreamSubscription? _streamSubscription;
 
   /// Controller for the room name text field.
   final TextEditingController _controllerRoom = TextEditingController(
@@ -46,46 +46,60 @@ class StartScreenState extends State<StartScreen> {
   final String _errorTextName = '';
 
   /// List of player names currently in the room.
-  List<String> _playerNames = [];
+  Set<String> _playerNames = {};
 
   /// Returns the trimmed player name entered by the user.
-  String get playerName => _controllerName.text.trim();
+  String get _playerName => _controllerName.text.trim();
+  bool waitingOnFirstBackendData = true;
 
   @override
   void initState() {
     super.initState();
-
-    // Set up the Firebase listener after ensuring Firebase is initialized.
-    useFirebase().then((_) {
-      _streamSubscription =
-          FirebaseDatabase.instance.ref().onValue.listen((event) {
-        final DataSnapshot snapshot = event.snapshot;
-        final Object? data = snapshot.value;
-
-        // Safely access and update the player list from the Firebase snapshot.
-        if (data != null && data is Map) {
-          final rooms = data['rooms'] as Map?;
-          if (rooms != null) {
-            final room = rooms[roomId] as Map?;
-            if (room != null) {
-              final players = room['invitees'] as List?;
-              if (players != null) {
-                setState(() {
-                  _playerNames = players.cast<String>().toList();
-                });
-              }
-            }
-          }
-        }
-      });
-    });
+    prepareBackEndForRoom(roomId);
   }
 
   @override
   void dispose() {
     // Cancel the Firebase subscription to prevent leaks.
-    _streamSubscription.cancel();
+    _streamSubscription?.cancel();
     super.dispose();
+  }
+
+  void prepareBackEndForRoom(final String roomId) {
+    waitingOnFirstBackendData = true;
+
+    _streamSubscription?.cancel();
+
+    // First pull
+    useFirebase().then((_) async {
+      final invitees = await getPlayersInRoom(roomId);
+      setState(() {
+        _playerNames = Set.from(invitees);
+        waitingOnFirstBackendData = false;
+      });
+    });
+
+    // Listen for updates
+    useFirebase().then((_) {
+      _streamSubscription = onBackendInviteesUpdated(roomId, (invitees) {
+        setState(() {
+          _playerNames = Set.from(invitees);
+          waitingOnFirstBackendData = false;
+        });
+      });
+    });
+  }
+
+  Widget loading() {
+    return SizedBox(
+      width: 400,
+      height: 400,
+      child: Center(
+        child: const CupertinoActivityIndicator(
+          radius: 40,
+        ),
+      ),
+    );
   }
 
   @override
@@ -95,34 +109,54 @@ class StartScreenState extends State<StartScreen> {
       title: '9 Cards Golf',
       child: SingleChildScrollView(
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  gameInstructions(),
-                  const SizedBox(height: 40),
-                  editBox('Room', _controllerRoom, _errorTextRoom),
-                  const SizedBox(height: 20),
-                  editBox('Name', _controllerName, _errorTextName),
-                  const SizedBox(height: 20),
-                  actionButton(),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: 400,
-                    height: 300,
-                    child: PlayersInRoomWidget(
-                      name: playerName,
-                      playerNames: _playerNames,
-                      onRemovePlayer: removePlayer,
+          child: waitingOnFirstBackendData
+              ? loading()
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        gameInstructions(),
+                        const SizedBox(height: 40),
+                        editBox(
+                          'Room',
+                          _controllerRoom,
+                          () {
+                            _controllerRoom.text =
+                                _controllerRoom.text.toUpperCase();
+                            prepareBackEndForRoom(roomId);
+                          },
+                          _errorTextRoom,
+                        ),
+                        const SizedBox(height: 20),
+                        editBox(
+                          'Name',
+                          _controllerName,
+                          () {
+                            _controllerName.text =
+                                _controllerName.text.toUpperCase();
+                            joinGame(_controllerName.text);
+                          },
+                          _errorTextName,
+                        ),
+                        const SizedBox(height: 20),
+                        actionButton(),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: 400,
+                          height: 300,
+                          child: PlayersInRoomWidget(
+                            name: _playerName,
+                            playerNames: _playerNames.toList(),
+                            onRemovePlayer: removePlayer,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
+                ),
         ),
       ),
     );
@@ -159,6 +193,7 @@ class StartScreenState extends State<StartScreen> {
   Widget editBox(
     final String label,
     final TextEditingController controller,
+    final Function() onSubmitted,
     final String errorStatus,
   ) {
     return Container(
@@ -192,6 +227,10 @@ class StartScreenState extends State<StartScreen> {
                 hintStyle: TextStyle(color: Colors.black.withAlpha(100)),
                 errorText: errorStatus.isEmpty ? null : errorStatus,
               ),
+              onEditingComplete: onSubmitted,
+              onSubmitted: (_) {
+                onSubmitted();
+              },
               onChanged: (_) => setState(() {}),
             ),
           ),
@@ -201,32 +240,24 @@ class StartScreenState extends State<StartScreen> {
   }
 
   /// Adds the current player to the game.
-  void joinGame(BuildContext context) {
-    String nameOfPersonJoining = playerName.toUpperCase();
-    _playerNames.add(nameOfPersonJoining);
-    pushPlayersNamesToFirebase();
-  }
-
-  /// Updates the player list in Firebase.
-  void pushPlayersNamesToFirebase() {
-    useFirebase().then((_) {
-      FirebaseDatabase.instance
-          .ref()
-          .child('rooms/$roomId/invitees')
-          .set(_playerNames);
-    });
+  void joinGame(final String nameToAdd) {
+    _playerNames.add(nameToAdd.toUpperCase());
+    setPlayersInRoom(roomId, _playerNames);
   }
 
   /// Removes a player from the game.
   void removePlayer(final String nameToRemove) {
-    _playerNames = _playerNames.where((name) => name != nameToRemove).toList();
-    pushPlayersNamesToFirebase();
+    // remove the name of player from the list of players
+    _playerNames.remove(nameToRemove);
+
+    // push to back end
+    setPlayersInRoom(roomId, _playerNames);
   }
 
   /// Starts the game and navigates to the game screen.
   void startGame(BuildContext context) {
     final newGame = GameModel(
-      names: _playerNames,
+      names: _playerNames.toList(),
       gameRoomId: roomId,
       isNewGame: true,
     );
@@ -240,10 +271,10 @@ class StartScreenState extends State<StartScreen> {
 
   /// Widget for the "Join Game" or "Start Game" button.
   Widget actionButton() {
-    if (playerName.isEmpty) {
+    if (_playerName.isEmpty) {
       return const Text('Please enter your name above ⬆');
     }
-    bool isPartOfTheList = _playerNames.contains(playerName.toUpperCase());
+    bool isPartOfTheList = _playerNames.contains(_playerName.toUpperCase());
 
     String label = isPartOfTheList
         ? (_playerNames.length > 1
@@ -257,7 +288,7 @@ class StartScreenState extends State<StartScreen> {
             startGame(context);
           }
         } else {
-          joinGame(context);
+          joinGame(_playerName);
         }
       },
       child: Padding(

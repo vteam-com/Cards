@@ -21,13 +21,15 @@ class Screen extends StatelessWidget {
     super.key,
     required this.title,
     required this.backButton,
-    this.rightText = '',
     required this.child,
+    this.onRefresh,
+    this.rightText = '',
   });
   final String title;
   final String rightText;
   final Widget child;
   final bool backButton;
+  final Function? onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +43,22 @@ class Screen extends StatelessWidget {
                 },
               )
             : null,
-        title:
-            Text(title, style: TextStyle(color: Colors.yellow.withAlpha(200))),
+        title: Text(
+          title,
+          style: TextStyle(color: Colors.yellow.shade100.withAlpha(200)),
+        ),
         actions: [
-          Padding(
-            // Add padding to prevent text from being cut off
-            padding: EdgeInsets.only(right: 8.0), // Adjust as needed
-            child: Text(rightText),
-          ),
+          if (onRefresh != null)
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: onRefresh!(),
+            ),
+          if (rightText.isNotEmpty)
+            Padding(
+              // Add padding to prevent text from being cut off
+              padding: EdgeInsets.only(right: 8.0), // Adjust as needed
+              child: Text(rightText),
+            ),
         ],
       ),
       body: Stack(
