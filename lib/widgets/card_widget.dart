@@ -58,7 +58,7 @@ class CardWidget extends StatelessWidget {
           child: Text(
             card.rank,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 40,
               fontWeight: FontWeight.bold,
               color: _getSuitColor(card.suit),
             ),
@@ -70,7 +70,7 @@ class CardWidget extends StatelessWidget {
           child: Text(
             card.value.toString(),
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: _getSuitColor(card.suit),
             ),
