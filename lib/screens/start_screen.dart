@@ -216,7 +216,15 @@ class StartScreenState extends State<StartScreen> {
               onSubmitted: (_) {
                 onSubmitted();
               },
-              onChanged: (_) => setState(() {}),
+              onChanged: (final String text) {
+                final String uppercaseText = text.toUpperCase();
+                controller.value = controller.value.copyWith(
+                  text: uppercaseText,
+                  selection:
+                      TextSelection.collapsed(offset: uppercaseText.length),
+                  composing: TextRange.empty,
+                );
+              },
             ),
           ),
         ],
