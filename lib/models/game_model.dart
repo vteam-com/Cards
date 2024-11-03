@@ -95,6 +95,7 @@ class GameModel with ChangeNotifier {
     return {
       'players': players.map((player) => player.toJson()).toList(),
       'deck': deck.toJson(),
+      'invitees': players.map((player) => player.name).toList(),
       'playerIdPlaying': playerIdPlaying,
       'playerIdAttacking': playerIdAttacking,
       'state': gameState.toString(),
