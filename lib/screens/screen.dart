@@ -36,9 +36,12 @@ class Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          title,
-          style: TextStyle(color: Colors.yellow.shade100.withAlpha(200)),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            title,
+            style: TextStyle(color: Colors.yellow.shade100.withAlpha(200)),
+          ),
         ),
         actions: [
           if (onRefresh != null)
