@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class ResponsiveBreakpoints {
   static const double phone = 600;
@@ -44,6 +45,24 @@ class Screen extends StatelessWidget {
           ),
         ),
         actions: [
+          TextButton(
+            child: Text('Licenses'),
+            onPressed: () async {
+              final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        LicensePage(
+                      applicationName: 'VTeam Cards',
+                      applicationVersion: packageInfo.version,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
           if (onRefresh != null)
             IconButton(
               icon: const Icon(Icons.refresh),

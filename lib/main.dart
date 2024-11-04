@@ -16,13 +16,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cards',
       theme: ThemeData(
-        brightness: Brightness.dark, // Set overall brightness to dark
-        scaffoldBackgroundColor: Colors.green[900], // Dark green background
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.green[900],
         textTheme: const TextTheme(
-          bodyMedium: TextStyle(color: Colors.white), // Default text color
+          bodyMedium: TextStyle(color: Colors.white),
           bodyLarge: TextStyle(color: Colors.white),
-          // ... other text styles you want to customize ...
-          displayLarge: TextStyle(color: Colors.white), // For AppBar titles
+          displayLarge: TextStyle(color: Colors.white),
           displayMedium: TextStyle(color: Colors.white),
           displaySmall: TextStyle(color: Colors.white),
           headlineLarge: TextStyle(color: Colors.white),
@@ -35,12 +34,12 @@ class MyApp extends StatelessWidget {
           labelMedium: TextStyle(color: Colors.white),
           labelSmall: TextStyle(color: Colors.white),
         ),
-        hintColor: Colors.white70, // Hint text color in TextFields
+        hintColor: Colors.white70,
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white.withAlpha(100), // Light gray background
-          hintStyle: TextStyle(color: Colors.white70), // Hint text color
-          labelStyle: TextStyle(color: Colors.white), // Label text color
+          fillColor: Colors.white.withAlpha(100),
+          hintStyle: TextStyle(color: Colors.white70),
+          labelStyle: TextStyle(color: Colors.white),
           enabledBorder: OutlineInputBorder(
             borderSide:
                 BorderSide(color: Colors.green.withAlpha(100), width: 1.0),
@@ -51,27 +50,36 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green[700], // Button background color
-            foregroundColor: Colors.white, // Text color
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ), // Button padding
-            textStyle: const TextStyle(fontSize: 16), // Text style
+            backgroundColor: Colors.green[700],
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            textStyle: const TextStyle(fontSize: 16),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0), // Button border radius
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          // Add TextButtonThemeData
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white, // Text color
+            textStyle: const TextStyle(fontSize: 16), // Text style
+            padding: const EdgeInsets.symmetric(
+                horizontal: 16, vertical: 12), //padding
+            shape: RoundedRectangleBorder(
+              // Rounded corners
+              borderRadius: BorderRadius.circular(8.0),
             ),
           ),
         ),
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.green[900], // Dark green AppBar
+          backgroundColor: Colors.green[900],
           titleTextStyle: const TextStyle(
             color: Colors.white,
             fontSize: 20.0,
             fontWeight: FontWeight.bold,
           ),
-          iconTheme:
-              const IconThemeData(color: Colors.white), // White app bar icons
+          iconTheme: const IconThemeData(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         primaryIconTheme: const IconThemeData(color: Colors.white),
