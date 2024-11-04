@@ -32,14 +32,7 @@ class CardWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: Colors.black.withAlpha(200), width: 1),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 2.0,
-              offset: Offset(2, 2),
-            ),
-          ],
+          border: Border.all(color: Colors.black, width: 1),
         ),
         child: revealed
             ? (card.suit == 'Joker' ? surfaceForJoker() : surfaceReveal())

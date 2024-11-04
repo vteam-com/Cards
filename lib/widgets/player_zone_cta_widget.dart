@@ -105,6 +105,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         buildMiniInstructions(
           true,
           'Tap any of your ↓ cards\nto swap with this →',
+          TextAlign.center,
         ),
         const SizedBox(
           width: 10,
@@ -121,6 +122,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
     return buildMiniInstructions(
       true,
       'Flip open one of your hidden cards',
+      TextAlign.center,
     );
   }
 
@@ -131,7 +133,8 @@ class PlayerZoneCtaWidget extends StatelessWidget {
       children: [
         buildMiniInstructions(
           true,
-          'Draw a card\nfrom\nthe piles ⇉',
+          'Draw\na card\nhere\n→',
+          TextAlign.right,
         ),
         const SizedBox(
           width: 10,
@@ -149,6 +152,14 @@ class PlayerZoneCtaWidget extends StatelessWidget {
             },
           ),
         ),
+        const SizedBox(
+          width: 10,
+        ),
+        buildMiniInstructions(
+          true,
+          'or\nhere\n←',
+          TextAlign.left,
+        ),
       ],
     );
   }
@@ -159,19 +170,24 @@ class PlayerZoneCtaWidget extends StatelessWidget {
       gameModel.areAllCardRevealed(playerIndex)
           ? 'You are done.'
           : 'Wait for your turn :)',
+      TextAlign.center,
     );
   }
 }
 
-Widget buildMiniInstructions(bool isActivePlayer, String text) {
-  final style = TextStyle(
+Widget buildMiniInstructions(
+  bool isActivePlayer,
+  String text,
+  TextAlign align,
+) {
+  final TextStyle style = TextStyle(
     fontSize: 18,
     color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
   );
 
   if (isActivePlayer) {
-    return BlinkingTextWidget(text: text, style: style);
+    return BlinkingTextWidget(text: text, align: align, style: style);
   } else {
-    return Text(text, style: style);
+    return Text(text, textAlign: align, style: style);
   }
 }
