@@ -141,8 +141,13 @@ class StartScreenState extends State<StartScreen> {
                     width: 400,
                     height: 300,
                     child: PlayersInRoomWidget(
-                      name: _playerName,
+                      activePlayerName: _playerName,
                       playerNames: _playerNames.toList(),
+                      onPlayerSelected: (String name) {
+                        setState(() {
+                          _controllerName.text = name;
+                        });
+                      },
                       onRemovePlayer: removePlayer,
                     ),
                   ),
