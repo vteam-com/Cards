@@ -46,6 +46,7 @@ class StartScreenState extends State<StartScreen> {
 
   /// List of player names currently in the room.
   Set<String> _playerNames = {};
+  List<String> _listOfRooms = [];
 
   /// Returns the trimmed player name entered by the user.
   String get _playerName => _controllerName.text.trim();
@@ -82,8 +83,11 @@ class StartScreenState extends State<StartScreen> {
 
     // Listen for updates
     useFirebase().then((_) {
-      _streamSubscription = onBackendInviteesUpdated(roomId, (invitees) {
+      _streamSubscription = onBackendInviteesUpdated(roomId, (invitees) async {
+        final listOfRooms = await getAllRooms();
+
         setState(() {
+          this._listOfRooms = listOfRooms;
           _playerNames = Set.from(invitees);
           waitingOnFirstBackendData = false;
         });
@@ -107,14 +111,18 @@ class StartScreenState extends State<StartScreen> {
                 children: [
                   gameInstructions(),
                   const SizedBox(height: 40),
-                  editBox(
-                    'Room',
-                    _controllerRoom,
-                    () {
-                      _controllerRoom.text = _controllerRoom.text.toUpperCase();
-                      prepareBackEndForRoom(roomId);
-                    },
-                    _errorTextRoom,
+                  Tooltip(
+                    message: _listOfRooms.join('\n'),
+                    child: editBox(
+                      'Room',
+                      _controllerRoom,
+                      () {
+                        _controllerRoom.text =
+                            _controllerRoom.text.toUpperCase();
+                        prepareBackEndForRoom(roomId);
+                      },
+                      _errorTextRoom,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   editBox(

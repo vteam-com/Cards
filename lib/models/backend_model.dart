@@ -85,3 +85,19 @@ List<String> getInviteesFromDataSnapshot(
   }
   return playersNames;
 }
+
+Future<List<String>> getAllRooms() async {
+  final DataSnapshot dataSnapshot =
+      await FirebaseDatabase.instance.ref('rooms').get();
+  final List<String> rooms = [];
+
+  if (dataSnapshot.exists && dataSnapshot.value is Map) {
+    final Map<dynamic, dynamic> data =
+        dataSnapshot.value as Map<dynamic, dynamic>;
+    data.forEach((key, value) {
+      rooms.add(key.toString());
+    });
+  }
+
+  return rooms;
+}
