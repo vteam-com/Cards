@@ -1,6 +1,5 @@
 import 'package:cards/models/card_model.dart';
-import 'package:cards/widgets/card_widget.dart';
-import 'package:cards/widgets/wiggle_widget.dart';
+import 'package:cards/widgets/card_pile_widget.dart';
 import 'package:flutter/material.dart';
 
 class CardPilesWidget extends StatelessWidget {
@@ -10,12 +9,14 @@ class CardPilesWidget extends StatelessWidget {
     required this.cardsDiscardPile,
     required this.onPickedFromDrawPile,
     required this.onPickedFromDiscardPile,
+    required this.revealTopDeckCard,
   });
 
   final List<CardModel> cardsInDrawPile;
   final List<CardModel> cardsDiscardPile;
   final VoidCallback onPickedFromDrawPile;
   final VoidCallback onPickedFromDiscardPile;
+  final bool revealTopDeckCard;
 
   @override
   Widget build(BuildContext context) {
@@ -25,73 +26,31 @@ class CardPilesWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildPileUnplayedCards(),
+          //
+          // Deck pile
+          //
+          CardPileWidget(
+            cards: cardsInDrawPile,
+            cardsAreHidden: true,
+            onDraw: onPickedFromDrawPile,
+            revealTopDeckCard: revealTopDeckCard,
+            wiggleTopCard: !revealTopDeckCard,
+          ),
+          // Gap
           SizedBox(
             width: 8,
           ),
-          _buildPileDiscard(), // Build the discard pile
+          //
+          // Discarded pile
+          //
+          CardPileWidget(
+            cards: cardsInDrawPile,
+            cardsAreHidden: false,
+            onDraw: onPickedFromDiscardPile,
+            revealTopDeckCard: true,
+            wiggleTopCard: !revealTopDeckCard,
+          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPileUnplayedCards() {
-    return Tooltip(
-      message: '${cardsInDrawPile.length} cards',
-      child: SizedBox(
-        width: 140.0,
-        child: GestureDetector(
-          onTap: onPickedFromDrawPile,
-          child: Stack(
-            alignment: Alignment.center,
-            children: List.generate(cardsInDrawPile.length, (index) {
-              double offset =
-                  index.toDouble() * 0.5; // Offset for stacking effect
-              return Positioned(
-                left: offset,
-                top: offset,
-                child: WiggleWidget(
-                  wiggle: index ==
-                      cardsInDrawPile.length - 1, // only the last top card
-                  child: CardWidget(
-                    card: cardsInDrawPile[index],
-                    revealed: false,
-                  ),
-                ),
-              );
-            }),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPileDiscard() {
-    return Tooltip(
-      message: '${cardsDiscardPile.length} cards',
-      child: SizedBox(
-        width: 140.0,
-        child: GestureDetector(
-          onTap: onPickedFromDiscardPile,
-          child: Stack(
-            alignment: Alignment.center,
-            children: List.generate(cardsDiscardPile.length, (index) {
-              double offset = index.toDouble(); // Offset for stacking effect
-              return Positioned(
-                left: offset,
-                top: offset,
-                child: WiggleWidget(
-                  wiggle: index ==
-                      cardsDiscardPile.length - 1, // only the last top card
-                  child: CardWidget(
-                    card: cardsDiscardPile[index],
-                    revealed: true,
-                  ),
-                ),
-              );
-            }),
-          ),
-        ),
       ),
     );
   }

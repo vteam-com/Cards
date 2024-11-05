@@ -141,6 +141,7 @@ class PlayerZoneWidget extends StatelessWidget {
     return WiggleWidget(
       wiggle: isPlayerPlaying &&
           (gameModel.gameState == GameStates.flipAndSwap ||
+              gameModel.gameState == GameStates.keepOrDiscard ||
               (gameModel.gameState == GameStates.flipOneCard && !isVisible)),
       child: GestureDetector(
         onTap: () {

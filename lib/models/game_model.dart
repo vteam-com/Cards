@@ -245,15 +245,15 @@ class GameModel with ChangeNotifier {
     int playerIndex,
     int cardIndex,
   ) {
-    if (gameState != GameStates.flipAndSwap) {
-      return false;
+    if (gameState == GameStates.keepOrDiscard ||
+        gameState == GameStates.flipAndSwap) {
+      players[playerIndex].cardVisibility[cardIndex] = true;
+      swapCard(playerIndex, cardIndex);
+
+      moveToNextPlayer(context);
+      return true;
     }
-
-    players[playerIndex].cardVisibility[cardIndex] = true;
-    swapCard(playerIndex, cardIndex);
-
-    moveToNextPlayer(context);
-    return true;
+    return false;
   }
 
   /// Checks if the current player can perform an action.

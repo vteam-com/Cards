@@ -1,7 +1,7 @@
 import 'package:cards/models/game_model.dart';
+import 'package:cards/widgets/card_pile_widget.dart';
 import 'package:cards/widgets/card_piles_widget.dart';
 import 'package:cards/widgets/card_widget.dart';
-import 'package:cards/widgets/wiggle_widget.dart';
 import 'package:flutter/material.dart';
 
 class PlayerZoneCtaWidget extends StatelessWidget {
@@ -27,7 +27,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
     if (isActivePlayer) {
       switch (gameModel.gameState) {
         case GameStates.keepOrDiscard:
-          return ctaKeepOrDiscard();
+          return ctaSwapOrDiscard();
         case GameStates.flipAndSwap:
           return ctaSwapWithKeptCard();
         case GameStates.flipOneCard:
@@ -41,64 +41,36 @@ class PlayerZoneCtaWidget extends StatelessWidget {
     }
   }
 
-  Widget ctaKeepOrDiscard() {
+  Widget ctaSwapOrDiscard() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Expanded(
-          child: WiggleWidget(
-            wiggle: true,
-            child: ElevatedButton(
-              onPressed: () {
-                gameModel.gameState = GameStates.flipAndSwap;
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: const Text(
-                  'Keep',
-                  style: TextStyle(
-                    // fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
+        FittedBox(
+          fit: BoxFit.cover,
+          child: CardWidget(
+            card: gameModel.selectedCard!,
+            revealed: true,
           ),
         ),
-        const SizedBox(
-          width: 10,
+        buildMiniInstructions(
+          true,
+          GameStates.keepOrDiscard == gameModel.gameState
+              ? 'Discard →\nor\n↓ swap'
+              : 'or\nhere\n←',
+          TextAlign.center,
         ),
-        if (gameModel.selectedCard != null)
-          FittedBox(
-            fit: BoxFit.cover,
-            child: CardWidget(
-              card: gameModel.selectedCard!,
-              revealed: true,
-            ),
-          ),
-        const SizedBox(
-          width: 10,
-        ),
-        Expanded(
-          child: WiggleWidget(
-            wiggle: true,
-            child: ElevatedButton(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: const Text(
-                  'Discard',
-                  style: TextStyle(
-                    // fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              onPressed: () {
-                gameModel.deck.cardsDeckDiscarded.add(gameModel.selectedCard!);
-                gameModel.selectedCard = null;
-                gameModel.gameState = GameStates.flipOneCard;
-              },
-            ),
+        FittedBox(
+          fit: BoxFit.cover,
+          child: CardPileWidget(
+            cards: gameModel.deck.cardsDeckDiscarded,
+            onDraw: () {
+              gameModel.deck.cardsDeckDiscarded.add(gameModel.selectedCard!);
+              gameModel.selectedCard = null;
+              gameModel.gameState = GameStates.flipOneCard;
+            },
+            cardsAreHidden: false,
+            wiggleTopCard: true,
+            revealTopDeckCard: true,
           ),
         ),
       ],
@@ -138,11 +110,12 @@ class PlayerZoneCtaWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       children: [
-        buildMiniInstructions(
-          true,
-          'Draw\na card\nhere\n→',
-          TextAlign.left,
-        ),
+        if (GameStates.keepOrDiscard != gameModel.gameState)
+          buildMiniInstructions(
+            true,
+            'Draw\na card\nhere\n→',
+            TextAlign.left,
+          ),
         const SizedBox(
           width: 10,
         ),
@@ -150,6 +123,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           fit: BoxFit.scaleDown,
           child: CardPilesWidget(
             cardsInDrawPile: gameModel.deck.cardsDeckPile,
+            revealTopDeckCard: gameModel.gameState == GameStates.keepOrDiscard,
             cardsDiscardPile: gameModel.deck.cardsDeckDiscarded,
             onPickedFromDrawPile: () {
               gameModel.drawCard(context, fromDiscardPile: false);
@@ -164,7 +138,9 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         ),
         buildMiniInstructions(
           true,
-          'or\nhere\n←',
+          GameStates.keepOrDiscard == gameModel.gameState
+              ? '← Discard\nor\n↓ swap'
+              : 'or\nhere\n←',
           TextAlign.right,
         ),
       ],
