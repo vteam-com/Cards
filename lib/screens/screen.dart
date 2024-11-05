@@ -46,6 +46,9 @@ class Screen extends StatelessWidget {
           ),
         ),
         actions: [
+          ///
+          /// VERSION & LICENSES
+          ///
           TextButton(
             child: Text(version),
             onPressed: () async {
@@ -63,6 +66,10 @@ class Screen extends StatelessWidget {
               }
             },
           ),
+
+          ///
+          /// REFRESH
+          ///
           if (onRefresh != null)
             IconButton(
               icon: const Icon(Icons.refresh),
@@ -70,11 +77,16 @@ class Screen extends StatelessWidget {
                 onRefresh!();
               },
             ),
+
+          /// RIGHT SIDE TEXT (User Name)
           if (rightText.isNotEmpty)
             Padding(
               // Add padding to prevent text from being cut off
               padding: EdgeInsets.only(right: 8.0), // Adjust as needed
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
               child: Text(rightText),
+              ),
             ),
         ],
       ),
