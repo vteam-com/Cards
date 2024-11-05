@@ -14,6 +14,7 @@ class GameModel with ChangeNotifier {
   /// [isNewGame] indicates whether this is a new game or joining an existing one.
   GameModel({
     required this.gameRoomId,
+    required this.loginUserName,
     required final List<String> names,
     bool isNewGame = false,
   }) {
@@ -28,6 +29,9 @@ class GameModel with ChangeNotifier {
 
   /// The ID of the game room.
   final String gameRoomId;
+
+  /// The name of the person running the app.
+  final String loginUserName;
 
   /// List of players in the game.
   final List<PlayerModel> players = [];
@@ -296,7 +300,9 @@ class GameModel with ChangeNotifier {
     String playersName = getPlayerName(playerIdPlaying);
     String playerAttackerName = getPlayerName(playerIdAttacking);
 
-    String inputText = 'It\'s your turn $playersName';
+    String inputText = playersName == loginUserName
+        ? 'It\'s your turn $playersName'
+        : 'It\'s $playersName\'s turn';
 
     if (isFinalTurn) {
       inputText =

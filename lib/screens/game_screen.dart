@@ -63,18 +63,35 @@ class GameScreenState extends State<GameScreen> {
   }
 
   @override
+
+  /// Builds the widget for the game screen.
+  ///
+  /// Determines the screen width using [MediaQuery] and selects an appropriate
+  /// layout based on the width.  Wraps the layout in a [Screen] widget
+  /// which provides a title, active player display, and refresh functionality.  The
+  /// displayed title reflects the current game state. A loading indicator is shown
+  /// while the game data is being fetched.
+  ///
+  /// Returns:
+  ///   The widget tree for the game screen.
+  @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return Screen(
       isWaiting: !isReady,
       title: widget.gameModel.getGameStateAsString(),
-      rightText:
-          widget.gameModel.getPlayerName(widget.gameModel.playerIdPlaying),
+      rightText: widget.gameModel.loginUserName,
       onRefresh: onRefresh,
       child: _adaptiveLayout(width),
     );
   }
 
+  /// Refreshes the game state by fetching the latest data from Firebase.
+  ///
+  /// Sets the loading state to true, retrieves the game data from the
+  /// corresponding Firebase node, and then updates the game model with
+  /// the retrieved data.  Finally, sets the loading state back to false
+  /// after the data has been processed.
   void onRefresh() {
     setState(() {
       isReady = false;

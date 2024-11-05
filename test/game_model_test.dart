@@ -14,6 +14,7 @@ void main() {
     setUp(() {
       mockContext = MockBuildContext();
       gameModel = GameModel(
+        loginUserName: 'Player 1',
         names: ['Player 1', 'Player 2'],
         gameRoomId: 'testRoom',
         isNewGame: true,
@@ -28,8 +29,8 @@ void main() {
         reason: 'Discard pile should have 1 card in it',
       );
 
-      gameModel.gameState =
-          GameStates.pickCardFromPiles; // Set the state to allow drawing
+      // Set the state enable draw of a card
+      gameModel.gameState = GameStates.pickCardFromPiles;
 
       // Act
       gameModel.drawCard(mockContext, fromDiscardPile: true);

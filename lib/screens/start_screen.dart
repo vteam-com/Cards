@@ -309,6 +309,7 @@ class StartScreenState extends State<StartScreen> {
   /// Starts the game and navigates to the game screen.
   void startGame(BuildContext context) {
     final newGame = GameModel(
+      loginUserName: _controllerName.text.toUpperCase(),
       names: _playerNames.toList(),
       gameRoomId: roomId,
       isNewGame: true,
