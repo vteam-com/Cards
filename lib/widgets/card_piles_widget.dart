@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cards/models/card_model.dart';
 import 'package:cards/widgets/card_widget.dart';
 import 'package:cards/widgets/wiggle_widget.dart';
@@ -31,7 +29,7 @@ class CardPilesWidget extends StatelessWidget {
           SizedBox(
             width: 8,
           ),
-          WiggleWidget(child: _buildPileDiscard()), // Build the discard pile
+          _buildPileDiscard(), // Build the discard pile
         ],
       ),
     );
@@ -46,13 +44,15 @@ class CardPilesWidget extends StatelessWidget {
           onTap: onPickedFromDrawPile,
           child: Stack(
             alignment: Alignment.center,
-            children: List.generate(min(20, cardsInDrawPile.length), (index) {
-              double offset = index.toDouble(); // Offset for stacking effect
+            children: List.generate(cardsInDrawPile.length, (index) {
+              double offset =
+                  index.toDouble() * 0.5; // Offset for stacking effect
               return Positioned(
                 left: offset,
                 top: offset,
                 child: WiggleWidget(
-                  wiggle: index == 19, // only the last top card
+                  wiggle: index ==
+                      cardsInDrawPile.length - 1, // only the last top card
                   child: CardWidget(
                     card: cardsInDrawPile[index],
                     revealed: false,
@@ -70,19 +70,23 @@ class CardPilesWidget extends StatelessWidget {
     return Tooltip(
       message: '${cardsDiscardPile.length} cards',
       child: SizedBox(
-        width: 110.0,
+        width: 140.0,
         child: GestureDetector(
           onTap: onPickedFromDiscardPile,
           child: Stack(
             alignment: Alignment.center,
-            children: List.generate(min(10, cardsDiscardPile.length), (index) {
+            children: List.generate(cardsDiscardPile.length, (index) {
               double offset = index.toDouble(); // Offset for stacking effect
               return Positioned(
                 left: offset,
                 top: offset,
-                child: CardWidget(
-                  card: cardsDiscardPile[index],
-                  revealed: true,
+                child: WiggleWidget(
+                  wiggle: index ==
+                      cardsDiscardPile.length - 1, // only the last top card
+                  child: CardWidget(
+                    card: cardsDiscardPile[index],
+                    revealed: true,
+                  ),
                 ),
               );
             }),

@@ -141,7 +141,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         buildMiniInstructions(
           true,
           'Draw\na card\nhere\n→',
-          TextAlign.right,
+          TextAlign.left,
         ),
         const SizedBox(
           width: 10,
@@ -165,7 +165,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         buildMiniInstructions(
           true,
           'or\nhere\n←',
-          TextAlign.left,
+          TextAlign.right,
         ),
       ],
     );
