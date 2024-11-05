@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cards/models/card_model.dart';
 import 'package:cards/widgets/card_widget.dart';
+import 'package:cards/widgets/wiggle_widget.dart';
 import 'package:flutter/material.dart';
 
 class CardPilesWidget extends StatelessWidget {
@@ -30,7 +31,7 @@ class CardPilesWidget extends StatelessWidget {
           SizedBox(
             width: 8,
           ),
-          _buildPileDiscard(), // Build the discard pile
+          WiggleWidget(child: _buildPileDiscard()), // Build the discard pile
         ],
       ),
     );
@@ -50,9 +51,12 @@ class CardPilesWidget extends StatelessWidget {
               return Positioned(
                 left: offset,
                 top: offset,
-                child: CardWidget(
-                  card: cardsInDrawPile[index],
-                  revealed: false,
+                child: WiggleWidget(
+                  wiggle: index == 19, // only the last top card
+                  child: CardWidget(
+                    card: cardsInDrawPile[index],
+                    revealed: false,
+                  ),
                 ),
               );
             }),

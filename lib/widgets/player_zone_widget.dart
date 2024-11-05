@@ -3,6 +3,7 @@ import 'package:cards/models/game_model.dart';
 import 'package:cards/widgets/card_widget.dart';
 import 'package:cards/widgets/player_header_widget.dart';
 import 'package:cards/widgets/player_zone_cta_widget.dart';
+import 'package:cards/widgets/wiggle_widget.dart';
 import 'package:flutter/material.dart';
 
 class PlayerZoneWidget extends StatelessWidget {
@@ -15,10 +16,10 @@ class PlayerZoneWidget extends StatelessWidget {
   final GameModel gameModel;
   final int indexOfPlayer;
   final bool smallDevice;
+  bool get isPlayerPlaying => gameModel.playerIdPlaying == indexOfPlayer;
 
   @override
   Widget build(BuildContext context) {
-    final bool isPlayerPlaying = gameModel.playerIdPlaying == indexOfPlayer;
     final PlayerModel player = gameModel.players[indexOfPlayer];
 
     return Container(
@@ -137,13 +138,18 @@ class PlayerZoneWidget extends StatelessWidget {
     final bool isVisible =
         gameModel.players[playerIndex].cardVisibility[gridIndex];
     final CardModel card = gameModel.players[playerIndex].hand[gridIndex];
-    return GestureDetector(
-      onTap: () {
-        gameModel.revealCard(context, playerIndex, gridIndex);
-      },
-      child: CardWidget(
-        card: card,
-        revealed: isVisible,
+    return WiggleWidget(
+      wiggle: isPlayerPlaying &&
+          (gameModel.gameState == GameStates.flipAndSwap ||
+              (gameModel.gameState == GameStates.flipOneCard && !isVisible)),
+      child: GestureDetector(
+        onTap: () {
+          gameModel.revealCard(context, playerIndex, gridIndex);
+        },
+        child: CardWidget(
+          card: card,
+          revealed: isVisible,
+        ),
       ),
     );
   }

@@ -1,8 +1,7 @@
 import 'package:cards/models/game_model.dart';
-import 'package:cards/widgets/blink_widget.dart';
-import 'package:cards/widgets/blinking_text_widget.dart';
 import 'package:cards/widgets/card_piles_widget.dart';
 import 'package:cards/widgets/card_widget.dart';
+import 'package:cards/widgets/wiggle_widget.dart';
 import 'package:flutter/material.dart';
 
 class PlayerZoneCtaWidget extends StatelessWidget {
@@ -47,18 +46,22 @@ class PlayerZoneCtaWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Expanded(
-          child: BlinkWidget(
+          child: WiggleWidget(
+            wiggle: true,
             child: ElevatedButton(
-              child: const Text(
-                '\nKeep\n',
-                style: TextStyle(
-                  // fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               onPressed: () {
                 gameModel.gameState = GameStates.flipAndSwap;
               },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: const Text(
+                  'Keep',
+                  style: TextStyle(
+                    // fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -77,13 +80,17 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           width: 10,
         ),
         Expanded(
-          child: BlinkWidget(
+          child: WiggleWidget(
+            wiggle: true,
             child: ElevatedButton(
-              child: const Text(
-                '\nDiscard\n',
-                style: TextStyle(
-                  // fontSize: 14,
-                  fontWeight: FontWeight.bold,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: const Text(
+                  'Discard',
+                  style: TextStyle(
+                    // fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               onPressed: () {
@@ -185,9 +192,5 @@ Widget buildMiniInstructions(
     color: Colors.white.withAlpha(isActivePlayer ? 255 : 140),
   );
 
-  if (isActivePlayer) {
-    return BlinkingTextWidget(text: text, align: align, style: style);
-  } else {
-    return Text(text, textAlign: align, style: style);
-  }
+  return Text(text, textAlign: align, style: style);
 }
