@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-const version = '1.0.7';
+const version = '1.0.8';
 
 class ResponsiveBreakpoints {
   static const double phone = 600;
@@ -85,7 +85,7 @@ class Screen extends StatelessWidget {
               padding: EdgeInsets.only(right: 8.0), // Adjust as needed
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-              child: Text(rightText),
+                child: Text(rightText),
               ),
             ),
         ],
