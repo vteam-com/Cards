@@ -244,15 +244,18 @@ class CardWidget extends StatelessWidget {
         break;
       case 9:
         positions = [
-          Offset(0, -40),
-          Offset(-20, -20),
-          Offset(20, -20),
+          // left
+          Offset(-20, -30),
           Offset(-20, 0),
-          Offset(20, 0),
+          Offset(-20, 30),
+          // center
+          Offset(0, -30),
           Offset(0, 0),
-          Offset(-20, 20),
-          Offset(20, 20),
-          Offset(0, 40),
+          Offset(0, 30),
+          // right
+          Offset(20, -30),
+          Offset(20, 0),
+          Offset(20, 30),
         ];
         break;
       case 10:
