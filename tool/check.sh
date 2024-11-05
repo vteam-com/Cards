@@ -11,3 +11,4 @@ dart format .
 flutter test
 
 tool/graph.sh
+tool/layers.sh
