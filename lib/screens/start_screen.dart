@@ -55,7 +55,7 @@ class StartScreenState extends State<StartScreen> {
   @override
   void initState() {
     super.initState();
-    prepareBackEndForRoom(roomId);
+    _processUrlArguments();
   }
 
   @override
@@ -65,6 +65,39 @@ class StartScreenState extends State<StartScreen> {
     _controllerRoom.dispose();
     _controllerName.dispose();
     super.dispose();
+  }
+
+  void _processUrlArguments() {
+    // Example URL: https://your-app-url?room=MYROOM&players=PLAYER1,PLAYER2
+    final uri = Uri.parse(Uri.base.toString());
+    final roomFromUrl = uri.queryParameters['room'];
+    final playersFromUrl = uri.queryParameters['players'];
+
+    if (roomFromUrl != null) {
+      _controllerRoom.text = roomFromUrl.toUpperCase();
+    }
+
+    if (playersFromUrl != null) {
+      final playerNames = playersFromUrl
+          .toUpperCase()
+          .split(',')
+          .map((name) => name.trim())
+          .toList();
+      _controllerName.text =
+          playerNames.first; // Set the first player as the default name
+      _playerNames = playerNames
+          .toSet(); // or joinGame(playersFromUrl) after initial data load
+
+      //Delay setting players in room until after initial data load completes
+      Future.delayed(Duration.zero, () async {
+        await useFirebase(); // Ensure Firebase is initialized
+        setPlayersInRoom(roomId, _playerNames); // Update backend with players
+      });
+    }
+
+    prepareBackEndForRoom(
+      roomId,
+    ); // Initialize backend connection after processing URL arguments.
   }
 
   void prepareBackEndForRoom(final String roomId) {
