@@ -69,16 +69,26 @@ class CardWidget extends StatelessWidget {
             ),
           ),
         ),
-        Center(
-          child: Text(
-            _getSuitSymbol(card.suit),
-            style: TextStyle(
-              fontSize: 20,
-              color: _getSuitColor(card.suit),
-            ),
+        ..._buildSuitSymbols(), // Spread the list of suit symbols
+      ],
+    );
+  }
+
+  Widget angleText(final String text, final Color color) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Transform.rotate(
+        angle: -45 * 3.14159265 / 180, // Converts degrees to radians
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 24,
+            color: color,
+            fontWeight: FontWeight.bold,
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -87,23 +97,7 @@ class CardWidget extends StatelessWidget {
     Color color = card.rank == 'Black' ? Colors.black : Colors.red;
     return Stack(
       children: [
-        Center(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Transform.rotate(
-              angle: -45 * 3.14159265 / 180, // Converts degrees to radians
-              child: Text(
-                'Joker',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ),
+        Center(child: angleText('Joker', color)),
         Positioned(
           bottom: 4,
           right: 4,
@@ -145,6 +139,167 @@ class CardWidget extends StatelessWidget {
       default:
         return '';
     }
+  }
+
+  Widget _buildSuitSymbol({final double size = 18}) {
+    return Text(
+      _getSuitSymbol(card.suit),
+      style: TextStyle(
+        fontSize: size,
+        color: _getSuitColor(card.suit),
+      ),
+    );
+  }
+
+  List<Widget> _buildSuitSymbols() {
+    List<Widget> symbols = [];
+    int numSymbols = card.value;
+
+    // Layout for number cards 2 to 10
+    List<Offset> positions;
+    switch (numSymbols) {
+      case 0: // King
+        return [figureCards('♚')];
+      case 12:
+        return [figureCards('♛')];
+      case 11:
+        return [figureCards('♝')];
+
+      case 1:
+        return [Center(child: _buildSuitSymbol(size: 30))];
+      case 2:
+        positions = [Offset(0, -30), Offset(0, 30)];
+        break;
+      case 3:
+        positions = [
+          Offset(0, -30),
+          Offset(0, 0),
+          Offset(0, 30),
+        ];
+        break;
+      case 4:
+        positions = [
+          Offset(-20, -20),
+          Offset(20, -20),
+          Offset(-20, 20),
+          Offset(20, 20),
+        ];
+        break;
+      case 5:
+        positions = [
+          // top
+          Offset(0, 0),
+
+          // left
+          Offset(-20, -20),
+          Offset(-20, 20),
+
+          // right
+          Offset(20, -20),
+          Offset(20, 20),
+        ];
+        break;
+      case 6:
+        positions = [
+          // left column
+          Offset(-15, -30),
+          Offset(-15, 0),
+          Offset(-15, 30),
+
+          // right column
+          Offset(20, -30),
+          Offset(20, 0),
+          Offset(20, 30),
+        ];
+        break;
+      case 7:
+        positions = [
+          // left
+          Offset(-20, -30),
+          Offset(-20, 0),
+          Offset(-20, 30),
+          // center
+          Offset(0, 0),
+          // right
+          Offset(20, -30),
+          Offset(20, 0),
+          Offset(20, 30),
+        ];
+        break;
+      case 8:
+        positions = [
+          // top row
+          Offset(-20, -30),
+          Offset(20, -30),
+          // second
+          Offset(-20, -10),
+          Offset(20, -10),
+          // third
+          Offset(-20, 10),
+          Offset(20, 10),
+          // last
+          Offset(-20, 30),
+          Offset(20, 30),
+        ];
+        break;
+      case 9:
+        positions = [
+          Offset(0, -40),
+          Offset(-20, -20),
+          Offset(20, -20),
+          Offset(-20, 0),
+          Offset(20, 0),
+          Offset(0, 0),
+          Offset(-20, 20),
+          Offset(20, 20),
+          Offset(0, 40),
+        ];
+        break;
+      case 10:
+        positions = [
+          // Left column
+          Offset(-20, -30),
+          Offset(-20, -10),
+          Offset(-20, 10),
+          Offset(-20, 30),
+          Offset(-20, 50),
+
+          // right column
+          Offset(20, -50),
+          Offset(20, -30),
+          Offset(20, -10),
+          Offset(20, 10),
+          Offset(20, 30),
+        ];
+        break;
+      default:
+        positions = [];
+    }
+
+    for (final Offset position in positions) {
+      symbols.add(
+        Positioned(
+          left: 40 + position.dx, // Adjust 50 to center horizontally
+          top: 70 + position.dy, // Adjust 75 to center vertically
+          child: _buildSuitSymbol(),
+        ),
+      );
+    }
+
+    return symbols;
+  }
+
+  Widget figureCards(final String text) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 30.0),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: _getSuitColor(card.suit), fontSize: 60),
+        ),
+      ),
+    );
   }
 
   /// Returns the color associated with the suit string.
