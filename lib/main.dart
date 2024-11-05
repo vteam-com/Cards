@@ -87,6 +87,7 @@ class MyApp extends StatelessWidget {
         primaryIconTheme: const IconThemeData(color: Colors.white),
       ),
       home: const StartScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
