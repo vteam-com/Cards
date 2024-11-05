@@ -51,7 +51,7 @@ class StartScreenState extends State<StartScreen> {
   /// Returns the trimmed player name entered by the user.
   String get _playerName => _controllerName.text.trim();
   bool waitingOnFirstBackendData = true;
-
+  bool _isExpandedRules = false;
   @override
   void initState() {
     super.initState();
@@ -138,12 +138,12 @@ class StartScreenState extends State<StartScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
+              constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  gameInstructions(),
-                  const SizedBox(height: 40),
+                  IntrinsicHeight(child: gameInstructions()),
+                  const SizedBox(height: 20),
                   Tooltip(
                     message: _listOfRooms.join('\n'),
                     child: editBox(
@@ -171,7 +171,6 @@ class StartScreenState extends State<StartScreen> {
                   actionButton(),
                   const SizedBox(height: 20),
                   SizedBox(
-                    width: 400,
                     height: 300,
                     child: PlayersInRoomWidget(
                       activePlayerName: _playerName,
@@ -194,29 +193,41 @@ class StartScreenState extends State<StartScreen> {
   }
 
   Widget gameInstructions() {
-    return SizedBox(
-      height: 200,
-      child: Markdown(
-        selectable: true,
-        data: '### Game Rules'
-            '\n- Aim for the lowest possible score.'
-            '\n- Choose a card from either the Deck or Discard pile.'
-            '\n- Swap the chosen card with a card in your 3x3 grid, or discard it and flip over one of your face-down cards.'
-            '\n- Three cards of the same rank in a row or column score zero.'
-            '\n- The first player to reveal all nine cards challenges others, claiming the lowest score.'
-            '\n- If someone else has an equal or lower score, the challenger doubles their points!'
-            '\n- Players are eliminated after busting 100 points.'
-            '\n'
-            '\n'
-            'Learn more [Wikipedia](https://en.wikipedia.org/wiki/Golf_(card_game))',
-        onTapLink: (text, href, title) async {
-          if (href != null) {
-            await launchUrlString(
-              href,
-            ); // Use launchUrlString directly with the href string
-          }
-        },
+    return ExpansionTile(
+      initiallyExpanded: _isExpandedRules,
+      onExpansionChanged: (bool expanded) {
+        setState(() {
+          _isExpandedRules = expanded;
+        });
+      },
+      title: Text(
+        'Game Rules',
+        style: TextStyle(fontSize: 20, color: Colors.green.shade100),
       ),
+      children: <Widget>[
+        SizedBox(
+          height: 500,
+          child: Markdown(
+            selectable: true,
+            styleSheet: MarkdownStyleSheet(textScaler: TextScaler.linear(1.2)),
+            data: '- Aim for the lowest score.'
+                '\n- Choose a card from either the Deck or Discard pile.'
+                '\n- Swap the chosen card with a card in your 3x3 grid, or discard it and flip over one of your face-down cards.'
+                '\n- Three cards of the same rank in a row or column score zero.'
+                '\n- The first player to reveal all nine cards challenges others, claiming the lowest score.'
+                '\n- If someone else has an equal or lower score, the challenger doubles their points!'
+                '\n- Players are eliminated after busting 100 points.'
+                '\n'
+                '\n'
+                'Learn more [Wikipedia](https://en.wikipedia.org/wiki/Golf_(card_game))',
+            onTapLink: (text, href, title) async {
+              if (href != null) {
+                await launchUrlString(href);
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 
