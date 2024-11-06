@@ -1,13 +1,22 @@
 import 'dart:async';
 
-import 'package:cards/firebase_options_private.dart';
+import 'package:cards/models/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 bool backendReady = false;
 
+bool get isRunningOffLine =>
+    DefaultFirebaseOptions.currentPlatform.apiKey == 'YOUR_API_KEY';
+
 Future<void> useFirebase() async {
+  if (isRunningOffLine) {
+    print('---------------------');
+    print('RUNNING OFFLINE');
+    print('---------------------');
+    return;
+  }
   try {
     if (backendReady == false) {
       await Firebase.initializeApp(

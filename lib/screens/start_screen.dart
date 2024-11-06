@@ -52,6 +52,7 @@ class StartScreenState extends State<StartScreen> {
   String get _playerName => _controllerName.text.trim();
   bool waitingOnFirstBackendData = true;
   bool _isExpandedRules = false;
+
   @override
   void initState() {
     super.initState();
@@ -101,6 +102,11 @@ class StartScreenState extends State<StartScreen> {
   }
 
   void prepareBackEndForRoom(final String roomId) {
+    if (isRunningOffLine) {
+      waitingOnFirstBackendData = false;
+      return;
+    }
+
     waitingOnFirstBackendData = true;
 
     _streamSubscription?.cancel();
