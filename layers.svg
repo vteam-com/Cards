@@ -301,19 +301,19 @@ url_launcher</title>
   </g>
   <g id='Labels_cards'>
     <text class="nodeName" x="150" y="75" font-size="120%">cards</text>
-    <text class="nodeName" x="150" y="95" font-size="80%">1.0.9</text>
+    <text class="nodeName" x="150" y="95" font-size="80%">1.1.1</text>
   </g>
   <g id='Labels_firebase_auth'>
     <text class="nodeName" x="750" y="225" font-size="120%">firebase_auth</text>
-    <text class="nodeName" x="750" y="245" font-size="80%">5.3.1</text>
+    <text class="nodeName" x="750" y="245" font-size="80%">5.3.2</text>
   </g>
   <g id='Labels_firebase_core'>
     <text class="nodeName" x="150" y="375" font-size="120%">firebase_core</text>
-    <text class="nodeName" x="150" y="395" font-size="80%">3.6.0</text>
+    <text class="nodeName" x="150" y="395" font-size="80%">3.7.0</text>
   </g>
   <g id='Labels_firebase_database'>
     <text class="nodeName" x="1050" y="225" font-size="120%">firebase_database</text>
-    <text class="nodeName" x="1050" y="245" font-size="80%">11.1.4</text>
+    <text class="nodeName" x="1050" y="245" font-size="80%">11.1.5</text>
   </g>
   <g id='Labels_flutter_markdown'>
     <text class="nodeName" x="1350" y="225" font-size="120%">flutter_markdown</text>

@@ -50,7 +50,7 @@ A Flutter base Multiplayer Card Game.
 ## Firebase
 
 - Edit and update the file ```firebase_options.dart``` with your firebase project details.
-- or Run this command to generate new private API for your deployement ```flutterfire configure```
+- or Run this command to generate new private API for your deployment ```flutterfire configure```
 
 ## Contributing
 

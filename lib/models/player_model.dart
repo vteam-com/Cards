@@ -33,6 +33,11 @@ class PlayerModel {
   void revealInitialCards() {
     cardVisibility[3] = true; // Access visibility directly
     cardVisibility[5] = true; // Access visibility directly
+    // cardVisibility[1] = true; // Access visibility directly
+    // cardVisibility[2] = true; // Access visibility directly
+    // cardVisibility[4] = true; // Access visibility directly
+    // cardVisibility[6] = true; // Access visibility directly
+    // cardVisibility[7] = true; // Access visibility directly
   }
 
   int _getSumOfCardsInHand() {

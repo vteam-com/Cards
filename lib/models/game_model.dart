@@ -206,8 +206,9 @@ class GameModel with ChangeNotifier {
 
     if (handleFlipOneCardState(context, playerIndex, cardIndex) ||
         handleFlipAndSwapState(context, playerIndex, cardIndex)) {
+      moveToNextPlayer(context);
+
       if (this.isFinalTurn) {
-        revealAllRemainingCardsFor(playerIndex);
         if (areAllCardsFromHandsRevealed()) {
           gameState = GameStates.gameOver;
         }
@@ -231,7 +232,6 @@ class GameModel with ChangeNotifier {
     // reveal the card
     players[playerIndex].cardVisibility[cardIndex] = true;
 
-    moveToNextPlayer(context);
     return true;
   }
 
@@ -250,7 +250,6 @@ class GameModel with ChangeNotifier {
         cardIndex,
       );
 
-      moveToNextPlayer(context);
       return true;
     }
     return false;
@@ -285,8 +284,11 @@ class GameModel with ChangeNotifier {
 
   /// Advances the game to the next player's turn.
   void moveToNextPlayer(BuildContext context) {
-    if (isFinalTurn == false) {
+    if (isFinalTurn) {
+      revealAllRemainingCardsFor(playerIdPlaying);
+    } else {
       if (areAllCardRevealed(playerIdPlaying)) {
+        // Start Final Turn
         playerIdAttacking = playerIdPlaying;
       }
     }
