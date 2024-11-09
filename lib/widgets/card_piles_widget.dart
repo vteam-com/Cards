@@ -44,7 +44,7 @@ class CardPilesWidget extends StatelessWidget {
           // Discarded pile
           //
           CardPileWidget(
-            cards: cardsInDrawPile,
+            cards: cardsDiscardPile,
             cardsAreHidden: false,
             onDraw: onPickedFromDiscardPile,
             revealTopDeckCard: true,
