@@ -7,14 +7,14 @@ class CardPileWidget extends StatelessWidget {
   const CardPileWidget({
     super.key,
     required this.cards,
-    required this.onDraw,
+    this.onDraw,
     required this.cardsAreHidden,
     required this.wiggleTopCard,
     required this.revealTopDeckCard,
   });
 
   final List<CardModel> cards;
-  final VoidCallback onDraw;
+  final VoidCallback? onDraw;
   final bool cardsAreHidden;
   final bool revealTopDeckCard;
   final bool wiggleTopCard;

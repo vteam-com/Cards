@@ -67,9 +67,6 @@ class GameModel with ChangeNotifier {
     }
   }
 
-  /// The card currently selected by the player.
-  CardModel? selectedCard;
-
   /// The number of players in the game.
   int get numPlayers => players.length;
 
@@ -85,13 +82,8 @@ class GameModel with ChangeNotifier {
     playerIdAttacking = json['playerIdAttacking'];
     _gameState = GameStates.values.firstWhere(
       (e) => e.toString() == json['state'],
-      orElse: () => GameStates.pickCardFromPiles,
+      orElse: () => GameStates.pickCardFromEitherPiles,
     );
-
-    selectedCard = null;
-    if (json['selectedCard'] != null) {
-      selectedCard = CardModel.fromJson(json['selectedCard']);
-    }
   }
 
   /// Converts the game model to a JSON object.
@@ -103,7 +95,6 @@ class GameModel with ChangeNotifier {
       'playerIdPlaying': playerIdPlaying,
       'playerIdAttacking': playerIdAttacking,
       'state': gameState.toString(),
-      'selectedCard': selectedCard?.toJson(),
     };
   }
 
@@ -136,25 +127,26 @@ class GameModel with ChangeNotifier {
     if (deck.cardsDeckPile.isNotEmpty) {
       deck.cardsDeckDiscarded.add(deck.cardsDeckPile.removeLast());
     }
-    gameState = GameStates.pickCardFromPiles;
+    gameState = GameStates.pickCardFromEitherPiles;
   }
 
   /// Allows a player to draw a card, either from the discard pile or the deck.
   ///
   /// [context] is the BuildContext used for displaying snackbar messages.
   /// [fromDiscardPile] indicates whether to draw from the discard pile or the deck.
-  void drawCard(BuildContext context, {required bool fromDiscardPile}) {
-    if (gameState != GameStates.pickCardFromPiles) {
+  void selectTopCardOfDeck(
+    BuildContext context, {
+    required bool fromDiscardPile,
+  }) {
+    if (gameState != GameStates.pickCardFromEitherPiles) {
       showTurnNotification(context, "It's not your turn!");
       return;
     }
 
     if (fromDiscardPile && deck.cardsDeckDiscarded.isNotEmpty) {
-      selectedCard = deck.cardsDeckDiscarded.removeLast();
-      gameState = GameStates.flipAndSwap;
+      gameState = GameStates.swapDiscardedCardWithAnyCardsInHand;
     } else if (!fromDiscardPile && deck.cardsDeckPile.isNotEmpty) {
-      selectedCard = deck.cardsDeckPile.removeLast();
-      gameState = GameStates.keepOrDiscard;
+      gameState = GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard;
     } else {
       showTurnNotification(context, 'No cards available to draw!');
     }
@@ -164,22 +156,26 @@ class GameModel with ChangeNotifier {
   ///
   /// [playerIndex] is the index of the player whose hand is being modified.
   /// [gridIndex] is the index of the card in the player's hand to swap.
-  void swapCard(int playerIndex, int gridIndex) {
-    if (selectedCard == null ||
-        !validGridIndex(players[playerIndex].hand, gridIndex)) {
+  void swapCardWithTopPile(
+    int playerIndex,
+    int gridIndex,
+  ) {
+    final hand = players[playerIndex].hand;
+
+    if (!validGridIndex(hand, gridIndex)) {
       return;
     }
 
     // do the swap
-    CardModel cardToSwapFromPlayer = players[playerIndex].hand[gridIndex];
-    // add to discard pile
-    deck.cardsDeckDiscarded.add(cardToSwapFromPlayer);
-
+    CardModel cardToSwapFromPlayer = hand[gridIndex];
     // replace players card in their 3x3 with the selected card
-    players[playerIndex].hand[gridIndex] = selectedCard!;
-
-    // No card selected anymore
-    selectedCard = null;
+    if (gameState == GameStates.swapDiscardedCardWithAnyCardsInHand) {
+      hand[gridIndex] = deck.cardsDeckDiscarded.removeLast();
+    } else {
+      hand[gridIndex] = deck.cardsDeckPile.removeLast();
+    }
+    // add players old card to to discard pile
+    deck.cardsDeckDiscarded.add(cardToSwapFromPlayer);
   }
 
   /// Checks if the given grid index is valid for the given hand.
@@ -228,7 +224,7 @@ class GameModel with ChangeNotifier {
     int playerIndex,
     int cardIndex,
   ) {
-    if (gameState != GameStates.flipOneCard ||
+    if (gameState != GameStates.revealOneHiddenCard ||
         players[playerIndex].cardVisibility[cardIndex]) {
       return false;
     }
@@ -245,10 +241,14 @@ class GameModel with ChangeNotifier {
     int playerIndex,
     int cardIndex,
   ) {
-    if (gameState == GameStates.keepOrDiscard ||
-        gameState == GameStates.flipAndSwap) {
+    if (gameState == GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard ||
+        gameState == GameStates.swapDiscardedCardWithAnyCardsInHand) {
       players[playerIndex].cardVisibility[cardIndex] = true;
-      swapCard(playerIndex, cardIndex);
+
+      swapCardWithTopPile(
+        playerIndex,
+        cardIndex,
+      );
 
       moveToNextPlayer(context);
       return true;
@@ -291,7 +291,7 @@ class GameModel with ChangeNotifier {
       }
     }
     playerIdPlaying = (playerIdPlaying + 1) % players.length;
-    gameState = GameStates.pickCardFromPiles;
+    gameState = GameStates.pickCardFromEitherPiles;
   }
 
   /// Returns a string representing the current game state, including the current player's name
@@ -321,9 +321,9 @@ void showTurnNotification(BuildContext context, String message) {
 
 enum GameStates {
   notStarted,
-  pickCardFromPiles,
-  keepOrDiscard,
-  flipOneCard,
-  flipAndSwap,
+  pickCardFromEitherPiles,
+  swapTopDeckCardWithAnyCardsInHandOrDiscard,
+  revealOneHiddenCard,
+  swapDiscardedCardWithAnyCardsInHand,
   gameOver,
 }

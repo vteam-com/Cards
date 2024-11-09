@@ -140,9 +140,12 @@ class PlayerZoneWidget extends StatelessWidget {
     final CardModel card = gameModel.players[playerIndex].hand[gridIndex];
     return WiggleWidget(
       wiggle: isPlayerPlaying &&
-          (gameModel.gameState == GameStates.flipAndSwap ||
-              gameModel.gameState == GameStates.keepOrDiscard ||
-              (gameModel.gameState == GameStates.flipOneCard && !isVisible)),
+          (gameModel.gameState ==
+                  GameStates.swapDiscardedCardWithAnyCardsInHand ||
+              gameModel.gameState ==
+                  GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard ||
+              (gameModel.gameState == GameStates.revealOneHiddenCard &&
+                  !isVisible)),
       child: GestureDetector(
         onTap: () {
           gameModel.revealCard(context, playerIndex, gridIndex);

@@ -26,37 +26,56 @@ class PlayerZoneCtaWidget extends StatelessWidget {
   Widget buildContent(BuildContext context) {
     if (isActivePlayer) {
       switch (gameModel.gameState) {
-        case GameStates.keepOrDiscard:
-          return ctaSwapOrDiscard();
-        case GameStates.flipAndSwap:
-          return ctaSwapWithKeptCard();
-        case GameStates.flipOneCard:
-          return ctaFlipOneOfYourHiddenCards();
-        case GameStates.pickCardFromPiles:
-        default:
+        //
+        case GameStates.notStarted:
+          return Text('Starting');
+
+        /// Player has to choose to Reveal the Top Deck card or Take the Discarded Card
+        /// if chose to reveal deck card >>> [swapWithAnyCardsInHandOrDiscard]
+        /// selected the discard card >>> [GameStates.swapDiscardedCardWithAnyCardsInHand]
+        case GameStates.pickCardFromEitherPiles:
           return ctaPickCardFromPiles(context);
+
+        // Use has chosen to reveal the top deck card
+        // now either:
+        // 1) swap with any of the players card > Move to next players [pickCardFromEitherPiles]
+        // 2) discard > this will move the state to >>> [revealOneHiddenCard]
+        case GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard:
+          return ctaSwapTopDeckCardWithAnyCardsInHandOrDiscard();
+
+        // swap the discarded card with any of the players card >>>> Move to next players [pickCardFromEitherPiles]
+        case GameStates.swapDiscardedCardWithAnyCardsInHand:
+          return ctaSwapDiscardedCardWithAnyCardsInHand();
+
+        // after this it goes to next player >>> [pickCardFromEitherPiles]
+        case GameStates.revealOneHiddenCard:
+          return ctaFlipOneOfYourHiddenCards();
+
+        //
+        case GameStates.gameOver:
+          return Text('GAME OVER');
       }
     } else {
       return buildWaitingForTurnContent();
     }
   }
 
-  Widget ctaSwapOrDiscard() {
+  Widget ctaSwapTopDeckCardWithAnyCardsInHandOrDiscard() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         FittedBox(
           fit: BoxFit.cover,
-          child: CardWidget(
-            card: gameModel.selectedCard!,
-            revealed: true,
+          child: CardPileWidget(
+            cards: gameModel.deck.cardsDeckPile,
+            wiggleTopCard: false,
+            cardsAreHidden: true,
+            revealTopDeckCard: true,
           ),
         ),
         buildMiniInstructions(
           true,
-          GameStates.keepOrDiscard == gameModel.gameState
-              ? 'Discard →\nor\n↓ swap'
-              : 'or\nhere\n←',
+          'Discard →\nor\n↓ swap',
           TextAlign.center,
         ),
         FittedBox(
@@ -64,9 +83,11 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           child: CardPileWidget(
             cards: gameModel.deck.cardsDeckDiscarded,
             onDraw: () {
-              gameModel.deck.cardsDeckDiscarded.add(gameModel.selectedCard!);
-              gameModel.selectedCard = null;
-              gameModel.gameState = GameStates.flipOneCard;
+              // Player has discard the top deck revealed card
+              // they now have to turn over one of their hidden card
+              gameModel.deck.cardsDeckDiscarded
+                  .add(gameModel.deck.cardsDeckPile.removeLast());
+              gameModel.gameState = GameStates.revealOneHiddenCard;
             },
             cardsAreHidden: false,
             wiggleTopCard: true,
@@ -77,7 +98,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
     );
   }
 
-  Widget ctaSwapWithKeptCard() {
+  Widget ctaSwapDiscardedCardWithAnyCardsInHand() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -90,7 +111,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           width: 10,
         ),
         CardWidget(
-          card: gameModel.selectedCard,
+          card: gameModel.deck.cardsDeckDiscarded.last,
           revealed: true,
         ),
       ],
@@ -110,7 +131,8 @@ class PlayerZoneCtaWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       children: [
-        if (GameStates.keepOrDiscard != gameModel.gameState)
+        if (GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard !=
+            gameModel.gameState)
           buildMiniInstructions(
             true,
             'Draw\na card\nhere\n→',
@@ -123,13 +145,14 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           fit: BoxFit.scaleDown,
           child: CardPilesWidget(
             cardsInDrawPile: gameModel.deck.cardsDeckPile,
-            revealTopDeckCard: gameModel.gameState == GameStates.keepOrDiscard,
+            revealTopDeckCard: gameModel.gameState ==
+                GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard,
             cardsDiscardPile: gameModel.deck.cardsDeckDiscarded,
             onPickedFromDrawPile: () {
-              gameModel.drawCard(context, fromDiscardPile: false);
+              gameModel.selectTopCardOfDeck(context, fromDiscardPile: false);
             },
             onPickedFromDiscardPile: () {
-              gameModel.drawCard(context, fromDiscardPile: true);
+              gameModel.selectTopCardOfDeck(context, fromDiscardPile: true);
             },
           ),
         ),
@@ -138,9 +161,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         ),
         buildMiniInstructions(
           true,
-          GameStates.keepOrDiscard == gameModel.gameState
-              ? '← Discard\nor\n↓ swap'
-              : 'or\nhere\n←',
+          'or\nhere\n←',
           TextAlign.right,
         ),
       ],

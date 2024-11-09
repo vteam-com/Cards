@@ -29,28 +29,15 @@ void main() {
         reason: 'Discard pile should have 1 card in it',
       );
 
-      // Set the state enable draw of a card
-      gameModel.gameState = GameStates.pickCardFromPiles;
+      // Set the state enable select a card from either pile
+      gameModel.gameState = GameStates.pickCardFromEitherPiles;
 
-      // Act
-      gameModel.drawCard(mockContext, fromDiscardPile: true);
-
-      // Assert
-      expect(
-        gameModel.deck.cardsDeckDiscarded.isEmpty,
-        true,
-        reason: 'Discard pile should be empty',
-      );
-
-      expect(
-        gameModel.selectedCard,
-        isNotNull,
-        reason: 'A card should have been picked up',
-      );
+      // Action user picked the top card of the discarded pile
+      gameModel.selectTopCardOfDeck(mockContext, fromDiscardPile: true);
 
       expect(
         gameModel.gameState,
-        GameStates.flipAndSwap,
+        GameStates.swapDiscardedCardWithAnyCardsInHand,
         reason: 'State should have changed to flipAndSwap',
       );
     });
