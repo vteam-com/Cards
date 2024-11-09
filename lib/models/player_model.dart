@@ -24,17 +24,10 @@ class PlayerModel {
         .map((cardJson) => CardModel.fromJson(cardJson as Map<String, dynamic>))
         .toList();
 
-    // Create a list of boolean values from the 'cardVisibility' JSON data.
-    final cardVisibility = (json['cardVisibility'] as List<dynamic>)
-        .map((visibility) => visibility as bool)
-        .toList();
-
     // Create a new PlayerModel instance with the parsed data.
     return PlayerModel(
       name: json['name'] as String,
-    )
-      ..hand = hand
-      ..cardVisibility = cardVisibility;
+    )..hand = hand;
   }
 
   ///
@@ -46,26 +39,18 @@ class PlayerModel {
   final String name;
   int get sumOfRevealedCards => _getSumOfCardsInHand();
   List<CardModel> hand = [];
-  List<bool> cardVisibility = [];
 
   void reset() {
     hand = [];
-    cardVisibility = [];
   }
 
   void addCardToHand(CardModel card) {
     hand.add(card);
-    cardVisibility.add(false);
   }
 
   void revealInitialCards() {
-    cardVisibility[3] = true; // Access visibility directly
-    cardVisibility[5] = true; // Access visibility directly
-    // cardVisibility[1] = true; // Access visibility directly
-    // cardVisibility[2] = true; // Access visibility directly
-    // cardVisibility[4] = true; // Access visibility directly
-    // cardVisibility[6] = true; // Access visibility directly
-    // cardVisibility[7] = true; // Access visibility directly
+    hand[3].isRevealed = true;
+    hand[5].isRevealed = true;
   }
 
   int _getSumOfCardsInHand() {
@@ -87,9 +72,9 @@ class PlayerModel {
       markIfSameRank(hand, markedForZeroScore, indices);
     }
 
-    for (int i = 0; i < hand.length; i++) {
-      if (cardVisibility[i] && !hand[i].partOfSet) {
-        score += hand[i].value;
+    for (final CardModel card in hand) {
+      if (card.isRevealed && card.partOfSet == false) {
+        score += card.value;
       }
     }
 
@@ -130,7 +115,6 @@ class PlayerModel {
     return {
       'name': name,
       'hand': hand.map((CardModel card) => card.toJson()).toList(),
-      'cardVisibility': cardVisibility,
     };
   }
 }

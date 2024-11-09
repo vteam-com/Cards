@@ -5,6 +5,7 @@ class CardModel {
       rank: json['rank'],
       value: json['value'],
       partOfSet: json['partOfSet'] ?? false,
+      isRevealed: json['isRevealed'] ?? false,
     );
   }
   CardModel({
@@ -12,10 +13,12 @@ class CardModel {
     required this.rank,
     required this.value,
     this.partOfSet = false,
+    this.isRevealed = false,
   });
   final String suit;
   final String rank;
   final int value;
+  bool isRevealed = false;
   bool partOfSet;
 
   @override
@@ -29,6 +32,7 @@ class CardModel {
       'rank': rank,
       'value': value,
       'partOfSet': partOfSet,
+      'isRevealed': isRevealed,
     };
   }
 

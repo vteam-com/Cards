@@ -136,7 +136,7 @@ class PlayerZoneWidget extends StatelessWidget {
     int gridIndex,
   ) {
     final bool isVisible =
-        gameModel.players[playerIndex].cardVisibility[gridIndex];
+        gameModel.players[playerIndex].hand[gridIndex].isRevealed;
     final CardModel card = gameModel.players[playerIndex].hand[gridIndex];
     return WiggleWidget(
       wiggle: isPlayerPlaying &&

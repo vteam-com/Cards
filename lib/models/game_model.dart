@@ -182,6 +182,10 @@ class GameModel with ChangeNotifier {
     } else {
       hand[gridIndex] = deck.cardsDeckPile.removeLast();
     }
+
+    // ensure this card is revealed
+    hand[gridIndex].isRevealed = true;
+
     // add players old card to to discard pile
     deck.cardsDeckDiscarded.add(cardToSwapFromPlayer);
   }
@@ -196,8 +200,8 @@ class GameModel with ChangeNotifier {
   /// [playerIndex] is the index of the player whose cards should be revealed.
   void revealAllRemainingCardsFor(int playerIndex) {
     final PlayerModel player = players[playerIndex];
-    for (int indexCard = 0; indexCard < player.hand.length; indexCard++) {
-      player.cardVisibility[indexCard] = true;
+    for (final CardModel card in player.hand) {
+      card.isRevealed = true;
     }
   }
 
@@ -212,8 +216,8 @@ class GameModel with ChangeNotifier {
       return;
     }
 
-    if (handleFlipOneCardState(context, playerIndex, cardIndex) ||
-        handleFlipAndSwapState(context, playerIndex, cardIndex)) {
+    if (handleFlipOneCardState(playerIndex, cardIndex) ||
+        handleFlipAndSwapState(playerIndex, cardIndex)) {
       moveToNextPlayer(context);
 
       if (this.isFinalTurn) {
@@ -227,32 +231,28 @@ class GameModel with ChangeNotifier {
     notifyCardUnavailable(context, 'Not allowed at the moment!');
   }
 
-  /// Handles the logic for flipping a card during the 'flipOneCard' game state.
+  /// Handles the logic for flipping a card during the [GameStates.revealOneHiddenCard] game state.
   bool handleFlipOneCardState(
-    BuildContext context,
     int playerIndex,
     int cardIndex,
   ) {
-    if (gameState != GameStates.revealOneHiddenCard ||
-        players[playerIndex].cardVisibility[cardIndex]) {
-      return false;
-    }
-    // reveal the card
-    players[playerIndex].cardVisibility[cardIndex] = true;
+    if (gameState == GameStates.revealOneHiddenCard &&
+        players[playerIndex].hand[cardIndex].isRevealed == false) {
+      // reveal the card
+      players[playerIndex].hand[cardIndex].isRevealed = true;
 
-    return true;
+      return true;
+    }
+    return false;
   }
 
   /// Handles the logic for flipping and swapping a card during the 'flipAndSwap' game state.
   bool handleFlipAndSwapState(
-    BuildContext context,
     int playerIndex,
     int cardIndex,
   ) {
     if (gameState == GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard ||
         gameState == GameStates.swapDiscardedCardWithAnyCardsInHand) {
-      players[playerIndex].cardVisibility[cardIndex] = true;
-
       swapCardWithTopPile(
         playerIndex,
         cardIndex,
@@ -277,7 +277,7 @@ class GameModel with ChangeNotifier {
 
   /// Checks if all cards are revealed for a specific player.
   bool areAllCardRevealed(final int playerIndex) {
-    return players[playerIndex].cardVisibility.every((visible) => visible);
+    return players[playerIndex].hand.every((card) => card.isRevealed);
   }
 
   /// Checks if all players have revealed all their cards.
