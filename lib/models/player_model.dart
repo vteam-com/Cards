@@ -2,28 +2,56 @@ import 'package:cards/models/card_model.dart';
 export 'package:cards/models/card_model.dart';
 
 class PlayerModel {
+  /// Creates a `PlayerModel` from a JSON map.
+  ///
+  /// This factory constructor takes a JSON map representing a player and
+  /// constructs a `PlayerModel` instance.  It parses the player's name, hand,
+  /// and card visibility from the JSON data.
+  ///
+  /// Args:
+  ///   json (Map<String, dynamic>): The JSON map representing the player.
+  ///       This map should contain the keys 'name', 'hand', and
+  ///       'cardVisibility'.  The 'hand' value should be a list of JSON maps
+  ///       representing cards, and the 'cardVisibility' value should be a list
+  ///       of booleans.
+  ///
+  /// Returns:
+  ///   PlayerModel: A new `PlayerModel` instance initialized with the data from
+  ///       the JSON map.
   factory PlayerModel.fromJson(Map<String, dynamic> json) {
-    List<CardModel> hand = [];
-    for (var cardJson in json['hand']) {
-      hand.add(CardModel.fromJson(cardJson));
-    }
+    // Create a list of CardModel objects from the 'hand' JSON data.
+    final hand = (json['hand'] as List<dynamic>)
+        .map((cardJson) => CardModel.fromJson(cardJson as Map<String, dynamic>))
+        .toList();
 
-    List<bool> cardVisibility = [];
-    for (var visibility in json['cardVisibility']) {
-      cardVisibility.add(visibility);
-    }
+    // Create a list of boolean values from the 'cardVisibility' JSON data.
+    final cardVisibility = (json['cardVisibility'] as List<dynamic>)
+        .map((visibility) => visibility as bool)
+        .toList();
 
+    // Create a new PlayerModel instance with the parsed data.
     return PlayerModel(
-      name: json['name'],
+      name: json['name'] as String,
     )
       ..hand = hand
       ..cardVisibility = cardVisibility;
   }
+
+  ///
+  /// Creates a `PlayerModel` with the given name.
+  ///
   PlayerModel({required this.name});
+
+  /// Properties
   final String name;
   int get sumOfRevealedCards => _getSumOfCardsInHand();
   List<CardModel> hand = [];
   List<bool> cardVisibility = [];
+
+  void reset() {
+    hand = [];
+    cardVisibility = [];
+  }
 
   void addCardToHand(CardModel card) {
     hand.add(card);

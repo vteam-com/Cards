@@ -117,9 +117,8 @@ class GameModel with ChangeNotifier {
 
     // Deal 9 cards to each player and reveal the initial 3.
     for (final PlayerModel player in players) {
-      for (final _ in Iterable.generate(9)) {
-        player.addCardToHand(deck.cardsDeckPile.removeLast());
-      }
+      player.reset();
+      dealCards(player);
       player.revealInitialCards();
     }
 
@@ -128,6 +127,15 @@ class GameModel with ChangeNotifier {
       deck.cardsDeckDiscarded.add(deck.cardsDeckPile.removeLast());
     }
     gameState = GameStates.pickCardFromEitherPiles;
+  }
+
+  /// Deals 9 cards to the given player from the deck.
+  ///
+  /// [player The player to deal cards to.
+  void dealCards(PlayerModel player) {
+    for (int i = 0; i < 9; i++) {
+      player.addCardToHand(deck.cardsDeckPile.removeLast());
+    }
   }
 
   /// Allows a player to draw a card, either from the discard pile or the deck.
