@@ -35,7 +35,7 @@ class CardWidget extends StatelessWidget {
           border: Border.all(color: Colors.black, width: 1),
         ),
         child: revealed
-            ? (card.suit == 'Joker' ? surfaceForJoker() : surfaceReveal())
+            ? (card.rank == 'Joker' ? surfaceForJoker() : surfaceReveal())
             : surfaceForHidden(),
       ),
     );
@@ -94,10 +94,10 @@ class CardWidget extends StatelessWidget {
 
   /// Builds a widget for displaying a Joker card.
   Widget surfaceForJoker() {
-    Color color = card.rank == 'Black' ? Colors.black : Colors.red;
+    Color color = _getSuitColor(card.suit);
     return Stack(
       children: [
-        Center(child: angleText('Joker', color)),
+        Center(child: angleText(card.rank, color)),
         Positioned(
           bottom: 4,
           right: 4,
@@ -125,25 +125,9 @@ class CardWidget extends StatelessWidget {
     );
   }
 
-  /// Returns the suit symbol based on the suit string.
-  String _getSuitSymbol(String suit) {
-    switch (suit) {
-      case 'Hearts':
-        return '♥️';
-      case 'Diamonds':
-        return '♦️';
-      case 'Clubs':
-        return '♣️';
-      case 'Spades':
-        return '♠️';
-      default:
-        return '';
-    }
-  }
-
   Widget _buildSuitSymbol({final double size = 18}) {
     return Text(
-      _getSuitSymbol(card.suit),
+      card.suit,
       style: TextStyle(
         fontSize: size,
         color: _getSuitColor(card.suit),
@@ -308,11 +292,11 @@ class CardWidget extends StatelessWidget {
   /// Returns the color associated with the suit string.
   Color _getSuitColor(String suit) {
     switch (suit) {
-      case 'Hearts':
-      case 'Diamonds':
+      case '♥️':
+      case '♦️':
         return Colors.red;
-      case 'Clubs':
-      case 'Spades':
+      case '♣️':
+      case '♠️':
         return Colors.black;
       default:
         return Colors.black;

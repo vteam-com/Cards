@@ -23,7 +23,7 @@ class CardModel {
 
   @override
   String toString() {
-    return '$rank of $suit';
+    return '$rank $suit';
   }
 
   Map<String, dynamic> toJson() {
@@ -36,7 +36,7 @@ class CardModel {
     };
   }
 
-  static const List<String> suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+  static const List<String> suits = ['♥️', '♦️', '♣️', '♠️'];
   static const List<String> ranks = [
     'A',
     '2',
@@ -53,7 +53,15 @@ class CardModel {
     'K',
   ];
 
+  /// Returns the numerical value of a card rank.
+  ///
+  /// Handles special cases for 'Joker', 'A', 'K', 'Q', 'J'.
+  /// Ranks '2' through '10' return their face value.
+  /// Returns 0 if the rank is invalid.
   static int getValue(String rank) {
+    if (rank == 'Joker') {
+      return -2;
+    }
     if (rank == 'A') {
       return 1;
     }
@@ -67,6 +75,7 @@ class CardModel {
       return 11;
     }
 
+    // face value for cards from 2 to 10
     return int.tryParse(rank) ?? 0;
   }
 }

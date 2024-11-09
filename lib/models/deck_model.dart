@@ -24,25 +24,29 @@ class DeckModel {
 
     // Generate the specified number of decks
     for (int deckCount = 0; deckCount < numberOfDecks; deckCount++) {
-      for (String suit in CardModel.suits) {
-        for (String rank in CardModel.ranks) {
-          cardsDeckPile.add(
-            CardModel(
-              suit: suit,
-              rank: rank,
-              value: CardModel.getValue(rank),
-            ),
-          );
-        }
-      }
-      // Add Jokers to each deck
-      cardsDeckPile.addAll([
-        CardModel(suit: 'Joker', rank: 'Black', value: -2),
-        CardModel(suit: 'Joker', rank: 'Red', value: -2),
-      ]);
+      addSingle54CardsDeckToDecks();
     }
 
     cardsDeckPile.shuffle();
+  }
+
+  void addSingle54CardsDeckToDecks() {
+    for (String suit in CardModel.suits) {
+      for (String rank in CardModel.ranks) {
+        cardsDeckPile.add(
+          CardModel(
+            suit: suit,
+            rank: rank,
+            value: CardModel.getValue(rank),
+          ),
+        );
+      }
+    }
+    // Add 2 Jokers to each deck
+    cardsDeckPile.addAll([
+      CardModel(suit: '♥️', rank: 'Joker', value: -2),
+      CardModel(suit: '♠️', rank: 'Joker', value: -2),
+    ]);
   }
 
   Map<String, dynamic> toJson() => {
