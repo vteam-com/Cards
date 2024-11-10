@@ -3,21 +3,18 @@ class CardModel {
     return CardModel(
       suit: json['suit'],
       rank: json['rank'],
-      value: json['value'],
-      partOfSet: json['partOfSet'] ?? false,
       isRevealed: json['isRevealed'] ?? false,
     );
   }
   CardModel({
     required this.suit,
     required this.rank,
-    required this.value,
     this.partOfSet = false,
     this.isRevealed = false,
   });
   final String suit;
   final String rank;
-  final int value;
+
   bool isRevealed = false;
   bool partOfSet;
 
@@ -30,9 +27,7 @@ class CardModel {
     return {
       'suit': suit,
       'rank': rank,
-      'value': value,
-      'partOfSet': partOfSet,
-      'isRevealed': isRevealed,
+      'isRevealed': isRevealed ? true : null,
     };
   }
 
@@ -58,7 +53,7 @@ class CardModel {
   /// Handles special cases for 'Joker', 'A', 'K', 'Q', 'J'.
   /// Ranks '2' through '10' return their face value.
   /// Returns 0 if the rank is invalid.
-  static int getValue(String rank) {
+  int get value {
     if (rank == 'Joker') {
       return -2;
     }

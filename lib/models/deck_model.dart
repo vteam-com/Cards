@@ -37,15 +37,14 @@ class DeckModel {
           CardModel(
             suit: suit,
             rank: rank,
-            value: CardModel.getValue(rank),
           ),
         );
       }
     }
     // Add 2 Jokers to each deck
     cardsDeckPile.addAll([
-      CardModel(suit: '♥️', rank: 'Joker', value: -2),
-      CardModel(suit: '♠️', rank: 'Joker', value: -2),
+      CardModel(suit: '♥️', rank: 'Joker'),
+      CardModel(suit: '♠️', rank: 'Joker'),
     ]);
   }
 

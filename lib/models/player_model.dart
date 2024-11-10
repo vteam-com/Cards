@@ -92,7 +92,7 @@ class PlayerModel {
           hand[indices[1]],
           hand[indices[2]],
         )) {
-      for (int index in indices) {
+      for (final int index in indices) {
         hand[index].partOfSet = true;
       }
     }

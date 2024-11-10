@@ -11,7 +11,7 @@ class CardWidget extends StatelessWidget {
     this.revealed = false,
   }) {
     if (card == null) {
-      this.card = CardModel(suit: '?', rank: '?', value: 0);
+      this.card = CardModel(suit: '?', rank: '?');
     } else {
       this.card = card;
     }
