@@ -16,6 +16,7 @@ class CardModel {
   final String rank;
 
   bool isRevealed = false;
+  bool isSelectable = false;
   bool partOfSet;
 
   @override

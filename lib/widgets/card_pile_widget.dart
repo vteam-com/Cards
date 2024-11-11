@@ -1,6 +1,5 @@
 import 'package:cards/models/card_model.dart';
 import 'package:cards/widgets/card_widget.dart';
-import 'package:cards/widgets/wiggle_widget.dart';
 import 'package:flutter/material.dart';
 
 class CardPileWidget extends StatelessWidget {
@@ -40,16 +39,13 @@ class CardPileWidget extends StatelessWidget {
               double offset =
                   index.toDouble() * 0.5; // Offset for stacking effect
               bool isTopCard = index == cards.length - 1;
+              final CardModel card = cards[index];
+              card.isSelectable = isTopCard && wiggleTopCard;
+              card.isRevealed = revealTopDeckCard && isTopCard;
               return Positioned(
                 left: offset,
                 top: offset,
-                child: WiggleWidget(
-                  wiggle: isTopCard && wiggleTopCard,
-                  child: CardWidget(
-                    card: cards[index],
-                    revealed: revealTopDeckCard && isTopCard,
-                  ),
-                ),
+                child: CardWidget(card: card),
               );
             }),
           ),

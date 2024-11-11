@@ -84,8 +84,8 @@ digraph "" {
   "/lib/widgets/card_piles_widget.dart" -> "/lib/widgets/card_pile_widget.dart";
   "/lib/widgets/card_pile_widget.dart" -> "/lib/models/card_model.dart";
   "/lib/widgets/card_pile_widget.dart" -> "/lib/widgets/card_widget.dart";
-  "/lib/widgets/card_pile_widget.dart" -> "/lib/widgets/wiggle_widget.dart";
   "/lib/widgets/card_widget.dart" -> "/lib/models/card_model.dart";
+  "/lib/widgets/card_widget.dart" -> "/lib/widgets/wiggle_widget.dart";
   "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/models/game_model.dart";
   "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/widgets/card_pile_widget.dart";
   "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/widgets/card_piles_widget.dart";
@@ -94,5 +94,4 @@ digraph "" {
   "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/card_widget.dart";
   "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/player_header_widget.dart";
   "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/player_zone_cta_widget.dart";
-  "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/wiggle_widget.dart";
 }

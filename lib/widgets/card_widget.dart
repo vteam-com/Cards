@@ -1,4 +1,5 @@
 import 'package:cards/models/card_model.dart';
+import 'package:cards/widgets/wiggle_widget.dart';
 import 'package:flutter/material.dart';
 
 /// A widget that displays a playing card or a placeholder.
@@ -8,7 +9,6 @@ class CardWidget extends StatelessWidget {
   CardWidget({
     super.key,
     CardModel? card,
-    this.revealed = false,
   }) {
     if (card == null) {
       this.card = CardModel(suit: '?', rank: '?');
@@ -19,24 +19,29 @@ class CardWidget extends StatelessWidget {
 
   /// The playing card to be displayed.
   late final CardModel card;
-  final bool revealed;
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Container(
-        margin: const EdgeInsets.all(4.0),
-        width: 100,
-        height: 150,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: Colors.black, width: 1),
+    return WiggleWidget(
+      wiggle: card.isSelectable,
+      child: Opacity(
+        opacity: card.isSelectable ? 1.0 : 0.8,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Container(
+            margin: const EdgeInsets.all(4.0),
+            width: 100,
+            height: 150,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: Colors.black, width: 1),
+            ),
+            child: card.isRevealed
+                ? (card.rank == 'Joker' ? surfaceForJoker() : surfaceReveal())
+                : surfaceForHidden(),
+          ),
         ),
-        child: revealed
-            ? (card.rank == 'Joker' ? surfaceForJoker() : surfaceReveal())
-            : surfaceForHidden(),
       ),
     );
   }

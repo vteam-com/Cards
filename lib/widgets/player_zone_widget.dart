@@ -3,7 +3,6 @@ import 'package:cards/models/game_model.dart';
 import 'package:cards/widgets/card_widget.dart';
 import 'package:cards/widgets/player_header_widget.dart';
 import 'package:cards/widgets/player_zone_cta_widget.dart';
-import 'package:cards/widgets/wiggle_widget.dart';
 import 'package:flutter/material.dart';
 
 class PlayerZoneWidget extends StatelessWidget {
@@ -135,26 +134,23 @@ class PlayerZoneWidget extends StatelessWidget {
     int playerIndex,
     int gridIndex,
   ) {
-    final bool isVisible =
-        gameModel.players[playerIndex].hand[gridIndex].isRevealed;
     final CardModel card = gameModel.players[playerIndex].hand[gridIndex];
-    return WiggleWidget(
-      wiggle: isPlayerPlaying &&
-          (gameModel.gameState ==
-                  GameStates.swapDiscardedCardWithAnyCardsInHand ||
-              gameModel.gameState ==
-                  GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard ||
-              (gameModel.gameState == GameStates.revealOneHiddenCard &&
-                  !isVisible)),
-      child: GestureDetector(
-        onTap: () {
-          gameModel.revealCard(context, playerIndex, gridIndex);
-        },
-        child: CardWidget(
-          card: card,
-          revealed: isVisible,
-        ),
-      ),
+
+    card.isRevealed = gameModel.players[playerIndex].hand[gridIndex].isRevealed;
+
+    card.isSelectable = isPlayerPlaying &&
+        (gameModel.gameState ==
+                GameStates.swapDiscardedCardWithAnyCardsInHand ||
+            gameModel.gameState ==
+                GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard ||
+            (gameModel.gameState == GameStates.revealOneHiddenCard &&
+                !card.isRevealed));
+
+    return GestureDetector(
+      onTap: () {
+        gameModel.revealCard(context, playerIndex, gridIndex);
+      },
+      child: CardWidget(card: card),
     );
   }
 }

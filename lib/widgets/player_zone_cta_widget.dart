@@ -112,7 +112,6 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         ),
         CardWidget(
           card: gameModel.deck.cardsDeckDiscarded.last,
-          revealed: true,
         ),
       ],
     );
@@ -144,13 +143,19 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         FittedBox(
           fit: BoxFit.scaleDown,
           child: CardPilesWidget(
+            //
+            // main draw pile
+            //
             cardsInDrawPile: gameModel.deck.cardsDeckPile,
             revealTopDeckCard: gameModel.gameState ==
                 GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard,
-            cardsDiscardPile: gameModel.deck.cardsDeckDiscarded,
             onPickedFromDrawPile: () {
               gameModel.selectTopCardOfDeck(context, fromDiscardPile: false);
             },
+            //
+            // discarded pile
+            //
+            cardsDiscardPile: gameModel.deck.cardsDeckDiscarded,
             onPickedFromDiscardPile: () {
               gameModel.selectTopCardOfDeck(context, fromDiscardPile: true);
             },
