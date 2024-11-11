@@ -3,6 +3,12 @@ import 'package:cards/widgets/wiggle_widget.dart';
 import 'package:flutter/material.dart';
 
 /// A widget that displays a playing card or a placeholder.
+///
+/// The [CardWidget] is responsible for rendering a playing card based on the provided [CardModel].
+///
+/// The widget uses the [WiggleWidget] to provide a wiggling animation when the card is selectable. It also adjusts the opacity of the card based on its selectable state.
+///
+/// The card surface is rendered using different methods depending on the card's properties, such as whether it is a Joker card or a regular card with suit and rank.
 class CardWidget extends StatelessWidget {
   /// Creates a [CardWidget] with a [CardModel] card.
   /// If the card is null, a placeholder is shown.
@@ -23,25 +29,27 @@ class CardWidget extends StatelessWidget {
         child: FittedBox(
           fit: BoxFit.scaleDown,
           child: Container(
-            margin: const EdgeInsets.all(4.0),
-            width: 100,
-            height: 150,
+            margin: const EdgeInsets.all(CardDimensions.margin),
+            width: CardDimensions.width,
+            height: CardDimensions.height,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(CardDimensions.borderRadius),
               border: Border.all(color: Colors.black, width: 1),
             ),
-            child: card.isRevealed
-                ? (card.rank == 'Joker' ? surfaceForJoker() : surfaceReveal())
-                : surfaceForHidden(),
+            child: card.isRevealed ? surfaceReveal() : surfaceForHidden(),
           ),
         ),
       ),
     );
   }
 
-  /// Builds a widget for displaying a regular card with suit and rank.
   Widget surfaceReveal() {
+    return card.rank == 'Joker' ? surfaceForJoker() : surfaceForAceToQueen();
+  }
+
+  /// Builds a widget for displaying a regular card with suit and rank.
+  Widget surfaceForAceToQueen() {
     return Stack(
       children: [
         Positioned(
@@ -73,24 +81,6 @@ class CardWidget extends StatelessWidget {
     );
   }
 
-  Widget angleText(final String text, final Color color) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Transform.rotate(
-        angle: -45 * 3.14159265 / 180, // Converts degrees to radians
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 24,
-            color: color,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
   /// Builds a widget for displaying a Joker card.
   Widget surfaceForJoker() {
     Color color = _getSuitColor(card.suit);
@@ -119,6 +109,24 @@ class CardWidget extends StatelessWidget {
         image: DecorationImage(
           image: AssetImage('assets/images/back_of_card.png'),
           fit: BoxFit.fill, // adjust the fit as needed
+        ),
+      ),
+    );
+  }
+
+  Widget angleText(final String text, final Color color) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Transform.rotate(
+        angle: -45 * 3.14159265 / 180, // Converts degrees to radians
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 24,
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -301,4 +309,14 @@ class CardWidget extends StatelessWidget {
         return Colors.black;
     }
   }
+}
+
+enum CardType { joker, numbered, face, hidden }
+
+// Move to a separate constants file or class
+class CardDimensions {
+  static const double width = 100.0;
+  static const double height = 150.0;
+  static const double margin = 4.0;
+  static const double borderRadius = 4.0;
 }
