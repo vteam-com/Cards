@@ -10,7 +10,7 @@ del graph.svg
 @REM call lakos . --no-tree -o graph.dot -i example/**
 
 @REM woth folders
-call lakos -o graph.dot --ignore=test/** .
+call lakos -o graph.dot .
 
 call dot -Tsvg graph.dot -Grankdir=TB -Gcolor=lightgray -Ecolor="#aabbaa88" -o graph.svg
 @REM fdp -Tsvg graph.dot -Gcolor=lightgray -Ecolor="#aabbaa99" -o graph.svg

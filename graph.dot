@@ -23,6 +23,9 @@ digraph "" {
   "/lib/widgets/table_surface_painter.dart" [label="table_surface_painter"];
   "/lib/widgets/text_edit_with_submit.dart" [label="text_edit_with_submit"];
   "/lib/widgets/wiggle_widget.dart" [label="wiggle_widget"];
+  "/test/models/card_model_test.dart" [label="card_model_test"];
+  "/test/models/game_model_test.dart" [label="game_model_test"];
+  "/test/models/player_model_test.dart" [label="player_model_test"];
   subgraph "cluster~" {
     label="cards";
     subgraph "cluster~/lib" {
@@ -56,6 +59,15 @@ digraph "" {
         "/lib/widgets/table_surface_painter.dart";
         "/lib/widgets/text_edit_with_submit.dart";
         "/lib/widgets/wiggle_widget.dart";
+      }
+    }
+    subgraph "cluster~/test" {
+      label="test";
+      subgraph "cluster~/test/models" {
+        label="models";
+        "/test/models/card_model_test.dart";
+        "/test/models/game_model_test.dart";
+        "/test/models/player_model_test.dart";
       }
     }
   }
@@ -94,4 +106,7 @@ digraph "" {
   "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/card_widget.dart";
   "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/player_header_widget.dart";
   "/lib/widgets/player_zone_widget.dart" -> "/lib/widgets/player_zone_cta_widget.dart";
+  "/test/models/card_model_test.dart" -> "/lib/models/card_model.dart";
+  "/test/models/game_model_test.dart" -> "/lib/models/game_model.dart";
+  "/test/models/player_model_test.dart" -> "/lib/models/player_model.dart";
 }
