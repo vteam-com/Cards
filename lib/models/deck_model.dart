@@ -5,7 +5,7 @@ class DeckModel {
   DeckModel(this.numberOfDecks);
 
   factory DeckModel.fromJson(Map<String, dynamic> json) {
-    return DeckModel(json['numberOfDecks'])
+    return DeckModel(json['numberOfDecks'] ?? 1)
       ..cardsDeckPile = List<CardModel>.from(
         json['cardsDeckPile']?.map((card) => CardModel.fromJson(card)) ?? [],
       )

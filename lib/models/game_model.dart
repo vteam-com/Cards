@@ -87,6 +87,14 @@ class GameModel with ChangeNotifier {
   }
 
   /// Converts the game model to a JSON object.
+  ///
+  /// The JSON object contains the following properties:
+  /// - `players`: a list of JSON objects representing the players in the game
+  /// - `deck`: a JSON object representing the game deck
+  /// - `invitees`: a list of player names
+  /// - `playerIdPlaying`: the index of the player currently playing
+  /// - `playerIdAttacking`: the index of the player being attacked in the final turn, or -1 if not the final turn
+  /// - `state`: the current state of the game as a string
   Map<String, dynamic> toJson() {
     return {
       'players': players.map((player) => player.toJson()).toList(),
