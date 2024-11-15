@@ -7,12 +7,11 @@ import 'package:flutter/material.dart';
 class PlayerZoneCtaWidget extends StatelessWidget {
   const PlayerZoneCtaWidget({
     super.key,
-    required this.playerIndex,
-    required this.isActivePlayer,
+    required this.player,
     required this.gameModel,
   });
-  final int playerIndex;
-  final bool isActivePlayer;
+
+  final PlayerModel player;
   final GameModel gameModel;
 
   @override
@@ -24,7 +23,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
   }
 
   Widget buildContent(BuildContext context) {
-    if (isActivePlayer) {
+    if (player.isActivePlayer) {
       switch (gameModel.gameState) {
         //
         case GameStates.notStarted:
@@ -175,10 +174,8 @@ class PlayerZoneCtaWidget extends StatelessWidget {
 
   Widget buildWaitingForTurnContent() {
     return buildMiniInstructions(
-      isActivePlayer,
-      gameModel.areAllCardRevealed(playerIndex)
-          ? 'You are done.'
-          : 'Wait for your turn :)',
+      player.isActivePlayer,
+      player.areAllCardsRevealed() ? 'You are done.' : 'Wait for your turn :)',
       TextAlign.center,
     );
   }

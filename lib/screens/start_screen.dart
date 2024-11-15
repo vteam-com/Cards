@@ -114,21 +114,19 @@ class StartScreenState extends State<StartScreen> {
     // First pull
     useFirebase().then((_) async {
       final invitees = await getPlayersInRoom(roomId);
+
       setState(() {
         _playerNames = Set.from(invitees);
         waitingOnFirstBackendData = false;
-      });
-    });
+        // Listen for updates
+        _streamSubscription =
+            onBackendInviteesUpdated(roomId, (invitees) async {
+          final listOfRooms = await getAllRooms();
 
-    // Listen for updates
-    useFirebase().then((_) {
-      _streamSubscription = onBackendInviteesUpdated(roomId, (invitees) async {
-        final listOfRooms = await getAllRooms();
-
-        setState(() {
-          this._listOfRooms = listOfRooms;
-          _playerNames = Set.from(invitees);
-          waitingOnFirstBackendData = false;
+          setState(() {
+            this._listOfRooms = listOfRooms;
+            _playerNames = Set.from(invitees);
+          });
         });
       });
     });

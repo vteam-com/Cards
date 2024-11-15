@@ -37,11 +37,16 @@ class PlayerModel {
 
   /// Properties
   final String name;
+  bool isActivePlayer = false;
   int get sumOfRevealedCards => _getSumOfCardsInHand();
   List<CardModel> hand = [];
 
   void reset() {
     hand = [];
+  }
+
+  bool areAllCardsRevealed() {
+    return hand.every((card) => card.isRevealed);
   }
 
   void addCardToHand(CardModel card) {

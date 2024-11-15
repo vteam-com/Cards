@@ -96,7 +96,7 @@ void main() {
 
     expect(gameModel.getGameStateAsString(), "It's your turn Player 1");
 
-    gameModel.playerIdPlaying = 1;
+    gameModel.setActivePlayer(1);
     expect(gameModel.getGameStateAsString(), "It's Player 2's turn");
 
     gameModel.playerIdAttacking = 0;

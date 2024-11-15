@@ -46,6 +46,7 @@ class GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    createGlobalKeyForPlayers();
     _initializeFirebaseListener();
     _scrollController = ScrollController();
 
@@ -114,6 +115,13 @@ class GameScreenState extends State<GameScreen> {
     });
   }
 
+  void createGlobalKeyForPlayers() {
+    _playerKeys = List.generate(
+      widget.gameModel.numPlayers,
+      (index) => GlobalKey(),
+    );
+  }
+
   void dataSnapshotToGameModel(final DataSnapshot snapshot) {
     if (!snapshot.exists) {
       return;
@@ -126,10 +134,7 @@ class GameScreenState extends State<GameScreen> {
       Map<String, dynamic> mapData = jsonDecode(jsonData);
       widget.gameModel.fromJson(mapData);
       setState(() {
-        _playerKeys = List.generate(
-          widget.gameModel.numPlayers,
-          (index) => GlobalKey(),
-        );
+        createGlobalKeyForPlayers();
         if (widget.gameModel.gameState == GameStates.gameOver) {
           showGameOverDialog(
             context,
@@ -226,7 +231,7 @@ class GameScreenState extends State<GameScreen> {
             child: PlayerZoneWidget(
               key: _playerKeys[index],
               gameModel: widget.gameModel,
-              indexOfPlayer: index,
+              player: widget.gameModel.players[index],
               smallDevice: true,
             ),
           );
@@ -244,7 +249,7 @@ class GameScreenState extends State<GameScreen> {
         return PlayerZoneWidget(
           key: _playerKeys[index],
           gameModel: widget.gameModel,
-          indexOfPlayer: index,
+          player: widget.gameModel.players[index],
           smallDevice: false,
         );
       }),

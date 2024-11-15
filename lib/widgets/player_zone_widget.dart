@@ -5,31 +5,41 @@ import 'package:cards/widgets/player_header_widget.dart';
 import 'package:cards/widgets/player_zone_cta_widget.dart';
 import 'package:flutter/material.dart';
 
-class PlayerZoneWidget extends StatelessWidget {
+class PlayerZoneWidget extends StatefulWidget {
   const PlayerZoneWidget({
     super.key,
     required this.gameModel,
-    required this.indexOfPlayer,
+    required this.player,
     required this.smallDevice,
   });
   final GameModel gameModel;
-  final int indexOfPlayer;
+  final PlayerModel player;
   final bool smallDevice;
-  bool get isPlayerPlaying => gameModel.playerIdPlaying == indexOfPlayer;
+
+  @override
+  State<PlayerZoneWidget> createState() => _PlayerZoneWidgetState();
+}
+
+class _PlayerZoneWidgetState extends State<PlayerZoneWidget> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final PlayerModel player = gameModel.players[indexOfPlayer];
-
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(seconds: 2),
+      curve: Curves.fastOutSlowIn,
       width: min(400, MediaQuery.of(context).size.width),
-      padding: EdgeInsets.all(smallDevice ? 8 : 20),
+      padding: EdgeInsets.all(widget.smallDevice ? 8 : 20),
       decoration: BoxDecoration(
         color: Colors.green.shade800.withAlpha(100),
         borderRadius: BorderRadius.circular(20.0),
         border: Border.all(
-          color: isPlayerPlaying ? Colors.yellow : Colors.transparent,
-          width: isPlayerPlaying ? 4.0 : 12.0,
+          color:
+              widget.player.isActivePlayer ? Colors.yellow : Colors.transparent,
+          width: widget.player.isActivePlayer ? 4.0 : 12.0,
         ),
       ),
       child: SingleChildScrollView(
@@ -42,8 +52,8 @@ class PlayerZoneWidget extends StatelessWidget {
             // Header
             //
             PlayerHeaderWidget(
-              name: player.name,
-              sumOfRevealedCards: player.sumOfRevealedCards,
+              name: widget.player.name,
+              sumOfRevealedCards: widget.player.sumOfRevealedCards,
             ),
             Divider(
               color: Colors.white.withAlpha(100),
@@ -53,9 +63,8 @@ class PlayerZoneWidget extends StatelessWidget {
             // CTA
             //
             PlayerZoneCtaWidget(
-              playerIndex: indexOfPlayer,
-              isActivePlayer: isPlayerPlaying,
-              gameModel: gameModel,
+              player: widget.player,
+              gameModel: widget.gameModel,
             ),
             Divider(
               color: Colors.white.withAlpha(100),
@@ -65,10 +74,14 @@ class PlayerZoneWidget extends StatelessWidget {
             // Cards in Hand
             //
             SizedBox(
-              height: smallDevice ? 380 : null,
+              height: widget.smallDevice ? 380 : null,
               child: FittedBox(
                 fit: BoxFit.cover,
-                child: buildPlayerHand(context, gameModel, indexOfPlayer),
+                child: buildPlayerHand(
+                  context,
+                  widget.gameModel,
+                  widget.player,
+                ),
               ),
             ),
           ],
@@ -77,10 +90,21 @@ class PlayerZoneWidget extends StatelessWidget {
     );
   }
 
+  LinearGradient activeBorder() {
+    return LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        Colors.yellow.shade200,
+        Colors.yellow.shade700,
+      ],
+    );
+  }
+
   Widget buildPlayerHand(
     BuildContext context,
     GameModel gameModel,
-    int playerIndex,
+    PlayerModel player,
   ) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -92,7 +116,7 @@ class PlayerZoneWidget extends StatelessWidget {
                   return buildPlayerCardButton(
                     context,
                     gameModel,
-                    playerIndex,
+                    player,
                     cardIndex,
                   );
                 },
@@ -104,7 +128,7 @@ class PlayerZoneWidget extends StatelessWidget {
                   return buildPlayerCardButton(
                     context,
                     gameModel,
-                    playerIndex,
+                    player,
                     cardIndex,
                   );
                 },
@@ -116,7 +140,7 @@ class PlayerZoneWidget extends StatelessWidget {
                   return buildPlayerCardButton(
                     context,
                     gameModel,
-                    playerIndex,
+                    player,
                     cardIndex,
                   );
                 },
@@ -131,14 +155,14 @@ class PlayerZoneWidget extends StatelessWidget {
   Widget buildPlayerCardButton(
     BuildContext context,
     GameModel gameModel,
-    int playerIndex,
+    PlayerModel player,
     int gridIndex,
   ) {
-    final CardModel card = gameModel.players[playerIndex].hand[gridIndex];
+    final CardModel card = player.hand[gridIndex];
 
-    card.isRevealed = gameModel.players[playerIndex].hand[gridIndex].isRevealed;
+    card.isRevealed = player.hand[gridIndex].isRevealed;
 
-    card.isSelectable = isPlayerPlaying &&
+    card.isSelectable = player.isActivePlayer &&
         (gameModel.gameState ==
                 GameStates.swapDiscardedCardWithAnyCardsInHand ||
             gameModel.gameState ==
@@ -148,7 +172,7 @@ class PlayerZoneWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        gameModel.revealCard(context, playerIndex, gridIndex);
+        gameModel.revealCard(context, player, gridIndex);
       },
       child: CardWidget(card: card),
     );

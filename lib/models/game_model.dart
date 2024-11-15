@@ -78,12 +78,19 @@ class GameModel with ChangeNotifier {
       players.add(PlayerModel.fromJson(playerJson));
     }
     deck = DeckModel.fromJson(json['deck']);
-    playerIdPlaying = json['playerIdPlaying'];
+    setActivePlayer(json['playerIdPlaying']);
     playerIdAttacking = json['playerIdAttacking'];
     _gameState = GameStates.values.firstWhere(
       (e) => e.toString() == json['state'],
       orElse: () => GameStates.pickCardFromEitherPiles,
     );
+  }
+
+  void setActivePlayer(final int index) {
+    playerIdPlaying = index;
+    for (int index = 0; index < players.length; index++) {
+      players[index].isActivePlayer = (index == playerIdPlaying);
+    }
   }
 
   /// Converts the game model to a JSON object.
@@ -173,26 +180,24 @@ class GameModel with ChangeNotifier {
   /// [playerIndex] is the index of the player whose hand is being modified.
   /// [gridIndex] is the index of the card in the player's hand to swap.
   void swapCardWithTopPile(
-    int playerIndex,
-    int gridIndex,
+    final PlayerModel player,
+    final int gridIndex,
   ) {
-    final hand = players[playerIndex].hand;
-
-    if (!validGridIndex(hand, gridIndex)) {
+    if (!validGridIndex(player.hand, gridIndex)) {
       return;
     }
 
     // do the swap
-    CardModel cardToSwapFromPlayer = hand[gridIndex];
+    CardModel cardToSwapFromPlayer = player.hand[gridIndex];
     // replace players card in their 3x3 with the selected card
     if (gameState == GameStates.swapDiscardedCardWithAnyCardsInHand) {
-      hand[gridIndex] = deck.cardsDeckDiscarded.removeLast();
+      player.hand[gridIndex] = deck.cardsDeckDiscarded.removeLast();
     } else {
-      hand[gridIndex] = deck.cardsDeckPile.removeLast();
+      player.hand[gridIndex] = deck.cardsDeckPile.removeLast();
     }
 
     // ensure this card is revealed
-    hand[gridIndex].isRevealed = true;
+    player.hand[gridIndex].isRevealed = true;
 
     // add players old card to to discard pile
     deck.cardsDeckDiscarded.add(cardToSwapFromPlayer);
@@ -218,14 +223,18 @@ class GameModel with ChangeNotifier {
   /// [context] is the BuildContext used for displaying snackbar messages.
   /// [playerIndex] is the index of the player revealing the card.
   /// [cardIndex] is the index of the card being revealed.
-  void revealCard(BuildContext context, int playerIndex, int cardIndex) {
-    if (!canCurrentPlayerAct(playerIndex)) {
+  void revealCard(
+    BuildContext context,
+    final PlayerModel player,
+    int cardIndex,
+  ) {
+    if (player.isActivePlayer == false) {
       notifyCardUnavailable(context, 'Wait your turn!');
       return;
     }
 
-    if (handleFlipOneCardState(playerIndex, cardIndex) ||
-        handleFlipAndSwapState(playerIndex, cardIndex)) {
+    if (handleFlipOneCardState(player, cardIndex) ||
+        handleFlipAndSwapState(player, cardIndex)) {
       moveToNextPlayer(context);
 
       if (this.isFinalTurn) {
@@ -241,13 +250,13 @@ class GameModel with ChangeNotifier {
 
   /// Handles the logic for flipping a card during the [GameStates.revealOneHiddenCard] game state.
   bool handleFlipOneCardState(
-    int playerIndex,
-    int cardIndex,
+    final PlayerModel player,
+    final int cardIndex,
   ) {
     if (gameState == GameStates.revealOneHiddenCard &&
-        players[playerIndex].hand[cardIndex].isRevealed == false) {
+        player.hand[cardIndex].isRevealed == false) {
       // reveal the card
-      players[playerIndex].hand[cardIndex].isRevealed = true;
+      player.hand[cardIndex].isRevealed = true;
 
       return true;
     }
@@ -256,13 +265,13 @@ class GameModel with ChangeNotifier {
 
   /// Handles the logic for flipping and swapping a card during the 'flipAndSwap' game state.
   bool handleFlipAndSwapState(
-    int playerIndex,
-    int cardIndex,
+    final PlayerModel player,
+    final int cardIndex,
   ) {
     if (gameState == GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard ||
         gameState == GameStates.swapDiscardedCardWithAnyCardsInHand) {
       swapCardWithTopPile(
-        playerIndex,
+        player,
         cardIndex,
       );
 
@@ -285,7 +294,7 @@ class GameModel with ChangeNotifier {
 
   /// Checks if all cards are revealed for a specific player.
   bool areAllCardRevealed(final int playerIndex) {
-    return players[playerIndex].hand.every((card) => card.isRevealed);
+    return players[playerIndex].areAllCardsRevealed();
   }
 
   /// Checks if all players have revealed all their cards.
@@ -308,7 +317,7 @@ class GameModel with ChangeNotifier {
         playerIdAttacking = playerIdPlaying;
       }
     }
-    playerIdPlaying = (playerIdPlaying + 1) % players.length;
+    setActivePlayer((playerIdPlaying + 1) % players.length);
     gameState = GameStates.pickCardFromEitherPiles;
   }
 
