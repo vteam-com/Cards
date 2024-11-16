@@ -126,6 +126,6 @@ class PlayerModel {
 
   @override
   String toString() {
-    return 'Player[$id] ${name.padRight(10)} ${isActivePlayer ? "* " : '  '} ${hand.join("|")}';
+    return 'Player[$id] ${name.padRight(10)} ${isActivePlayer ? "* " : '  '} ${hand.join(" ")} ${sumOfRevealedCards.toString().padLeft(3)}';
   }
 }

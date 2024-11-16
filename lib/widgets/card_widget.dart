@@ -44,12 +44,8 @@ class CardWidget extends StatelessWidget {
     );
   }
 
-  Widget surfaceReveal() {
-    return card.rank == 'Joker' ? surfaceForJoker() : surfaceForAceToQueen();
-  }
-
   /// Builds a widget for displaying a regular card with suit and rank.
-  Widget surfaceForAceToQueen() {
+  Widget surfaceReveal() {
     return Stack(
       children: [
         Positioned(
@@ -149,11 +145,14 @@ class CardWidget extends StatelessWidget {
     // Layout for number cards 2 to 10
     List<Offset> positions;
     switch (numSymbols) {
+      case -2: // Joker
+        return [figureCards('§')];
+
       case 0: // King
         return [figureCards('♚')];
-      case 12:
+      case 12: // Queen
         return [figureCards('♛')];
-      case 11:
+      case 11: // Jack
         return [figureCards('♝')];
 
       case 1:

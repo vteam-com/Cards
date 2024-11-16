@@ -58,7 +58,7 @@ void main() {
       });
 
       test('returns -2 for Joker', () {
-        expect(CardModel(suit: '♠️', rank: 'Joker').value, -2);
+        expect(CardModel(suit: '♠️', rank: '§').value, -2);
       });
 
       test('returns 0 for invalid rank', () {
@@ -68,7 +68,7 @@ void main() {
 
     test('toString returns correct string representation', () {
       final card = CardModel(suit: '♠️', rank: 'A');
-      expect(card.toString(), 'A ♠️');
+      expect(card.toString(), 'A♠️_');
     });
 
     test('suits list contains all required suits', () {
@@ -86,10 +86,11 @@ void main() {
         '7',
         '8',
         '9',
-        '10',
+        'X',
         'J',
         'Q',
         'K',
+        '§',
       ]);
     });
   });
