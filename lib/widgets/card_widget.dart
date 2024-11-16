@@ -24,21 +24,18 @@ class CardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return WiggleWidget(
       wiggle: card.isSelectable,
-      child: Opacity(
-        opacity: card.isSelectable ? 1.0 : 0.8,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Container(
-            margin: const EdgeInsets.all(CardDimensions.margin),
-            width: CardDimensions.width,
-            height: CardDimensions.height,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(CardDimensions.borderRadius),
-              border: Border.all(color: Colors.black, width: 1),
-            ),
-            child: card.isRevealed ? surfaceReveal() : surfaceForHidden(),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Container(
+          margin: const EdgeInsets.all(CardDimensions.margin),
+          width: CardDimensions.width,
+          height: CardDimensions.height,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(CardDimensions.borderRadius),
+            border: Border.all(color: Colors.black, width: 1),
           ),
+          child: card.isRevealed ? surfaceReveal() : surfaceForHidden(),
         ),
       ),
     );
