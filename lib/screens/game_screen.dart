@@ -42,18 +42,17 @@ class GameScreenState extends State<GameScreen> {
   /// Flag indicating whether the layout is for a phone-sized screen.
   bool phoneLayout = false;
   bool isReady = false;
+  int updateCount = 0;
 
   @override
   void initState() {
     super.initState();
-    createGlobalKeyForPlayers();
+    _createGlobalKeyForPlayers();
     _initializeFirebaseListener();
-    _scrollController = ScrollController();
 
     /// Scroll to the active player after the layout is built.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToActivePlayer();
-    });
+    _scrollController = ScrollController();
+    _setupScrollToActivePlayer();
   }
 
   @override
@@ -78,13 +77,19 @@ class GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
+    print('GAME SCREEN - BUILD($updateCount)');
     return Screen(
       isWaiting: !isReady,
-      title: widget.gameModel.getGameStateAsString(),
+      title: '${widget.gameModel.getGameStateAsString()} (${++updateCount})',
       rightText: widget.gameModel.loginUserName,
-      onRefresh: onRefresh,
+      onRefresh: _onRefresh,
       child: _adaptiveLayout(width),
     );
+  }
+
+  /// Gets the Firebase database reference path for this game room
+  String _getFirebaseRef() {
+    return 'rooms/${widget.gameModel.gameRoomId}';
   }
 
   /// Refreshes the game state by fetching the latest data from Firebase.
@@ -93,36 +98,38 @@ class GameScreenState extends State<GameScreen> {
   /// corresponding Firebase node, and then updates the game model with
   /// the retrieved data.  Finally, sets the loading state back to false
   /// after the data has been processed.
-  void onRefresh() {
+  void _onRefresh() {
     setState(() {
       isReady = false;
-      FirebaseDatabase.instance
-          .ref('rooms/${widget.gameModel.gameRoomId}')
-          .get()
-          .then((final DataSnapshot snapshot) {
-        dataSnapshotToGameModel(snapshot);
-      });
     });
+    _getFirebaseData();
   }
 
   /// Initializes the Firebase listener for game state updates.
   void _initializeFirebaseListener() {
     _streamSubscription = FirebaseDatabase.instance
-        .ref('rooms/${widget.gameModel.gameRoomId}')
+        .ref(_getFirebaseRef())
         .onValue
         .listen((DatabaseEvent event) {
-      dataSnapshotToGameModel(event.snapshot);
+      _dataSnapshotToGameModel(event.snapshot);
     });
   }
 
-  void createGlobalKeyForPlayers() {
+  /// Fetches game data from Firebase
+  Future<void> _getFirebaseData() async {
+    final DataSnapshot snapshot =
+        await FirebaseDatabase.instance.ref(_getFirebaseRef()).get();
+    _dataSnapshotToGameModel(snapshot);
+  }
+
+  void _createGlobalKeyForPlayers() {
     _playerKeys = List.generate(
       widget.gameModel.numPlayers,
       (index) => GlobalKey(),
     );
   }
 
-  void dataSnapshotToGameModel(final DataSnapshot snapshot) {
+  void _dataSnapshotToGameModel(final DataSnapshot snapshot) {
     if (!snapshot.exists) {
       return;
     }
@@ -134,7 +141,7 @@ class GameScreenState extends State<GameScreen> {
       Map<String, dynamic> mapData = jsonDecode(jsonData);
       widget.gameModel.fromJson(mapData);
       setState(() {
-        createGlobalKeyForPlayers();
+        _createGlobalKeyForPlayers();
         if (widget.gameModel.gameState == GameStates.gameOver) {
           showGameOverDialog(
             context,
@@ -171,7 +178,7 @@ class GameScreenState extends State<GameScreen> {
   }
 
   /// Scrolls to the currently active player.
-  void _scrollToActivePlayer() {
+  void _setupScrollToActivePlayer() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final int playerIndex = widget.gameModel.playerIdPlaying;
       if (playerIndex < _playerKeys.length) {
@@ -232,7 +239,8 @@ class GameScreenState extends State<GameScreen> {
               key: _playerKeys[index],
               gameModel: widget.gameModel,
               player: widget.gameModel.players[index],
-              smallDevice: true,
+              height: 550,
+              cardHeight: 300,
             ),
           );
         }),
@@ -250,7 +258,8 @@ class GameScreenState extends State<GameScreen> {
           key: _playerKeys[index],
           gameModel: widget.gameModel,
           player: widget.gameModel.players[index],
-          smallDevice: false,
+          height: 700,
+          cardHeight: 400,
         );
       }),
     );

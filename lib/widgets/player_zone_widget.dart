@@ -1,91 +1,64 @@
 import 'dart:math';
+import 'package:animate_do/animate_do.dart';
 import 'package:cards/models/game_model.dart';
 import 'package:cards/widgets/card_widget.dart';
 import 'package:cards/widgets/player_header_widget.dart';
 import 'package:cards/widgets/player_zone_cta_widget.dart';
 import 'package:flutter/material.dart';
 
-class PlayerZoneWidget extends StatefulWidget {
+class PlayerZoneWidget extends StatelessWidget {
   const PlayerZoneWidget({
     super.key,
     required this.gameModel,
     required this.player,
-    required this.smallDevice,
+    this.height = 750,
+    this.cardHeight = 400,
   });
   final GameModel gameModel;
   final PlayerModel player;
-  final bool smallDevice;
-
-  @override
-  State<PlayerZoneWidget> createState() => _PlayerZoneWidgetState();
-}
-
-class _PlayerZoneWidgetState extends State<PlayerZoneWidget> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  final double height;
+  final double cardHeight;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(seconds: 2),
-      curve: Curves.fastOutSlowIn,
-      width: min(400, MediaQuery.of(context).size.width),
-      padding: EdgeInsets.all(widget.smallDevice ? 8 : 20),
+    print(player.toString());
+    final double width = min(400, MediaQuery.of(context).size.width);
+    return Stack(
+      children: [
+        if (player.isActivePlayer)
+          FadeIn(
+            child: containerBorder(width, height),
+          ),
+        Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: Colors.green.shade800.withAlpha(50),
+            border: Border.all(
+              color: Colors.transparent,
+              width: 8,
+            ),
+            borderRadius: BorderRadius.circular(20.0),
+            // No shadow.
+          ),
+          padding: EdgeInsets.all(10),
+          child: buildContent(context),
+        ),
+      ],
+    );
+  }
+
+  Widget containerBorder(double width, double height) {
+    return Container(
+      width: width,
+      height: height,
       decoration: BoxDecoration(
-        color: Colors.green.shade800.withAlpha(100),
-        borderRadius: BorderRadius.circular(20.0),
         border: Border.all(
-          color:
-              widget.player.isActivePlayer ? Colors.yellow : Colors.transparent,
-          width: widget.player.isActivePlayer ? 4.0 : 12.0,
+          color: Colors.yellow,
+          width: 8,
         ),
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            //
-            // Header
-            //
-            PlayerHeaderWidget(
-              name: widget.player.name,
-              sumOfRevealedCards: widget.player.sumOfRevealedCards,
-            ),
-            Divider(
-              color: Colors.white.withAlpha(100),
-            ),
-
-            //
-            // CTA
-            //
-            PlayerZoneCtaWidget(
-              player: widget.player,
-              gameModel: widget.gameModel,
-            ),
-            Divider(
-              color: Colors.white.withAlpha(100),
-            ),
-
-            //
-            // Cards in Hand
-            //
-            SizedBox(
-              height: widget.smallDevice ? 380 : null,
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: buildPlayerHand(
-                  context,
-                  widget.gameModel,
-                  widget.player,
-                ),
-              ),
-            ),
-          ],
-        ),
+        borderRadius: BorderRadius.circular(20.0),
+        // No shadow.
       ),
     );
   }
@@ -97,6 +70,52 @@ class _PlayerZoneWidgetState extends State<PlayerZoneWidget> {
       colors: [
         Colors.yellow.shade200,
         Colors.yellow.shade700,
+      ],
+    );
+  }
+
+  Widget buildContent(final BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        //
+        // Header
+        //
+        PlayerHeaderWidget(
+          name: player.name,
+          sumOfRevealedCards: player.sumOfRevealedCards,
+        ),
+        Divider(
+          color: Colors.white.withAlpha(100),
+        ),
+
+        //
+        // CTA
+        //
+        PlayerZoneCtaWidget(
+          player: player,
+          gameModel: gameModel,
+        ),
+        Divider(
+          color: Colors.white.withAlpha(100),
+        ),
+
+        //
+        // Cards in Hand
+        //
+        SizedBox(
+          height: cardHeight,
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: buildPlayerHand(
+              context,
+              gameModel,
+              player,
+            ),
+          ),
+        ),
       ],
     );
   }
