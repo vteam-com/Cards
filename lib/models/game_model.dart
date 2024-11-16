@@ -70,13 +70,14 @@ class GameModel with ChangeNotifier {
   /// The number of players in the game.
   int get numPlayers => players.length;
 
-  /// Updates the game model from a JSON object.
-  void fromJson(Map<String, dynamic> json) {
-    final List<dynamic> playersJson = json['players'];
-    players.clear();
-    for (final playerJson in playersJson) {
-      players.add(PlayerModel.fromJson(playerJson));
-    }
+  /// Loads the game state from a JSON object.
+  ///
+  /// [json] should contain:
+  /// - 'deck': JSON object representing the deck state
+  /// - 'playerIdPlaying': index of active player
+  /// - 'playerIdAttacking': index of player being attacked (-1 if not in final turn)
+  /// - 'state': string representation of game state
+  void _loadGameState(Map<String, dynamic> json) {
     deck = DeckModel.fromJson(json['deck']);
     setActivePlayer(json['playerIdPlaying']);
     playerIdAttacking = json['playerIdAttacking'];
@@ -84,6 +85,34 @@ class GameModel with ChangeNotifier {
       (e) => e.toString() == json['state'],
       orElse: () => GameStates.pickCardFromEitherPiles,
     );
+  }
+
+  /// Updates the game model from a JSON object.
+  ///
+  /// [json] should contain:
+  /// - 'players': array of player JSON objects
+  /// - 'deck': deck JSON object
+  /// - 'playerIdPlaying': active player index
+  /// - 'playerIdAttacking': attacked player index
+  /// - 'state': game state string
+  void fromJson(Map<String, dynamic> json) {
+    _loadPlayers(json['players']);
+    _loadGameState(json);
+  }
+
+  /// Loads player data from a JSON array.
+  ///
+  /// [playersJson] array of player JSON objects containing player state.
+  /// Clears existing players and recreates them from the JSON data,
+  /// assigning sequential IDs starting from 0.
+  void _loadPlayers(List<dynamic> playersJson) {
+    players.clear();
+    int index = 0;
+    for (final playerJson in playersJson) {
+      final PlayerModel player = PlayerModel.fromJson(playerJson);
+      player.id = index++;
+      players.add(player);
+    }
   }
 
   void setActivePlayer(final int index) {

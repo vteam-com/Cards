@@ -36,6 +36,7 @@ class PlayerModel {
   PlayerModel({required this.name});
 
   /// Properties
+  int id = -1;
   final String name;
   bool isActivePlayer = false;
   int get sumOfRevealedCards => _getSumOfCardsInHand();
@@ -121,5 +122,10 @@ class PlayerModel {
       'name': name,
       'hand': hand.map((CardModel card) => card.toJson()).toList(),
     };
+  }
+
+  @override
+  String toString() {
+    return 'Player[$id] ${name.padRight(10)} ${isActivePlayer ? "* " : '  '} ${hand.join("|")}';
   }
 }
