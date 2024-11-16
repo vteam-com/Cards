@@ -52,9 +52,9 @@ class CardWidget extends StatelessWidget {
           top: 4,
           left: 4,
           child: Text(
-            card.rank,
+            card.rank == '§' ? 'Joker' : card.rank,
             style: TextStyle(
-              fontSize: 40,
+              fontSize: card.rank == '§' ? 30 : 40,
               fontWeight: FontWeight.bold,
               color: _getSuitColor(card.suit),
             ),
@@ -146,8 +146,7 @@ class CardWidget extends StatelessWidget {
     List<Offset> positions;
     switch (numSymbols) {
       case -2: // Joker
-        return [figureCards('§')];
-
+        return [figureCards('⛳')];
       case 0: // King
         return [figureCards('♚')];
       case 12: // Queen
@@ -305,7 +304,7 @@ class CardWidget extends StatelessWidget {
       case '♠️':
         return Colors.black;
       default:
-        return Colors.black;
+        return Colors.green;
     }
   }
 }

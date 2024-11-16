@@ -90,7 +90,7 @@ void main() {
         'J',
         'Q',
         'K',
-        '§',
+        // '§', // Joker is a special case
       ]);
     });
   });

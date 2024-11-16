@@ -57,7 +57,7 @@ class CardModel {
     'J', // Jack
     'Q', // Queen
     'K', // King
-    '§', // Joker
+    // '§', // Joker are special we ony generate 2 per deck, so do not include them here
   ];
 
   /// Returns the numerical value of a card rank.
