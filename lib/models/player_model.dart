@@ -128,4 +128,22 @@ class PlayerModel {
   String toString() {
     return 'Player[$id] ${name.padRight(10)} ${isActivePlayer ? "* " : '  '} ${hand.join(" ")} ${sumOfRevealedCards.toString().padLeft(3)}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is PlayerModel &&
+        other.id == id &&
+        other.name == name &&
+        other.isActivePlayer == isActivePlayer &&
+        other.hand.length == hand.length &&
+        List.generate(hand.length, (i) => hand[i] == other.hand[i])
+            .every((bool equalResult) => equalResult);
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, isActivePlayer, Object.hashAll(hand));
 }

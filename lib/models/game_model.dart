@@ -2,6 +2,7 @@ import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/deck_model.dart';
 import 'package:cards/models/player_model.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 export 'package:cards/models/deck_model.dart';
 export 'package:cards/models/player_model.dart';
@@ -69,6 +70,21 @@ class GameModel with ChangeNotifier {
 
   /// The number of players in the game.
   int get numPlayers => players.length;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is GameModel &&
+        other.gameState == gameState &&
+        other.playerIdPlaying == playerIdPlaying &&
+        listEquals(other.players, players);
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(gameState, playerIdPlaying, Object.hashAll(players));
 
   /// Loads the game state from a JSON object.
   ///
