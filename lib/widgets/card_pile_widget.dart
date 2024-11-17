@@ -27,6 +27,10 @@ class CardPileWidget extends StatelessWidget {
   }
 
   Widget _buildPileUnplayedCards() {
+    double cardStackOffset = 0.5;
+    if (cards.length > 50) {
+      cardStackOffset = 0.2;
+    }
     return Tooltip(
       message: '${cards.length} cards',
       child: SizedBox(
@@ -36,8 +40,8 @@ class CardPileWidget extends StatelessWidget {
           child: Stack(
             alignment: Alignment.center,
             children: List.generate(cards.length, (index) {
-              double offset =
-                  index.toDouble() * 0.5; // Offset for stacking effect
+              double offset = index.toDouble() *
+                  cardStackOffset; // Offset for stacking effect
               bool isTopCard = index == cards.length - 1;
               final CardModel card = cards[index];
               card.isSelectable = isTopCard && wiggleTopCard;

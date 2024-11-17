@@ -35,91 +35,117 @@ class CardWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(CardDimensions.borderRadius),
             border: Border.all(color: Colors.black, width: 1),
           ),
-          child: card.isRevealed ? surfaceReveal() : surfaceForHidden(),
+          child: card.isRevealed ? _buildFaceUp() : _buildFaceDown(),
         ),
       ),
     );
   }
 
   /// Builds a widget for displaying a regular card with suit and rank.
-  Widget surfaceReveal() {
-    return Stack(
+  Widget _buildFaceUp() {
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              _buildRank(),
+              const Spacer(),
+              _buildValue(),
+            ],
+          ),
+
+          //
+          // Display the center representation of the Suite & Card
+          //
+          ..._buildSuitSymbols(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRank() {
+    final color = _getSuitColor(card.suit);
+    switch (card.rank) {
+      case '§':
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Joker',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        );
+      case 'K':
+      case 'Q':
+      case 'J':
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              card.rank,
+              style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            Text(
+              card.suit,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        );
+      default:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              card.rank,
+              style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        );
+    }
+  }
+
+  Widget _buildValue() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Positioned(
-          top: 4,
-          left: 4,
-          child: Text(
-            card.rank == '§' ? 'Joker' : card.rank,
-            style: TextStyle(
-              fontSize: card.rank == '§' ? 30 : 40,
-              fontWeight: FontWeight.bold,
-              color: _getSuitColor(card.suit),
-            ),
+        Text(
+          card.value.toString(),
+          textAlign: TextAlign.right,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: _getSuitColor(card.suit),
           ),
         ),
-        Positioned(
-          bottom: 4,
-          right: 4,
-          child: Text(
-            card.value.toString(),
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: _getSuitColor(card.suit),
-            ),
-          ),
-        ),
-        ..._buildSuitSymbols(), // Spread the list of suit symbols
       ],
     );
   }
 
-  /// Builds a widget for displaying a Joker card.
-  Widget surfaceForJoker() {
-    Color color = _getSuitColor(card.suit);
-    return Stack(
-      children: [
-        Center(child: angleText(card.rank, color)),
-        Positioned(
-          bottom: 4,
-          right: 4,
-          child: Text(
-            card.value.toString(),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget surfaceForHidden() {
+  Widget _buildFaceDown() {
     return const DecoratedBox(
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/back_of_card.png'),
           fit: BoxFit.fill, // adjust the fit as needed
-        ),
-      ),
-    );
-  }
-
-  Widget angleText(final String text, final Color color) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Transform.rotate(
-        angle: -45 * 3.14159265 / 180, // Converts degrees to radians
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 24,
-            color: color,
-            fontWeight: FontWeight.bold,
-          ),
         ),
       ),
     );
@@ -139,20 +165,21 @@ class CardWidget extends StatelessWidget {
     List<Widget> symbols = [];
     int numSymbols = card.value;
 
-    // Layout for number cards 2 to 10
     List<Offset> positions;
     switch (numSymbols) {
       case -2: // Joker
-        return [figureCards('⛳')];
+        return [_figureCards('⛳')];
       case 0: // King
-        return [figureCards('♚')];
+        return [_figureCards('♚')];
       case 12: // Queen
-        return [figureCards('♛')];
+        return [_figureCards('♛')];
       case 11: // Jack
-        return [figureCards('♝')];
+        return [_figureCards('♝')];
 
       case 1:
         return [Center(child: _buildSuitSymbol(size: 30))];
+
+      // Layout for number cards 2 to 10
       case 2:
         positions = [Offset(0, -30), Offset(0, 30)];
         break;
@@ -268,7 +295,7 @@ class CardWidget extends StatelessWidget {
     for (final Offset position in positions) {
       symbols.add(
         Positioned(
-          left: 40 + position.dx, // Adjust 50 to center horizontally
+          left: 35 + position.dx, // Adjust 50 to center horizontally
           top: 70 + position.dy, // Adjust 75 to center vertically
           child: _buildSuitSymbol(),
         ),
@@ -278,7 +305,7 @@ class CardWidget extends StatelessWidget {
     return symbols;
   }
 
-  Widget figureCards(final String text) {
+  Widget _figureCards(final String text) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(top: 30.0),
