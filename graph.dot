@@ -24,6 +24,7 @@ digraph "" {
   "/lib/widgets/wiggle_widget.dart" [label="wiggle_widget"];
   "/lib/widgets/players_in_room_widget.dart" [label="players_in_room_widget"];
   "/lib/widgets/text_edit_with_submit.dart" [label="text_edit_with_submit"];
+  "/lib/widgets/rooms_widget.dart" [label="rooms_widget"];
   "/lib/widgets/player_zone_widget.dart" [label="player_zone_widget"];
   "/lib/widgets/card_piles_widget.dart" [label="card_piles_widget"];
   subgraph "cluster~" {
@@ -66,6 +67,7 @@ digraph "" {
         "/lib/widgets/wiggle_widget.dart";
         "/lib/widgets/players_in_room_widget.dart";
         "/lib/widgets/text_edit_with_submit.dart";
+        "/lib/widgets/rooms_widget.dart";
         "/lib/widgets/player_zone_widget.dart";
         "/lib/widgets/card_piles_widget.dart";
       }
@@ -94,6 +96,7 @@ digraph "" {
   "/lib/screens/start_screen.dart" -> "/lib/screens/game_screen.dart";
   "/lib/screens/start_screen.dart" -> "/lib/screens/screen.dart";
   "/lib/screens/start_screen.dart" -> "/lib/widgets/players_in_room_widget.dart";
+  "/lib/screens/start_screen.dart" -> "/lib/widgets/rooms_widget.dart";
   "/lib/main.dart" -> "/lib/screens/start_screen.dart";
   "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/models/game_model.dart";
   "/lib/widgets/player_zone_cta_widget.dart" -> "/lib/widgets/card_pile_widget.dart";

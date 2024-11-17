@@ -6,6 +6,7 @@ import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/players_in_room_widget.dart';
+import 'package:cards/widgets/rooms_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -54,6 +55,7 @@ class StartScreenState extends State<StartScreen> {
   String get _playerName => _controllerName.text.trim();
   bool waitingOnFirstBackendData = true;
   bool _isExpandedRules = false;
+  bool _isExpandedRooms = false;
 
   @override
   void initState() {
@@ -150,37 +152,51 @@ class StartScreenState extends State<StartScreen> {
               constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IntrinsicHeight(child: gameInstructions()),
                   const SizedBox(height: 20),
-                  Tooltip(
-                    message: _listOfRooms.join('\n'),
-                    child: editBox(
-                      'Room',
-                      _controllerRoom,
-                      () {
-                        _controllerRoom.text =
-                            _controllerRoom.text.toUpperCase();
+                  Row(
+                    children: [
+                      editBox(
+                        'Room',
+                        _controllerRoom,
+                        () {
+                          _controllerRoom.text =
+                              _controllerRoom.text.toUpperCase();
+                          prepareBackEndForRoom(roomId);
+                        },
+                        _errorTextRoom,
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _isExpandedRooms = !_isExpandedRooms;
+                            });
+                          },
+                          icon: Icon(
+                            _isExpandedRooms
+                                ? Icons.expand_less
+                                : Icons.expand_more,
+                            color: Colors.green.shade900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_isExpandedRooms)
+                    RoomsWidget(
+                      roomId: roomId,
+                      rooms: _listOfRooms,
+                      onSelected: (String room) {
+                        _controllerRoom.text = room;
                         prepareBackEndForRoom(roomId);
                       },
-                      _errorTextRoom,
+                      onRemoveRoom:
+                          _playerName == 'JP' ? (String room) {} : null,
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  editBox(
-                    'Name',
-                    _controllerName,
-                    () {
-                      _controllerName.text = _controllerName.text.toUpperCase();
-                      joinGame(_controllerName.text);
-                    },
-                    _errorTextName,
-                  ),
-                  const SizedBox(height: 20),
-                  actionButton(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 2),
                   SizedBox(
-                    height: 300,
+                    width: 400,
                     child: PlayersInRoomWidget(
                       activePlayerName: _playerName,
                       playerNames: _playerNames.toList(),
@@ -192,6 +208,37 @@ class StartScreenState extends State<StartScreen> {
                       onRemovePlayer: removePlayer,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Who Are You?\nSelect above ⬆ or join below ⬇',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  editBox(
+                    'Join',
+                    _controllerName,
+                    () {
+                      _controllerName.text = _controllerName.text.toUpperCase();
+                      joinGame(_controllerName.text);
+                    },
+                    _errorTextName,
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          joinGame(_controllerName.text);
+                        });
+                      },
+                      icon: Icon(
+                        Icons.add,
+                        color: Colors.green.shade900,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  actionButton(),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -246,6 +293,7 @@ class StartScreenState extends State<StartScreen> {
     final TextEditingController controller,
     final Function() onSubmitted,
     final String errorStatus,
+    final Widget rightSideChild,
   ) {
     return Container(
       width: 400,
@@ -293,6 +341,7 @@ class StartScreenState extends State<StartScreen> {
               },
             ),
           ),
+          rightSideChild,
         ],
       ),
     );

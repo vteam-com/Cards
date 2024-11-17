@@ -16,60 +16,67 @@ class PlayersInRoomWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.green.shade100,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8),
-              topRight: Radius.circular(8),
-            ),
-          ),
-          child: Text(
-            '${playerNames.length} players',
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-        Expanded(
-          child: DecoratedBox(
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: 250,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.black.withAlpha(100),
+              color: Colors.green.shade100,
               borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(8),
-                bottomRight: Radius.circular(8),
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
               ),
             ),
-            child: ListView.builder(
-              itemCount: playerNames.length,
-              itemBuilder: (context, index) {
-                String nameToDisplay = playerNames[index];
-                return ListTile(
-                  title: TextButton(
-                    onPressed: () => onPlayerSelected(playerNames[index]),
-                    child: Text(
-                      nameToDisplay,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  leading: SizedBox(
-                    width: 40,
-                    child: nameToDisplay == activePlayerName
-                        ? Text('(YOU)')
-                        : null,
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.remove_circle, color: Colors.red.shade300),
-                    onPressed: () => onRemovePlayer(playerNames[index]),
-                  ),
-                );
-              },
+            child: Text(
+              '${playerNames.length} players',
+              style: TextStyle(color: Colors.black),
             ),
           ),
-        ),
-      ],
+          Expanded(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(100),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
+                ),
+              ),
+              child: ListView.builder(
+                itemCount: playerNames.length,
+                itemBuilder: (context, index) {
+                  String nameToDisplay = playerNames[index];
+                  return ListTile(
+                    title: TextButton(
+                      onPressed: () => onPlayerSelected(playerNames[index]),
+                      child: Text(
+                        nameToDisplay,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    leading: SizedBox(
+                      width: 40,
+                      child: nameToDisplay == activePlayerName
+                          ? Text('(YOU)')
+                          : null,
+                    ),
+                    trailing: IconButton(
+                      icon:
+                          Icon(Icons.remove_circle, color: Colors.red.shade300),
+                      onPressed: () => onRemovePlayer(playerNames[index]),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
