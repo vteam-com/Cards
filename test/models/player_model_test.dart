@@ -48,6 +48,20 @@ void main() {
       expect(player.sumOfRevealedCards, 0);
     });
 
+    test('sumOfRevealedCards identifies vertical sets of Jokers', () {
+      // 3 lined up Jokers shall not be Zero, we expect -6
+      player.addCardToHand(CardModel(suit: '♥️', rank: '§', isRevealed: true));
+      player.addCardToHand(CardModel(suit: '♦️', rank: '2'));
+      player.addCardToHand(CardModel(suit: '♣️', rank: '3'));
+      player.addCardToHand(CardModel(suit: '♠️', rank: '§', isRevealed: true));
+      player.addCardToHand(CardModel(suit: '♥️', rank: '5'));
+      player.addCardToHand(CardModel(suit: '♦️', rank: '6'));
+      player.addCardToHand(CardModel(suit: '♣️', rank: '§', isRevealed: true));
+      player.addCardToHand(CardModel(suit: '♠️', rank: '8'));
+      player.addCardToHand(CardModel(suit: '♥️', rank: '9'));
+      expect(player.sumOfRevealedCards, -6);
+    });
+
     test('toJson creates correct json representation', () {
       player.addCardToHand(CardModel(suit: '♥️', rank: 'A', isRevealed: true));
       player.addCardToHand(CardModel(suit: '♦️', rank: '2'));

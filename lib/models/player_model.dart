@@ -99,7 +99,9 @@ class PlayerModel {
           hand[indices[2]],
         )) {
       for (final int index in indices) {
-        hand[index].partOfSet = true;
+        if (hand[index].rank != '§') {
+          hand[index].partOfSet = true;
+        }
       }
     }
   }
