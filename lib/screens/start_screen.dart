@@ -345,7 +345,7 @@ class StartScreenState extends State<StartScreen> {
   }
 
   String getUrlToGame() {
-    return html.window.location.href +
+    return html.window.location.origin +
         GameModel.getLinkToGameFromInput(roomId, _playerNames.toList());
   }
 
