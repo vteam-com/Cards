@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 const version = '1.1.1';
 
@@ -25,6 +26,7 @@ class Screen extends StatelessWidget {
     required this.title,
     required this.child,
     this.onRefresh,
+    this.getLinkToShare,
     this.rightText = '',
     required this.isWaiting,
   });
@@ -32,6 +34,7 @@ class Screen extends StatelessWidget {
   final String rightText;
   final Widget child;
   final Function? onRefresh;
+  final String Function()? getLinkToShare;
   final bool isWaiting;
 
   @override
@@ -87,6 +90,17 @@ class Screen extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8.0),
                 child: Text(rightText),
               ),
+            ),
+
+          //
+          // Share link
+          //
+          if (getLinkToShare != null)
+            IconButton(
+              icon: const Icon(Icons.ios_share),
+              onPressed: () {
+                Share.share(getLinkToShare!());
+              },
             ),
         ],
       ),

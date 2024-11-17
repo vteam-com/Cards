@@ -1,3 +1,4 @@
+// ignore: avoid_web_libraries_in_flutter
 import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/deck_model.dart';
 import 'package:cards/models/player_model.dart';
@@ -164,6 +165,10 @@ class GameModel with ChangeNotifier {
       return 'No one';
     }
     return players[index].name;
+  }
+
+  List<String> getPlayersNames() {
+    return players.map((player) => player.name).toList();
   }
 
   /// Initializes the game state, including dealing cards and setting the initial game state.
@@ -382,6 +387,23 @@ class GameModel with ChangeNotifier {
     }
 
     return inputText;
+  }
+
+  static String getLinkToGameFromInput(
+    final String room,
+    final List<String> names,
+  ) {
+    return '?room=$room&players=${names.join(",")}';
+  }
+
+  String get linkUri =>
+      getLinkToGameFromInput(this.gameRoomId, this.getPlayersNames());
+
+  String getLinkToGame() {
+    if (kIsWeb) {
+      return Uri.base.origin + linkUri;
+    }
+    return '';
   }
 }
 

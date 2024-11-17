@@ -83,6 +83,9 @@ class GameScreenState extends State<GameScreen> {
       title: '${widget.gameModel.getGameStateAsString()} (${++updateCount})',
       rightText: widget.gameModel.loginUserName,
       onRefresh: _onRefresh,
+      getLinkToShare: () {
+        return widget.gameModel.getLinkToGame();
+      },
       child: _adaptiveLayout(width),
     );
   }

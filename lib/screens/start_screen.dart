@@ -1,10 +1,12 @@
 import 'dart:async';
-
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/players_in_room_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -137,6 +139,9 @@ class StartScreenState extends State<StartScreen> {
     return Screen(
       isWaiting: waitingOnFirstBackendData,
       title: '9 Cards Golf',
+      getLinkToShare: () {
+        return getUrlToGame();
+      },
       child: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -329,12 +334,30 @@ class StartScreenState extends State<StartScreen> {
       gameRoomId: roomId,
       isNewGame: true,
     );
+    // Update URL to include room ID
+    updateUrlWithoutReload();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => GameScreen(gameModel: newGame),
       ),
     );
+  }
+
+  String getUrlToGame() {
+    return html.window.location.href +
+        GameModel.getLinkToGameFromInput(roomId, _playerNames.toList());
+  }
+
+  void updateUrlWithoutReload() {
+    if (kIsWeb) {
+      // Push the new state to the browser's history
+      html.window.history.pushState(
+        null,
+        'vteam cards $roomId',
+        getUrlToGame(),
+      );
+    }
   }
 
   /// Widget for the "Join Game" or "Start Game" button.
