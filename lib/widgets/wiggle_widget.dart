@@ -23,7 +23,7 @@ class WiggleWidgetState extends State<WiggleWidget>
     if (widget.wiggle) {
       // Initialize the animation controller
       _controller = AnimationController(
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 750),
         vsync: this,
       ); // Repeat the animation back and forth
 
@@ -31,7 +31,7 @@ class WiggleWidgetState extends State<WiggleWidget>
       _controller!.repeat(reverse: true);
 
       // Define the wiggle animation with a slight rotation angle
-      _wiggleAnimation = Tween<double>(begin: -0.03, end: 0.04).animate(
+      _wiggleAnimation = Tween<double>(begin: -0.05, end: 0.05).animate(
         CurvedAnimation(
           parent: _controller!,
           curve: Curves.easeInOut,
