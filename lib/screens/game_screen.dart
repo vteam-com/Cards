@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cards/models/game_model.dart';
 import 'package:cards/models/game_over_dialog.dart';
+import 'package:cards/models/misc.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/player_zone_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -77,7 +78,7 @@ class GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    print('GAME SCREEN - BUILD($updateCount)');
+    debugLog('GAME SCREEN - BUILD($updateCount)');
     return Screen(
       isWaiting: !isReady,
       title: '${widget.gameModel.getGameStateAsString()} (${++updateCount})',

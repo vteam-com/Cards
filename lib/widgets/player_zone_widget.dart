@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:animate_do/animate_do.dart';
 import 'package:cards/models/game_model.dart';
+import 'package:cards/models/misc.dart';
 import 'package:cards/widgets/card_widget.dart';
 import 'package:cards/widgets/player_header_widget.dart';
 import 'package:cards/widgets/player_zone_cta_widget.dart';
@@ -21,7 +22,7 @@ class PlayerZoneWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(player.toString());
+    debugLog(player.toString());
     final double width = min(400, MediaQuery.of(context).size.width);
     return Stack(
       children: [

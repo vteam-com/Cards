@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cards/models/firebase_options.dart';
+import 'package:cards/models/misc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -12,9 +13,9 @@ bool get isRunningOffLine =>
 
 Future<void> useFirebase() async {
   if (isRunningOffLine) {
-    print('---------------------');
-    print('RUNNING OFFLINE');
-    print('---------------------');
+    debugLog('---------------------');
+    debugLog('RUNNING OFFLINE');
+    debugLog('---------------------');
     return;
   }
   try {
@@ -27,9 +28,9 @@ Future<void> useFirebase() async {
     }
   } catch (e) {
     backendReady = false;
-    print('---------------------');
-    print(e);
-    print('---------------------');
+    debugLog('---------------------');
+    debugLog(e.toString());
+    debugLog('---------------------');
   }
 }
 

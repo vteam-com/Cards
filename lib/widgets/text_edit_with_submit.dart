@@ -1,3 +1,4 @@
+import 'package:cards/models/misc.dart';
 import 'package:flutter/material.dart';
 
 class TextFieldWithButton extends StatelessWidget {
@@ -23,7 +24,7 @@ class TextFieldWithButton extends StatelessWidget {
           onPressed: () {
             // Handle submit action here
             final text = _controller.text;
-            print('Submitted text: $text');
+            debugLog('Submitted text: $text');
             // Clear the TextField after submission
             _controller.clear();
           },
