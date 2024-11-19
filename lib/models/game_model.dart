@@ -225,6 +225,40 @@ class GameModel with ChangeNotifier {
     }
   }
 
+  void onDropCardOnCard(
+    final BuildContext context,
+    final CardModel cardSource,
+    final CardModel cardTarget,
+  ) {
+    switch (gameState) {
+      case GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard:
+        if (cardTarget == deck.cardsDeckDiscarded.last) {
+          // Player has discard the top deck revealed card
+          // they now have to turn over one of their hidden card
+          deck.cardsDeckDiscarded.add(deck.cardsDeckPile.removeLast());
+          gameState = GameStates.revealOneHiddenCard;
+          return;
+        } else {
+          // Find the index of the target card in the player's hand
+          final int targetIndex =
+              players[playerIdPlaying].hand.indexOf(cardTarget);
+
+          if (targetIndex != -1) {
+            swapCardWithTopPile(
+              players[playerIdPlaying],
+              targetIndex,
+            );
+            moveToNextPlayer(context); // Assuming context is available
+            // Optionally add a state update notification here
+            notifyListeners();
+          }
+        }
+      default:
+        // Do nothing or handle other states if necessary
+        break;
+    }
+  }
+
   /// Swaps the selected card with a card in the player's hand.
   ///
   /// [playerIndex] is the index of the player whose hand is being modified.

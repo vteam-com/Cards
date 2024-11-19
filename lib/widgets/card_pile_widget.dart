@@ -10,13 +10,19 @@ class CardPileWidget extends StatelessWidget {
     required this.cardsAreHidden,
     required this.wiggleTopCard,
     required this.revealTopDeckCard,
+    required this.isDropSource,
+    required this.isDropTarget,
+    required this.onDragDropped,
   });
 
   final List<CardModel> cards;
   final VoidCallback? onDraw;
   final bool cardsAreHidden;
   final bool revealTopDeckCard;
+  final bool isDropSource;
+  final bool isDropTarget;
   final bool wiggleTopCard;
+  final Function(CardModel source, CardModel target) onDragDropped;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +38,7 @@ class CardPileWidget extends StatelessWidget {
       cardStackOffset = 0.2;
     }
     return Tooltip(
-      message: '${cards.length} cards',
+      message: '${cards.length}\ncards',
       child: SizedBox(
         width: 140.0,
         child: GestureDetector(
@@ -49,7 +55,12 @@ class CardPileWidget extends StatelessWidget {
               return Positioned(
                 left: offset,
                 top: offset,
-                child: CardWidget(card: card),
+                child: isDropSource
+                    ? dragSource(card)
+                    : CardWidget(
+                        card: card,
+                        onDropped: onDragDropped,
+                      ),
               );
             }),
           ),

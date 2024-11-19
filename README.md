@@ -7,6 +7,7 @@ A Flutter base Multiplayer Card Game.
 - 9 Card Golf Game 3 x 3
 - 2 to 4 players
 - 1 or 2 deck of card
+- Drag and drop cards
 
 ## Getting Started
 

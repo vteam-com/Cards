@@ -194,7 +194,12 @@ class PlayerZoneWidget extends StatelessWidget {
       onTap: () {
         gameModel.revealCard(context, player, gridIndex);
       },
-      child: CardWidget(card: card),
+      child: CardWidget(
+        card: card,
+        onDropped: (cardSource, cardTarget) {
+          gameModel.onDropCardOnCard(context, cardSource, cardTarget);
+        },
+      ),
     );
   }
 }

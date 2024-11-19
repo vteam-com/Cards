@@ -15,13 +15,31 @@ class CardWidget extends StatelessWidget {
   const CardWidget({
     super.key,
     required this.card,
+    required this.onDropped,
   });
 
   /// The playing card to be displayed.
   final CardModel card;
+  final Function(CardModel source, CardModel target)? onDropped;
 
   @override
   Widget build(BuildContext context) {
+    return DragTarget<CardModel>(
+      onAcceptWithDetails: (DragTargetDetails<CardModel> data) {
+        // DROPPED DROP CARD
+        onDropped?.call(data.data, card);
+      },
+      onWillAcceptWithDetails: (data) => card.isSelectable && onDropped != null,
+      builder: (context, List<CardModel?> candidateData, List rejectedData) {
+        return Transform.scale(
+          scale: candidateData.isEmpty ? 1.0 : 1.5,
+          child: buildCard(),
+        );
+      },
+    );
+  }
+
+  Widget buildCard() {
     return WiggleWidget(
       wiggle: card.isSelectable,
       child: FittedBox(
@@ -35,37 +53,37 @@ class CardWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(CardDimensions.borderRadius),
             border: Border.all(color: Colors.black, width: 1),
           ),
-          child: card.isRevealed ? _buildFaceUp() : _buildFaceDown(),
+          child: card.isRevealed ? buildFaceUp() : buildFaceDown(),
         ),
       ),
     );
   }
 
   /// Builds a widget for displaying a regular card with suit and rank.
-  Widget _buildFaceUp() {
+  Widget buildFaceUp() {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Stack(
         children: [
           Column(
             children: [
-              _buildRank(),
+              buildRank(),
               const Spacer(),
-              _buildValue(),
+              buildValue(),
             ],
           ),
 
           //
           // Display the center representation of the Suite & Card
           //
-          ..._buildSuitSymbols(),
+          ...buildSuitSymbols(),
         ],
       ),
     );
   }
 
-  Widget _buildRank() {
-    final color = _getSuitColor(card.suit);
+  Widget buildRank() {
+    final color = getSuitColor(card.suit);
     switch (card.rank) {
       case '§':
         return Row(
@@ -77,6 +95,8 @@ class CardWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.normal,
+                decoration: TextDecoration.none,
                 color: color,
               ),
             ),
@@ -93,6 +113,7 @@ class CardWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
+                decoration: TextDecoration.none,
                 color: color,
               ),
             ),
@@ -101,6 +122,7 @@ class CardWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                decoration: TextDecoration.none,
                 color: color,
               ),
             ),
@@ -115,6 +137,7 @@ class CardWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
+                decoration: TextDecoration.none,
                 color: color,
               ),
             ),
@@ -123,7 +146,7 @@ class CardWidget extends StatelessWidget {
     }
   }
 
-  Widget _buildValue() {
+  Widget buildValue() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -133,14 +156,15 @@ class CardWidget extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: _getSuitColor(card.suit),
+            decoration: TextDecoration.none,
+            color: getSuitColor(card.suit),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildFaceDown() {
+  Widget buildFaceDown() {
     return const DecoratedBox(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -151,33 +175,34 @@ class CardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSuitSymbol({final double size = 18}) {
+  Widget buildSuitSymbol({final double size = 18}) {
     return Text(
       card.suit,
       style: TextStyle(
         fontSize: size,
-        color: _getSuitColor(card.suit),
+        color: getSuitColor(card.suit),
+        decoration: TextDecoration.none,
       ),
     );
   }
 
-  List<Widget> _buildSuitSymbols() {
+  List<Widget> buildSuitSymbols() {
     List<Widget> symbols = [];
     int numSymbols = card.value;
 
     List<Offset> positions;
     switch (numSymbols) {
       case -2: // Joker
-        return [_figureCards('⛳')];
+        return [figureCards('⛳')];
       case 0: // King
-        return [_figureCards('♚')];
+        return [figureCards('♚')];
       case 12: // Queen
-        return [_figureCards('♛')];
+        return [figureCards('♛')];
       case 11: // Jack
-        return [_figureCards('♝')];
+        return [figureCards('♝')];
 
       case 1:
-        return [Center(child: _buildSuitSymbol(size: 30))];
+        return [Center(child: buildSuitSymbol(size: 30))];
 
       // Layout for number cards 2 to 10
       case 2:
@@ -297,7 +322,7 @@ class CardWidget extends StatelessWidget {
         Positioned(
           left: 35 + position.dx, // Adjust 50 to center horizontally
           top: 70 + position.dy, // Adjust 75 to center vertically
-          child: _buildSuitSymbol(),
+          child: buildSuitSymbol(),
         ),
       );
     }
@@ -305,21 +330,25 @@ class CardWidget extends StatelessWidget {
     return symbols;
   }
 
-  Widget _figureCards(final String text) {
+  Widget figureCards(final String text) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(top: 30.0),
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: TextStyle(color: _getSuitColor(card.suit), fontSize: 60),
+          style: TextStyle(
+            color: getSuitColor(card.suit),
+            fontSize: 60,
+            decoration: TextDecoration.none,
+          ),
         ),
       ),
     );
   }
 
   /// Returns the color associated with the suit string.
-  Color _getSuitColor(String suit) {
+  Color getSuitColor(String suit) {
     switch (suit) {
       case '♥️':
       case '♦️':
@@ -341,4 +370,22 @@ class CardDimensions {
   static const double height = 150.0;
   static const double margin = 4.0;
   static const double borderRadius = 4.0;
+}
+
+Widget dragSource(final CardModel card) {
+  return Draggable<CardModel>(
+    data: card,
+    feedback: Opacity(
+      opacity: 0.8,
+      child: CardWidget(
+        card: card,
+        onDropped: null,
+      ),
+    ),
+    childWhenDragging: SizedBox(), // hide it when dragging
+    child: CardWidget(
+      card: card,
+      onDropped: null,
+    ),
+  );
 }

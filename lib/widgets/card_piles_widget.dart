@@ -10,6 +10,7 @@ class CardPilesWidget extends StatelessWidget {
     required this.onPickedFromDrawPile,
     required this.onPickedFromDiscardPile,
     required this.revealTopDeckCard,
+    required this.onDragDropped,
   });
 
   final List<CardModel> cardsInDrawPile;
@@ -17,6 +18,7 @@ class CardPilesWidget extends StatelessWidget {
   final VoidCallback onPickedFromDrawPile;
   final VoidCallback onPickedFromDiscardPile;
   final bool revealTopDeckCard;
+  final Function(CardModel source, CardModel target) onDragDropped;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,9 @@ class CardPilesWidget extends StatelessWidget {
             onDraw: onPickedFromDrawPile,
             revealTopDeckCard: revealTopDeckCard,
             wiggleTopCard: !revealTopDeckCard,
+            isDropSource: true,
+            isDropTarget: false,
+            onDragDropped: onDragDropped,
           ),
           // Gap
           SizedBox(
@@ -49,6 +54,9 @@ class CardPilesWidget extends StatelessWidget {
             onDraw: onPickedFromDiscardPile,
             revealTopDeckCard: true,
             wiggleTopCard: !revealTopDeckCard,
+            isDropSource: !revealTopDeckCard,
+            isDropTarget: revealTopDeckCard,
+            onDragDropped: onDragDropped,
           ),
         ],
       ),

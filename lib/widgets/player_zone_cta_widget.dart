@@ -40,7 +40,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         // 1) swap with any of the players card > Move to next players [pickCardFromEitherPiles]
         // 2) discard > this will move the state to >>> [revealOneHiddenCard]
         case GameStates.swapTopDeckCardWithAnyCardsInHandOrDiscard:
-          return ctaSwapTopDeckCardWithAnyCardsInHandOrDiscard();
+          return ctaSwapTopDeckCardWithAnyCardsInHandOrDiscard(context);
 
         // swap the discarded card with any of the players card >>>> Move to next players [pickCardFromEitherPiles]
         case GameStates.swapDiscardedCardWithAnyCardsInHand:
@@ -59,7 +59,9 @@ class PlayerZoneCtaWidget extends StatelessWidget {
     }
   }
 
-  Widget ctaSwapTopDeckCardWithAnyCardsInHandOrDiscard() {
+  Widget ctaSwapTopDeckCardWithAnyCardsInHandOrDiscard(
+    final BuildContext context,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -70,6 +72,10 @@ class PlayerZoneCtaWidget extends StatelessWidget {
             wiggleTopCard: false,
             cardsAreHidden: true,
             revealTopDeckCard: true,
+            isDropSource: true,
+            isDropTarget: false,
+            onDragDropped: (cardSource, cardTarget) =>
+                gameModel.onDropCardOnCard(context, cardSource, cardTarget),
           ),
         ),
         buildMiniInstructions(
@@ -91,6 +97,10 @@ class PlayerZoneCtaWidget extends StatelessWidget {
             cardsAreHidden: false,
             wiggleTopCard: true,
             revealTopDeckCard: true,
+            isDropSource: false,
+            isDropTarget: true,
+            onDragDropped: (cardSource, cardTarget) =>
+                gameModel.onDropCardOnCard(context, cardSource, cardTarget),
           ),
         ),
       ],
@@ -111,6 +121,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         ),
         CardWidget(
           card: gameModel.deck.cardsDeckDiscarded.last,
+          onDropped: null,
         ),
       ],
     );
@@ -136,9 +147,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
             'Draw\na card\nhere\n→',
             TextAlign.left,
           ),
-        const SizedBox(
-          width: 10,
-        ),
+        const SizedBox(width: 10),
         FittedBox(
           fit: BoxFit.scaleDown,
           child: CardPilesWidget(
@@ -151,6 +160,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
             onPickedFromDrawPile: () {
               gameModel.selectTopCardOfDeck(context, fromDiscardPile: false);
             },
+
             //
             // discarded pile
             //
@@ -158,11 +168,10 @@ class PlayerZoneCtaWidget extends StatelessWidget {
             onPickedFromDiscardPile: () {
               gameModel.selectTopCardOfDeck(context, fromDiscardPile: true);
             },
+            onDragDropped: (cardSource, cardTarget) {},
           ),
         ),
-        const SizedBox(
-          width: 10,
-        ),
+        const SizedBox(width: 10),
         buildMiniInstructions(
           true,
           'or\nhere\n←',
