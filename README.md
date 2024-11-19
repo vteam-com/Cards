@@ -66,6 +66,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Flutter team for the excellent framework
 - Contributors and open-source projects that inspired this app
 
-## Call Graph
+## Layer Dependency Diagram
 
-![Call Graph](./graph.svg)
+![layers.svg](layers.svg)
+
+## Graph Call
+
+install
+
+```dart pub global activate lakos```
+
+```brew install graphviz```
+
+run
+```./graph.sh```
+
+![graph.svg](graph.svg)

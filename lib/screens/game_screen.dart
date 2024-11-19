@@ -5,7 +5,7 @@ import 'package:cards/models/game_model.dart';
 import 'package:cards/models/game_over_dialog.dart';
 import 'package:cards/models/misc.dart';
 import 'package:cards/screens/screen.dart';
-import 'package:cards/widgets/player_zone_widget.dart';
+import 'package:cards/widgets/player/player_zone_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 

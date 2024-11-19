@@ -1,7 +1,7 @@
 import 'package:cards/models/game_model.dart';
-import 'package:cards/widgets/card_pile_widget.dart';
-import 'package:cards/widgets/card_piles_widget.dart';
-import 'package:cards/widgets/card_widget.dart';
+import 'package:cards/widgets/cards/card_pile_widget.dart';
+import 'package:cards/widgets/cards/card_piles_widget.dart';
+import 'package:cards/widgets/cards/card_widget.dart';
 import 'package:flutter/material.dart';
 
 class PlayerZoneCtaWidget extends StatelessWidget {
