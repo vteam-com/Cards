@@ -6,35 +6,46 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-bool backendReady = false;
+bool get isRunningOffLine => true;
+bool backendReady = isRunningOffLine;
 
-bool get isRunningOffLine =>
-    DefaultFirebaseOptions.currentPlatform.apiKey == 'YOUR_API_KEY';
+// DefaultFirebaseOptions.currentPlatform.apiKey == 'YOUR_API_KEY';
 
 Future<void> useFirebase() async {
   if (isRunningOffLine) {
     debugLog('---------------------');
     debugLog('RUNNING OFFLINE');
     debugLog('---------------------');
-    return;
-  }
-  try {
-    if (backendReady == false) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      await FirebaseAuth.instance.signInAnonymously();
-      backendReady = true;
+
+    backendReady = true;
+  } else {
+    try {
+      if (backendReady == false) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+
+        if (isRunningOffLine) {
+          await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+        }
+
+        await FirebaseAuth.instance.signInAnonymously();
+        backendReady = true;
+      }
+    } catch (e) {
+      backendReady = false;
+      debugLog('---------------------');
+      debugLog(e.toString());
+      debugLog('---------------------');
     }
-  } catch (e) {
-    backendReady = false;
-    debugLog('---------------------');
-    debugLog(e.toString());
-    debugLog('---------------------');
   }
 }
 
 Future<List<String>> getPlayersInRoom(final String roomId) async {
+  if (isRunningOffLine) {
+    return ['BOB,SUE,JOHN,MARY'];
+  }
+
   final DataSnapshot dataSnapshot = await FirebaseDatabase.instance
       .ref()
       .child('rooms/$roomId/invitees')
@@ -50,6 +61,10 @@ Future<List<String>> getPlayersInRoom(final String roomId) async {
 }
 
 void setPlayersInRoom(final String room, final Set<String> playersNames) {
+  if (isRunningOffLine) {
+    return;
+  }
+
   useFirebase().then((_) {
     FirebaseDatabase.instance
         .ref()

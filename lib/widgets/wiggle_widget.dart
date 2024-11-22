@@ -20,24 +20,23 @@ class WiggleWidgetState extends State<WiggleWidget>
   @override
   void initState() {
     super.initState();
-    if (widget.wiggle) {
-      // Initialize the animation controller
-      _controller = AnimationController(
-        duration: const Duration(milliseconds: 750),
-        vsync: this,
-      ); // Repeat the animation back and forth
 
-      _controller!.value = _random.nextDouble();
-      _controller!.repeat(reverse: true);
+    // Initialize the animation controller
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 750),
+      vsync: this,
+    ); // Repeat the animation back and forth
 
-      // Define the wiggle animation with a slight rotation angle
-      _wiggleAnimation = Tween<double>(begin: -0.05, end: 0.05).animate(
-        CurvedAnimation(
-          parent: _controller!,
-          curve: Curves.easeInOut,
-        ),
-      );
-    }
+    _controller!.value = _random.nextDouble();
+    _controller!.repeat(reverse: true);
+
+    // Define the wiggle animation with a slight rotation angle
+    _wiggleAnimation = Tween<double>(begin: -0.05, end: 0.05).animate(
+      CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
   @override
@@ -49,20 +48,20 @@ class WiggleWidgetState extends State<WiggleWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.wiggle && _wiggleAnimation != null) {
-      return AnimatedBuilder(
-        animation: _wiggleAnimation!,
-        builder: (context, child) {
-          return Transform.rotate(
-            angle: _wiggleAnimation!.value,
-            child: child,
-          );
-        },
-        child: widget.child,
-      );
-    } else {
-      // just display as is
-      return widget.child;
+    if (widget.wiggle) {
+      if (_wiggleAnimation != null) {
+        return AnimatedBuilder(
+          animation: _wiggleAnimation!,
+          builder: (context, child) {
+            return Transform.rotate(
+              angle: _wiggleAnimation!.value,
+              child: child,
+            );
+          },
+          child: widget.child,
+        );
+      }
     }
+    return widget.child;
   }
 }

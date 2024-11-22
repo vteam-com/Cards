@@ -72,7 +72,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
             wiggleTopCard: false,
             cardsAreHidden: true,
             revealTopDeckCard: true,
-            isDropSource: true,
+            isDragSource: true,
             isDropTarget: false,
             onDragDropped: (cardSource, cardTarget) =>
                 gameModel.onDropCardOnCard(context, cardSource, cardTarget),
@@ -97,7 +97,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
             cardsAreHidden: false,
             wiggleTopCard: true,
             revealTopDeckCard: true,
-            isDropSource: false,
+            isDragSource: false,
             isDropTarget: true,
             onDragDropped: (cardSource, cardTarget) =>
                 gameModel.onDropCardOnCard(context, cardSource, cardTarget),
@@ -119,10 +119,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
         const SizedBox(
           width: 10,
         ),
-        CardWidget(
-          card: gameModel.deck.cardsDeckDiscarded.last,
-          onDropped: null,
-        ),
+        dragSource(gameModel.deck.cardsDeckDiscarded.last),
       ],
     );
   }

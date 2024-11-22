@@ -61,10 +61,16 @@ class GameModel with ChangeNotifier {
     if (_gameState != value) {
       _gameState = value;
 
-      if (backendReady) {
-        final refPlayers =
-            FirebaseDatabase.instance.ref().child('rooms/$gameRoomId');
-        refPlayers.set(this.toJson());
+      if (isRunningOffLine) {
+        notifyListeners();
+      } else {
+        if (backendReady) {
+          if (isRunningOffLine == false) {
+            final refPlayers =
+                FirebaseDatabase.instance.ref().child('rooms/$gameRoomId');
+            refPlayers.set(this.toJson());
+          }
+        }
       }
     }
   }
@@ -159,6 +165,11 @@ class GameModel with ChangeNotifier {
     };
   }
 
+  @override
+  String toString() {
+    return '${deck.cardsDeckPile.last} ${deck.cardsDeckDiscarded.last}';
+  }
+
   /// Returns the name of the player at the given index.
   String getPlayerName(final int index) {
     if (index < 0 || index >= players.length) {
@@ -239,23 +250,37 @@ class GameModel with ChangeNotifier {
           gameState = GameStates.revealOneHiddenCard;
           return;
         } else {
-          // Find the index of the target card in the player's hand
-          final int targetIndex =
-              players[playerIdPlaying].hand.indexOf(cardTarget);
-
-          if (targetIndex != -1) {
-            swapCardWithTopPile(
-              players[playerIdPlaying],
-              targetIndex,
-            );
-            moveToNextPlayer(context); // Assuming context is available
-            // Optionally add a state update notification here
-            notifyListeners();
-          }
+          swapDragCardOnPlayersTargetCard(cardTarget, context);
+        }
+      case GameStates.swapDiscardedCardWithAnyCardsInHand:
+        if (cardTarget == deck.cardsDeckDiscarded.last) {
+          // Player has just drop the card back down
+          // do nothing
+          return;
+        } else {
+          swapDragCardOnPlayersTargetCard(cardTarget, context);
         }
       default:
         // Do nothing or handle other states if necessary
         break;
+    }
+  }
+
+  void swapDragCardOnPlayersTargetCard(
+    CardModel cardTarget,
+    BuildContext context,
+  ) {
+    // Find the index of the target card in the player's hand
+    final int targetIndex = players[playerIdPlaying].hand.indexOf(cardTarget);
+
+    if (targetIndex != -1) {
+      swapCardWithTopPile(
+        players[playerIdPlaying],
+        targetIndex,
+      );
+      moveToNextPlayer(context); // Assuming context is available
+      // Optionally add a state update notification here
+      notifyListeners();
     }
   }
 

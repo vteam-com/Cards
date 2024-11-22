@@ -68,7 +68,7 @@ void main() {
 
     test('toString returns correct string representation', () {
       final card = CardModel(suit: '♠️', rank: 'A');
-      expect(card.toString(), 'A♠️_');
+      expect(card.toString(), 'A♠️_ ');
     });
 
     test('suits list contains all required suits', () {

@@ -10,7 +10,7 @@ class CardPileWidget extends StatelessWidget {
     required this.cardsAreHidden,
     required this.wiggleTopCard,
     required this.revealTopDeckCard,
-    required this.isDropSource,
+    required this.isDragSource,
     required this.isDropTarget,
     required this.onDragDropped,
   });
@@ -19,7 +19,7 @@ class CardPileWidget extends StatelessWidget {
   final VoidCallback? onDraw;
   final bool cardsAreHidden;
   final bool revealTopDeckCard;
-  final bool isDropSource;
+  final bool isDragSource;
   final bool isDropTarget;
   final bool wiggleTopCard;
   final Function(CardModel source, CardModel target) onDragDropped;
@@ -55,7 +55,7 @@ class CardPileWidget extends StatelessWidget {
               return Positioned(
                 left: offset,
                 top: offset,
-                child: isDropSource
+                child: isDragSource
                     ? dragSource(card)
                     : CardWidget(
                         card: card,

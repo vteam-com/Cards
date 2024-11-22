@@ -1,6 +1,6 @@
 import 'dart:async';
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+// import 'dart:html' as html;
 import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/game_model.dart';
 import 'package:cards/screens/game_screen.dart';
@@ -53,7 +53,7 @@ class StartScreenState extends State<StartScreen> {
 
   /// Returns the trimmed player name entered by the user.
   String get _playerName => _controllerName.text.trim();
-  bool waitingOnFirstBackendData = true;
+  bool _waitingOnFirstBackendData = !isRunningOffLine;
   bool _isExpandedRules = false;
   bool _isExpandedRooms = false;
 
@@ -73,6 +73,14 @@ class StartScreenState extends State<StartScreen> {
   }
 
   void _processUrlArguments() {
+    if (isRunningOffLine) {
+      // '?room=BANANA&players=BOB,SUE,JOHN'
+      _playerNames = {'BOB', 'SUE', 'JOHN'};
+      _controllerRoom.text = 'BANANA';
+      _controllerName.text = 'BOB';
+      return;
+    }
+
     // Example URL: https://your-app-url?room=MYROOM&players=PLAYER1,PLAYER2
     final uri = Uri.parse(Uri.base.toString());
     final roomFromUrl = uri.queryParameters['room'];
@@ -96,6 +104,7 @@ class StartScreenState extends State<StartScreen> {
       //Delay setting players in room until after initial data load completes
       Future.delayed(Duration.zero, () async {
         await useFirebase(); // Ensure Firebase is initialized
+
         setPlayersInRoom(roomId, _playerNames); // Update backend with players
       });
     }
@@ -107,11 +116,11 @@ class StartScreenState extends State<StartScreen> {
 
   void prepareBackEndForRoom(final String roomId) {
     if (isRunningOffLine) {
-      waitingOnFirstBackendData = false;
+      _waitingOnFirstBackendData = false;
       return;
     }
 
-    waitingOnFirstBackendData = true;
+    _waitingOnFirstBackendData = true;
 
     _streamSubscription?.cancel();
 
@@ -121,11 +130,11 @@ class StartScreenState extends State<StartScreen> {
 
       setState(() {
         _playerNames = Set.from(invitees);
-        waitingOnFirstBackendData = false;
+        _waitingOnFirstBackendData = false;
         // Listen for updates
         _streamSubscription =
             onBackendInviteesUpdated(roomId, (invitees) async {
-          final listOfRooms = await getAllRooms();
+          final List<String> listOfRooms = await getAllRooms();
 
           setState(() {
             this._listOfRooms = listOfRooms;
@@ -139,7 +148,7 @@ class StartScreenState extends State<StartScreen> {
   @override
   Widget build(BuildContext context) {
     return Screen(
-      isWaiting: waitingOnFirstBackendData,
+      isWaiting: _waitingOnFirstBackendData,
       title: '9 Cards Golf',
       getLinkToShare: () {
         return getUrlToGame();
@@ -394,18 +403,21 @@ class StartScreenState extends State<StartScreen> {
   }
 
   String getUrlToGame() {
-    return html.window.location.origin +
-        GameModel.getLinkToGameFromInput(roomId, _playerNames.toList());
+    if (kIsWeb) {
+      // return html.window.location.origin +
+      //     GameModel.getLinkToGameFromInput(roomId, _playerNames.toList());
+    }
+    return '';
   }
 
   void updateUrlWithoutReload() {
     if (kIsWeb) {
       // Push the new state to the browser's history
-      html.window.history.pushState(
-        null,
-        'vteam cards $roomId',
-        getUrlToGame(),
-      );
+      // html.window.history.pushState(
+      //   null,
+      //   'vteam cards $roomId',
+      //   getUrlToGame(),
+      // );
     }
   }
 

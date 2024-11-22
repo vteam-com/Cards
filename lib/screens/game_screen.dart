@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/game_model.dart';
 import 'package:cards/models/game_over_dialog.dart';
 import 'package:cards/models/misc.dart';
@@ -42,14 +43,24 @@ class GameScreenState extends State<GameScreen> {
 
   /// Flag indicating whether the layout is for a phone-sized screen.
   bool phoneLayout = false;
-  bool isReady = false;
+  bool isReady = isRunningOffLine;
   int updateCount = 0;
 
   @override
   void initState() {
     super.initState();
     _createGlobalKeyForPlayers();
-    _initializeFirebaseListener();
+    if (isRunningOffLine) {
+      _getFirebaseData();
+      widget.gameModel.addListener(() {
+        // Update the UI when the game model changes
+        setState(() {
+          // Update the UI
+        });
+      });
+    } else {
+      _initializeFirebaseListener();
+    }
 
     /// Scroll to the active player after the layout is built.
     _scrollController = ScrollController();
@@ -78,7 +89,7 @@ class GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    debugLog('GAME SCREEN - BUILD($updateCount)');
+    debugLog('GAME SCREEN - BUILD($updateCount) ${widget.gameModel}');
     return Screen(
       isWaiting: !isReady,
       title: '${widget.gameModel.getGameStateAsString()} (${++updateCount})',
@@ -103,27 +114,36 @@ class GameScreenState extends State<GameScreen> {
   /// the retrieved data.  Finally, sets the loading state back to false
   /// after the data has been processed.
   void _onRefresh() {
-    setState(() {
-      isReady = false;
-    });
     _getFirebaseData();
   }
 
   /// Initializes the Firebase listener for game state updates.
   void _initializeFirebaseListener() {
-    _streamSubscription = FirebaseDatabase.instance
-        .ref(_getFirebaseRef())
-        .onValue
-        .listen((DatabaseEvent event) {
-      _dataSnapshotToGameModel(event.snapshot);
-    });
+    if (isRunningOffLine) {
+      _jsonToGameModel(fakeData());
+    } else {
+      _streamSubscription = FirebaseDatabase.instance
+          .ref(_getFirebaseRef())
+          .onValue
+          .listen((DatabaseEvent event) {
+        _dataSnapshotToGameModel(event.snapshot);
+      });
+    }
+  }
+
+  Map<String, dynamic> fakeData() {
+    return widget.gameModel.toJson();
   }
 
   /// Fetches game data from Firebase
   Future<void> _getFirebaseData() async {
-    final DataSnapshot snapshot =
-        await FirebaseDatabase.instance.ref(_getFirebaseRef()).get();
-    _dataSnapshotToGameModel(snapshot);
+    if (isRunningOffLine) {
+      _jsonToGameModel(fakeData());
+    } else {
+      final DataSnapshot snapshot =
+          await FirebaseDatabase.instance.ref(_getFirebaseRef()).get();
+      _dataSnapshotToGameModel(snapshot);
+    }
   }
 
   void _createGlobalKeyForPlayers() {
@@ -143,19 +163,23 @@ class GameScreenState extends State<GameScreen> {
       // Convert the data to a Map<String, dynamic>
       String jsonData = jsonEncode(data);
       Map<String, dynamic> mapData = jsonDecode(jsonData);
-      widget.gameModel.fromJson(mapData);
-      setState(() {
-        _createGlobalKeyForPlayers();
-        if (widget.gameModel.gameState == GameStates.gameOver) {
-          showGameOverDialog(
-            context,
-            widget.gameModel.players,
-            widget.gameModel.initializeGame,
-          );
-        }
-      });
+      _jsonToGameModel(mapData);
     }
-    isReady = true;
+  }
+
+  void _jsonToGameModel(Map<String, dynamic> mapData) {
+    widget.gameModel.fromJson(mapData);
+    setState(() {
+      _createGlobalKeyForPlayers();
+      if (widget.gameModel.gameState == GameStates.gameOver) {
+        showGameOverDialog(
+          context,
+          widget.gameModel.players,
+          widget.gameModel.initializeGame,
+        );
+      }
+      isReady = true;
+    });
   }
 
   /// Adapts the layout based on the screen width.

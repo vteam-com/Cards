@@ -7,7 +7,8 @@
         {
             "name": "cards",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "flutterMode": "debug"
         },
         {
             "name": "cards (profile mode)",

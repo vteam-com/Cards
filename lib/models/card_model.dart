@@ -31,7 +31,7 @@ class CardModel {
 
   @override
   String toString() {
-    return '$rank$suit${isRevealed ? '|' : '_'}';
+    return '$rank$suit${isRevealed ? '|' : '_'}${isSelectable ? 'S' : ' '}';
   }
 
   Map<String, dynamic> toJson() {
