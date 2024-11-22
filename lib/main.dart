@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.green[900],
+        fontFamilyFallback: const ['Roboto'],
         textTheme: const TextTheme(
           bodyMedium: TextStyle(color: Colors.white),
           bodyLarge: TextStyle(color: Colors.white),

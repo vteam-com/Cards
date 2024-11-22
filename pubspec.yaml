@@ -60,6 +60,10 @@ flutter:
     - assets/images/background.png
     - assets/images/table_top.png
     - assets/images/back_of_card.png
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto/Roboto-Regular.ttf
 
 # dart run flutter_launcher_icons
 flutter_launcher_icons:
