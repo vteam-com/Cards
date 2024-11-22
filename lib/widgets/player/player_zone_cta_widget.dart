@@ -108,6 +108,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
   }
 
   Widget ctaSwapDiscardedCardWithAnyCardsInHand() {
+    gameModel.deck.cardsDeckDiscarded.last.isSelectable = false;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -127,7 +128,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
   Widget ctaFlipOneOfYourHiddenCards() {
     return buildMiniInstructions(
       true,
-      'Flip open one of your hidden cards',
+      '↓ Flip open one of your hidden cards ↓',
       TextAlign.center,
     );
   }
