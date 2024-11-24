@@ -12,13 +12,15 @@ class PlayerZoneWidget extends StatelessWidget {
     super.key,
     required this.gameModel,
     required this.player,
-    this.height = 750,
-    this.cardHeight = 400,
+    required this.heightZone,
+    required this.heightOfCTA,
+    required this.heightOfCardGrid,
   });
   final GameModel gameModel;
   final PlayerModel player;
-  final double height;
-  final double cardHeight;
+  final double heightZone;
+  final double heightOfCTA;
+  final double heightOfCardGrid;
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +30,11 @@ class PlayerZoneWidget extends StatelessWidget {
       children: [
         if (player.isActivePlayer)
           FadeIn(
-            child: containerBorder(width, height),
+            child: _containerBorder(width, heightZone),
           ),
         Container(
           width: width,
-          height: height,
+          height: heightZone,
           decoration: BoxDecoration(
             color: Colors.green.shade800.withAlpha(50),
             border: Border.all(
@@ -43,13 +45,13 @@ class PlayerZoneWidget extends StatelessWidget {
             // No shadow.
           ),
           padding: EdgeInsets.all(10),
-          child: buildContent(context),
+          child: _buildContent(context),
         ),
       ],
     );
   }
 
-  Widget containerBorder(double width, double height) {
+  Widget _containerBorder(double width, double height) {
     return Container(
       width: width,
       height: height,
@@ -75,7 +77,7 @@ class PlayerZoneWidget extends StatelessWidget {
     );
   }
 
-  Widget buildContent(final BuildContext context) {
+  Widget _buildContent(final BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -88,29 +90,36 @@ class PlayerZoneWidget extends StatelessWidget {
           name: player.name,
           sumOfRevealedCards: player.sumOfRevealedCards,
         ),
-        Divider(
-          color: Colors.white.withAlpha(100),
-        ),
+
+        //
+        // line
+        //
+        Divider(color: Colors.white.withAlpha(100)),
 
         //
         // CTA
         //
-        PlayerZoneCtaWidget(
-          player: player,
-          gameModel: gameModel,
+        SizedBox(
+          height: heightOfCTA,
+          child: PlayerZoneCtaWidget(
+            player: player,
+            gameModel: gameModel,
+          ),
         ),
-        Divider(
-          color: Colors.white.withAlpha(100),
-        ),
+
+        //
+        // line
+        //
+        Divider(color: Colors.white.withAlpha(100)),
 
         //
         // Cards in Hand
         //
         SizedBox(
-          height: cardHeight,
+          height: heightOfCardGrid,
           child: FittedBox(
-            fit: BoxFit.cover,
-            child: buildPlayerHand(
+            fit: BoxFit.scaleDown,
+            child: _buildPlayerHand(
               context,
               gameModel,
               player,
@@ -121,58 +130,54 @@ class PlayerZoneWidget extends StatelessWidget {
     );
   }
 
-  Widget buildPlayerHand(
+  Widget _buildPlayerHand(
     BuildContext context,
     GameModel gameModel,
     PlayerModel player,
   ) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Column(
-          children: [
-            Row(
-              children: [0, 1, 2].map(
-                (cardIndex) {
-                  return buildPlayerCardButton(
-                    context,
-                    gameModel,
-                    player,
-                    cardIndex,
-                  );
-                },
-              ).toList(),
-            ),
-            Row(
-              children: [3, 4, 5].map(
-                (cardIndex) {
-                  return buildPlayerCardButton(
-                    context,
-                    gameModel,
-                    player,
-                    cardIndex,
-                  );
-                },
-              ).toList(),
-            ),
-            Row(
-              children: [6, 7, 8].map(
-                (cardIndex) {
-                  return buildPlayerCardButton(
-                    context,
-                    gameModel,
-                    player,
-                    cardIndex,
-                  );
-                },
-              ).toList(),
-            ),
-          ],
-        );
-      },
+    return Column(
+      children: [
+        Row(
+          children: [0, 1, 2].map(
+            (cardIndex) {
+              return _buildPlayerCardButton(
+                context,
+                gameModel,
+                player,
+                cardIndex,
+              );
+            },
+          ).toList(),
+        ),
+        Row(
+          children: [3, 4, 5].map(
+            (cardIndex) {
+              return _buildPlayerCardButton(
+                context,
+                gameModel,
+                player,
+                cardIndex,
+              );
+            },
+          ).toList(),
+        ),
+        Row(
+          children: [6, 7, 8].map(
+            (cardIndex) {
+              return _buildPlayerCardButton(
+                context,
+                gameModel,
+                player,
+                cardIndex,
+              );
+            },
+          ).toList(),
+        ),
+      ],
     );
   }
 
-  Widget buildPlayerCardButton(
+  Widget _buildPlayerCardButton(
     BuildContext context,
     GameModel gameModel,
     PlayerModel player,

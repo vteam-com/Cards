@@ -21,7 +21,6 @@ digraph "" {
   "/lib/widgets/cards/card_pile_widget.dart" [label="card_pile_widget"];
   "/lib/widgets/cards/card_widget.dart" [label="card_widget"];
   "/lib/widgets/cards/card_face_widget.dart" [label="card_face_widget"];
-  "/lib/widgets/cards/card_piles_widget.dart" [label="card_piles_widget"];
   "/lib/widgets/wiggle_widget.dart" [label="wiggle_widget"];
   "/lib/widgets/players_in_room_widget.dart" [label="players_in_room_widget"];
   "/lib/widgets/text_edit_with_submit.dart" [label="text_edit_with_submit"];
@@ -72,7 +71,6 @@ digraph "" {
           "/lib/widgets/cards/card_pile_widget.dart";
           "/lib/widgets/cards/card_widget.dart";
           "/lib/widgets/cards/card_face_widget.dart";
-          "/lib/widgets/cards/card_piles_widget.dart";
         }
         subgraph "cluster~/lib/widgets/player" {
           label="player";
@@ -112,18 +110,15 @@ digraph "" {
   "/lib/screens/start_screen.dart" -> "/lib/widgets/rooms_widget.dart";
   "/lib/main.dart" -> "/lib/screens/start_screen.dart";
   "/lib/widgets/cards/card_pile_widget.dart" -> "/lib/models/card_model.dart";
+  "/lib/widgets/cards/card_pile_widget.dart" -> "/lib/widgets/cards/card_face_widget.dart";
   "/lib/widgets/cards/card_pile_widget.dart" -> "/lib/widgets/cards/card_widget.dart";
   "/lib/widgets/cards/card_widget.dart" -> "/lib/models/card_model.dart";
   "/lib/widgets/cards/card_widget.dart" -> "/lib/widgets/cards/card_face_widget.dart";
   "/lib/widgets/cards/card_widget.dart" -> "/lib/widgets/wiggle_widget.dart";
   "/lib/widgets/cards/card_face_widget.dart" -> "/lib/models/card_model.dart";
-  "/lib/widgets/cards/card_piles_widget.dart" -> "/lib/models/card_model.dart";
-  "/lib/widgets/cards/card_piles_widget.dart" -> "/lib/widgets/cards/card_pile_widget.dart";
   "/lib/widgets/text_edit_with_submit.dart" -> "/lib/models/misc.dart";
   "/lib/widgets/player/player_zone_cta_widget.dart" -> "/lib/models/game_model.dart";
   "/lib/widgets/player/player_zone_cta_widget.dart" -> "/lib/widgets/cards/card_pile_widget.dart";
-  "/lib/widgets/player/player_zone_cta_widget.dart" -> "/lib/widgets/cards/card_piles_widget.dart";
-  "/lib/widgets/player/player_zone_cta_widget.dart" -> "/lib/widgets/cards/card_widget.dart";
   "/lib/widgets/player/player_zone_widget.dart" -> "/lib/models/game_model.dart";
   "/lib/widgets/player/player_zone_widget.dart" -> "/lib/models/misc.dart";
   "/lib/widgets/player/player_zone_widget.dart" -> "/lib/widgets/cards/card_widget.dart";

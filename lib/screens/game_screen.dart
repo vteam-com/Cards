@@ -267,8 +267,9 @@ class GameScreenState extends State<GameScreen> {
               key: _playerKeys[index],
               gameModel: widget.gameModel,
               player: widget.gameModel.players[index],
-              height: 550,
-              cardHeight: 300,
+              heightZone: 550,
+              heightOfCTA: 140,
+              heightOfCardGrid: 300,
             ),
           );
         }),
@@ -286,8 +287,9 @@ class GameScreenState extends State<GameScreen> {
           key: _playerKeys[index],
           gameModel: widget.gameModel,
           player: widget.gameModel.players[index],
-          height: 700,
-          cardHeight: 400,
+          heightZone: 700,
+          heightOfCTA: 140,
+          heightOfCardGrid: 400,
         );
       }),
     );

@@ -1,4 +1,5 @@
 import 'package:cards/models/card_model.dart';
+import 'package:cards/widgets/cards/card_face_widget.dart';
 import 'package:cards/widgets/cards/card_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,7 @@ class CardPileWidget extends StatelessWidget {
     required this.isDragSource,
     required this.isDropTarget,
     required this.onDragDropped,
+    required this.scale,
   });
 
   final List<CardModel> cards;
@@ -22,13 +24,17 @@ class CardPileWidget extends StatelessWidget {
   final bool isDragSource;
   final bool isDropTarget;
   final bool wiggleTopCard;
-  final Function(CardModel source, CardModel target) onDragDropped;
+  final double scale;
+  final Function(CardModel source, CardModel target)? onDragDropped;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 190,
-      child: _buildPileUnplayedCards(), // Build the discard pile
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Transform.scale(
+        scale: scale,
+        child: _buildPileUnplayedCards(),
+      ),
     );
   }
 
@@ -40,7 +46,8 @@ class CardPileWidget extends StatelessWidget {
     return Tooltip(
       message: '${cards.length}\ncards',
       child: SizedBox(
-        width: 140.0,
+        height: CardDimensions.height * 1.50,
+        width: CardDimensions.width * 1.30,
         child: GestureDetector(
           onTap: onDraw,
           child: Stack(
