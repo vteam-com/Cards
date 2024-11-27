@@ -1,8 +1,10 @@
 {
     "cmake.ignoreCMakeListsMissing": true,
     "cSpell.words": [
+        "flutterfire",
         "prefs",
         "Roboto",
-        "vteam"
+        "vteam",
+        "webframeworks"
     ]
 }

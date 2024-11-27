@@ -189,7 +189,7 @@ class PlayerZoneCtaWidget extends StatelessWidget {
           wiggleTopCard: true,
           cardsAreHidden: false,
           revealTopDeckCard: true,
-          isDragSource: true,
+          isDragSource: false,
           isDropTarget: false,
           onDragDropped: null,
           onDraw: () =>

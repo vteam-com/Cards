@@ -6,10 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-bool get isRunningOffLine => true;
+bool get isRunningOffLine => false;
 bool backendReady = isRunningOffLine;
-
-// DefaultFirebaseOptions.currentPlatform.apiKey == 'YOUR_API_KEY';
 
 Future<void> useFirebase() async {
   if (isRunningOffLine) {
