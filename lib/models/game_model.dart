@@ -2,22 +2,26 @@
 import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/deck_model.dart';
 import 'package:cards/models/player_model.dart';
+import 'package:cards/models/skyjo_deck_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 export 'package:cards/models/deck_model.dart';
 export 'package:cards/models/player_model.dart';
 
-class GameModel with ChangeNotifier {
+abstract class GameModel with ChangeNotifier {
   /// Creates a new game model.
   ///
   /// [gameRoomId] is the ID of the room this game is in.
   /// [names] is the list of player names.
+  /// [cardsToDeal] is the number of cards to deal to each player
   /// [isNewGame] indicates whether this is a new game or joining an existing one.
   GameModel({
     required this.gameRoomId,
     required this.loginUserName,
     required final List<String> names,
+    required this.cardsToDeal,
+    required this.deck,
     bool isNewGame = false,
   }) {
     // Initialize players from the list of names
@@ -29,6 +33,9 @@ class GameModel with ChangeNotifier {
     }
   }
 
+  /// The number of cards to deal to each player
+  final int cardsToDeal;
+
   /// The ID of the game room.
   final String gameRoomId;
 
@@ -39,7 +46,7 @@ class GameModel with ChangeNotifier {
   final List<PlayerModel> players = [];
 
   /// The deck of cards used in the game.
-  DeckModel deck = DeckModel(1);
+  DeckModel deck;
 
   /// The index of the player currently playing.
   int playerIdPlaying = 0;
@@ -101,7 +108,7 @@ class GameModel with ChangeNotifier {
   /// - 'playerIdAttacking': index of player being attacked (-1 if not in final turn)
   /// - 'state': string representation of game state
   void _loadGameState(Map<String, dynamic> json) {
-    deck = DeckModel.fromJson(json['deck']);
+    deck = loadDeck(json['deck']);
     setActivePlayer(json['playerIdPlaying']);
     playerIdAttacking = json['playerIdAttacking'];
     _gameState = GameStates.values.firstWhere(
@@ -109,6 +116,9 @@ class GameModel with ChangeNotifier {
       orElse: () => GameStates.pickCardFromEitherPiles,
     );
   }
+
+  DeckModel loadDeck(Map<String, dynamic> json);
+  PlayerModel loadPlayer(Map<String, dynamic> json);
 
   /// Updates the game model from a JSON object.
   ///
@@ -132,7 +142,7 @@ class GameModel with ChangeNotifier {
     players.clear();
     int index = 0;
     for (final playerJson in playersJson) {
-      final PlayerModel player = PlayerModel.fromJson(playerJson);
+      final PlayerModel player = loadPlayer(playerJson);
       player.id = index++;
       players.add(player);
     }
@@ -205,11 +215,11 @@ class GameModel with ChangeNotifier {
     gameState = GameStates.pickCardFromEitherPiles;
   }
 
-  /// Deals 9 cards to the given player from the deck.
+  /// Deals the proper cards to the given player from the deck.
   ///
   /// [player The player to deal cards to.
   void dealCards(PlayerModel player) {
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < cardsToDeal; i++) {
       player.addCardToHand(deck.cardsDeckPile.removeLast());
     }
   }
@@ -416,8 +426,11 @@ class GameModel with ChangeNotifier {
     return true;
   }
 
+  void processEndOfTurn() {}
+
   /// Advances the game to the next player's turn.
   void moveToNextPlayer(BuildContext context) {
+    processEndOfTurn();
     if (isFinalTurn) {
       revealAllRemainingCardsFor(playerIdPlaying);
     } else {

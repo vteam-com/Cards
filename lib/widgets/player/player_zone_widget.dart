@@ -135,9 +135,9 @@ class PlayerZoneWidget extends StatelessWidget {
     GameModel gameModel,
     PlayerModel player,
   ) {
-    return Column(
+    return Row(
       children: [
-        Row(
+        Column(
           children: [0, 1, 2].map(
             (cardIndex) {
               return _buildPlayerCardButton(
@@ -149,7 +149,7 @@ class PlayerZoneWidget extends StatelessWidget {
             },
           ).toList(),
         ),
-        Row(
+        Column(
           children: [3, 4, 5].map(
             (cardIndex) {
               return _buildPlayerCardButton(
@@ -161,8 +161,20 @@ class PlayerZoneWidget extends StatelessWidget {
             },
           ).toList(),
         ),
-        Row(
+        Column(
           children: [6, 7, 8].map(
+            (cardIndex) {
+              return _buildPlayerCardButton(
+                context,
+                gameModel,
+                player,
+                cardIndex,
+              );
+            },
+          ).toList(),
+        ),
+        Column(
+          children: [9, 10, 11].map(
             (cardIndex) {
               return _buildPlayerCardButton(
                 context,
@@ -183,6 +195,9 @@ class PlayerZoneWidget extends StatelessWidget {
     PlayerModel player,
     int gridIndex,
   ) {
+    if (gridIndex >= player.hand.length) {
+      return Container();
+    }
     final CardModel card = player.hand[gridIndex];
 
     card.isRevealed = player.hand[gridIndex].isRevealed;

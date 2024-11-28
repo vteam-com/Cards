@@ -3,6 +3,7 @@ import 'dart:async';
 // import 'dart:html' as html;
 import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/game_model.dart';
+import 'package:cards/models/skyjo_game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';
 import 'package:cards/widgets/players_in_room_widget.dart';
@@ -386,7 +387,7 @@ class StartScreenState extends State<StartScreen> {
 
   /// Starts the game and navigates to the game screen.
   void startGame(BuildContext context) {
-    final newGame = GameModel(
+    final newGame = SkyjoGameModel(
       loginUserName: _controllerName.text.toUpperCase(),
       names: _playerNames.toList(),
       gameRoomId: roomId,

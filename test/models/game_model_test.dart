@@ -131,6 +131,8 @@ void main() {
       names: ['Player 1', 'Player 2'],
       gameRoomId: 'testRoom',
       isNewGame: true,
+      cardsToDeal: 12,
+      deck: DeckModel(1),
     );
 
     final jsonData = {
