@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cards/models/card_model.dart';
 import 'package:cards/widgets/cards/card_face_widget.dart';
 import 'package:flutter/material.dart';
@@ -26,32 +28,36 @@ class SkyjoCardFaceWidget extends CardFaceWidget {
       child: Stack(
         children: [
           Container(
-            color: getBackColor(card.value),
-            child: Column(
-              children: [
-                buildValue(),
-              ],
+            width: 200,
+            height: 300,
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                colors: [
+                  Colors.white,
+                  getBackColor(card.value),
+                ],
+                center: Alignment.center,
+                radius: 0.75,
+              ),
             ),
-          )
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget buildValue() {
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            card.value.toString(),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 60,
-              fontWeight: FontWeight.bold,
-              decoration: TextDecoration.none,
-              color: Colors.black,
+            // color: getBackColor(card.value),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  child: buildSmallText(),
+                ),
+                Center(child: buildMainText()),
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: Transform.rotate(
+                    angle: pi, // 180 degrees in radians
+                    child: buildSmallText(),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -59,21 +65,58 @@ class SkyjoCardFaceWidget extends CardFaceWidget {
     );
   }
 
-  Widget figureCards(final String text) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 30.0),
-        child: Text(
-          text,
+  Widget buildSmallText() {
+    return Stack(
+      children: [
+        // Transform.translate(
+        //   offset: Offset(-5, 0),
+        //   child: Transform.rotate(
+        //     angle: pi / 6,
+        //     child: Transform.scale(
+        //       scaleX: 1.5,
+        //       child: CircleAvatar(
+        //         radius: 10,
+        //         backgroundColor: Colors.white,
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        Text(
+          card.rank,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: getSuitColor(card.suit),
-            fontSize: 60,
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
             decoration: TextDecoration.none,
           ),
         ),
-      ),
+      ],
     );
+  }
+
+  Widget buildMainText() {
+    return Stack(children: [
+      Text(
+        card.value.toString(),
+        style: TextStyle(
+          fontFamily: 'Comic Sans MS',
+          fontSize: 60,
+          foreground: Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 6
+            ..color = Colors.white,
+          decoration: TextDecoration.none,
+        ),
+      ),
+      Text(card.value.toString(),
+          style: TextStyle(
+            fontFamily: 'Comic Sans MS',
+            fontSize: 60,
+            color: Colors.black,
+            decoration: TextDecoration.none,
+          ))
+    ]);
   }
 
   /// Returns the color associated with the suit string.
