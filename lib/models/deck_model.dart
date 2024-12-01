@@ -2,15 +2,17 @@ import 'package:cards/models/card_model.dart';
 export 'package:cards/models/card_model.dart';
 
 abstract class DeckModel {
-  DeckModel(this.numberOfDecks);
+  DeckModel({required this.numberOfDecks});
 
   int numberOfDecks = 0;
 
   List<CardModel> cardsDeckPile = [];
   List<CardModel> cardsDeckDiscarded = [];
 
-  void shuffle({required final int numberOfDecks}) {
+  void shuffle() {
     this.numberOfDecks = numberOfDecks;
+    cardsDeckPile = [];
+    cardsDeckDiscarded = [];
 
     // Generate the specified number of decks
     for (int deckCount = 0; deckCount < numberOfDecks; deckCount++) {

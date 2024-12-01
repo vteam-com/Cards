@@ -3,10 +3,10 @@ import 'package:cards/models/game_model.dart';
 export 'package:cards/models/card_model.dart';
 
 class FrenchSuitDeckModel extends DeckModel {
-  FrenchSuitDeckModel(super.numberOfDecks) : super();
+  FrenchSuitDeckModel({required super.numberOfDecks});
 
   factory FrenchSuitDeckModel.fromJson(Map<String, dynamic> json) {
-    return FrenchSuitDeckModel(json['numberOfDecks'] ?? 1)
+    return FrenchSuitDeckModel(numberOfDecks: json['numberOfDecks'] ?? 1)
       ..cardsDeckPile = List<FrenchSuitCardModel>.from(
         json['cardsDeckPile']
                 ?.map((card) => FrenchSuitCardModel.fromJson(card)) ??

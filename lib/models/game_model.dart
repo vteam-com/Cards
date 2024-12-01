@@ -199,9 +199,7 @@ abstract class GameModel with ChangeNotifier {
     playerIdPlaying = 0;
     playerIdAttacking = -1;
 
-    // Calculate number of decks based on number of players.
-    final int numDecks = (numPlayers - 2) ~/ 2;
-    deck.shuffle(numberOfDecks: 1 + numDecks);
+    deck.shuffle();
 
     // Deal 9 cards to each player and reveal the initial 3.
     for (final PlayerModel player in players) {

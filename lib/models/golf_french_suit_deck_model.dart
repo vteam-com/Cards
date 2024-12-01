@@ -4,10 +4,10 @@ import 'package:cards/models/golf_french_suit_card_model.dart';
 export 'package:cards/models/card_model.dart';
 
 class GolfFrenchSuitDeckModel extends DeckModel {
-  GolfFrenchSuitDeckModel(super.numberOfDecks) : super();
+  GolfFrenchSuitDeckModel({required super.numberOfDecks});
 
   factory GolfFrenchSuitDeckModel.fromJson(Map<String, dynamic> json) {
-    return GolfFrenchSuitDeckModel(json['numberOfDecks'] ?? 1)
+    return GolfFrenchSuitDeckModel(numberOfDecks: json['numberOfDecks'] ?? 1)
       ..cardsDeckPile = List<GolfFrenchSuitCardModel>.from(
         json['cardsDeckPile']
                 ?.map((card) => GolfFrenchSuitCardModel.fromJson(card)) ??

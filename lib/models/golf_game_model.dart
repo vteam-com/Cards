@@ -15,7 +15,8 @@ class GolfGameModel extends GameModel {
     super.isNewGame,
   }) : super(
           cardsToDeal: 9,
-          deck: GolfFrenchSuitDeckModel(((names.length + 1) ~/ 2)),
+          deck:
+              GolfFrenchSuitDeckModel(numberOfDecks: ((names.length + 1) ~/ 2)),
         );
 
   @override

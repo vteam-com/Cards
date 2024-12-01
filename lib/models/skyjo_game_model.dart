@@ -13,7 +13,7 @@ class SkyjoGameModel extends GameModel {
     required super.loginUserName,
     required super.names,
     super.isNewGame,
-  }) : super(cardsToDeal: 12, deck: SkyjoDeckModel(1));
+  }) : super(cardsToDeal: 12, deck: SkyjoDeckModel(numberOfDecks: 1));
 
   @override
   void processEndOfTurn() {
