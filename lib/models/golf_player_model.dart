@@ -1,4 +1,5 @@
 import 'package:cards/models/game_model.dart';
+import 'package:cards/models/golf_french_suit_card_model.dart';
 export 'package:cards/models/card_model.dart';
 
 class GolfPlayerModel extends PlayerModel {
@@ -21,7 +22,8 @@ class GolfPlayerModel extends PlayerModel {
   factory GolfPlayerModel.fromJson(Map<String, dynamic> json) {
     // Create a list of CardModel objects from the 'hand' JSON data.
     final hand = (json['hand'] as List<dynamic>)
-        .map((cardJson) => CardModel.fromJson(cardJson as Map<String, dynamic>))
+        .map((cardJson) =>
+            GolfFrenchSuitCardModel.fromJson(cardJson as Map<String, dynamic>))
         .toList();
 
     // Create a new PlayerModel instance with the parsed data.

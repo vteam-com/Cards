@@ -26,7 +26,7 @@ class GolfGameModel extends GameModel {
 
   @override
   PlayerModel loadPlayer(Map<String, dynamic> json) {
-    return PlayerModel.fromJson(json);
+    return GolfPlayerModel.fromJson(json);
   }
 
   @override
