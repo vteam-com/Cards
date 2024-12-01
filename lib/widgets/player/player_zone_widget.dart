@@ -135,57 +135,25 @@ class PlayerZoneWidget extends StatelessWidget {
     GameModel gameModel,
     PlayerModel player,
   ) {
+    List row = List.empty(growable: true);
+
+    // For now we always do columns of 3
+    for (int i = 0; i < player.hand.length - 2; i += 3) {
+      row.add(
+        Column(
+          children: [i, i + 1, i + 2].map((cardIndex) {
+            return _buildPlayerCardButton(
+              context,
+              gameModel,
+              player,
+              cardIndex,
+            );
+          }).toList(),
+        ),
+      );
+    }
     return Row(
-      children: [
-        Column(
-          children: [0, 1, 2].map(
-            (cardIndex) {
-              return _buildPlayerCardButton(
-                context,
-                gameModel,
-                player,
-                cardIndex,
-              );
-            },
-          ).toList(),
-        ),
-        Column(
-          children: [3, 4, 5].map(
-            (cardIndex) {
-              return _buildPlayerCardButton(
-                context,
-                gameModel,
-                player,
-                cardIndex,
-              );
-            },
-          ).toList(),
-        ),
-        Column(
-          children: [6, 7, 8].map(
-            (cardIndex) {
-              return _buildPlayerCardButton(
-                context,
-                gameModel,
-                player,
-                cardIndex,
-              );
-            },
-          ).toList(),
-        ),
-        Column(
-          children: [9, 10, 11].map(
-            (cardIndex) {
-              return _buildPlayerCardButton(
-                context,
-                gameModel,
-                player,
-                cardIndex,
-              );
-            },
-          ).toList(),
-        ),
-      ],
+      children: [...row],
     );
   }
 

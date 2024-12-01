@@ -25,8 +25,11 @@ class SkyjoGameModel extends GameModel {
       if (player.hand[i].isRevealed &&
           player.hand[i + 1].isRevealed &&
           player.hand[i + 2].isRevealed &&
-          player.areAllTheSameRank(player.hand[i].rank, player.hand[i + 1].rank,
-              player.hand[i + 2].rank)) {
+          player.areAllTheSameRank(
+            player.hand[i].rank,
+            player.hand[i + 1].rank,
+            player.hand[i + 2].rank,
+          )) {
         deck.cardsDeckDiscarded.add(player.hand[i]);
         player.hand.removeAt(i);
         deck.cardsDeckDiscarded.add(player.hand[i]);
@@ -48,5 +51,10 @@ class SkyjoGameModel extends GameModel {
   @override
   PlayerModel loadPlayer(Map<String, dynamic> json) {
     return SkyjoPlayerModel.fromJson(json);
+  }
+
+  @override
+  void addPlayer(String name) {
+    players.add(SkyjoPlayerModel(name: name));
   }
 }

@@ -96,27 +96,31 @@ class SkyjoCardFaceWidget extends CardFaceWidget {
   }
 
   Widget buildMainText() {
-    return Stack(children: [
-      Text(
-        card.value.toString(),
-        style: TextStyle(
-          fontFamily: 'Comic Sans MS',
-          fontSize: 60,
-          foreground: Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 6
-            ..color = Colors.white,
-          decoration: TextDecoration.none,
+    return Stack(
+      children: [
+        Text(
+          card.value.toString(),
+          style: TextStyle(
+            fontFamily: 'Comic Sans MS',
+            fontSize: 60,
+            foreground: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 6
+              ..color = Colors.white,
+            decoration: TextDecoration.none,
+          ),
         ),
-      ),
-      Text(card.value.toString(),
+        Text(
+          card.value.toString(),
           style: TextStyle(
             fontFamily: 'Comic Sans MS',
             fontSize: 60,
             color: Colors.black,
             decoration: TextDecoration.none,
-          ))
-    ]);
+          ),
+        ),
+      ],
+    );
   }
 
   /// Returns the color associated with the suit string.

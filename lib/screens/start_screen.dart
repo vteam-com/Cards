@@ -2,7 +2,6 @@ import 'dart:async';
 // ignore: avoid_web_libraries_in_flutter
 // import 'dart:html' as html;
 import 'package:cards/models/backend_model.dart';
-import 'package:cards/models/game_model.dart';
 import 'package:cards/models/skyjo_game_model.dart';
 import 'package:cards/screens/game_screen.dart';
 import 'package:cards/screens/screen.dart';

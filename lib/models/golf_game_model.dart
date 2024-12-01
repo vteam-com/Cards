@@ -1,5 +1,6 @@
 import 'package:cards/models/game_model.dart';
 import 'package:cards/models/golf_french_suit_deck_model.dart';
+import 'package:cards/models/golf_player_model.dart';
 
 class GolfGameModel extends GameModel {
   /// Creates a new Game game model.
@@ -25,5 +26,10 @@ class GolfGameModel extends GameModel {
   @override
   PlayerModel loadPlayer(Map<String, dynamic> json) {
     return PlayerModel.fromJson(json);
+  }
+
+  @override
+  void addPlayer(String name) {
+    players.add(GolfPlayerModel(name: name));
   }
 }

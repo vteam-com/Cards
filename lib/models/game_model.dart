@@ -2,7 +2,6 @@
 import 'package:cards/models/backend_model.dart';
 import 'package:cards/models/deck_model.dart';
 import 'package:cards/models/player_model.dart';
-import 'package:cards/models/skyjo_deck_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ abstract class GameModel with ChangeNotifier {
   /// [gameRoomId] is the ID of the room this game is in.
   /// [names] is the list of player names.
   /// [cardsToDeal] is the number of cards to deal to each player
+  /// [deck] a cardDeck to use for the game
   /// [isNewGame] indicates whether this is a new game or joining an existing one.
   GameModel({
     required this.gameRoomId,
@@ -62,6 +62,8 @@ abstract class GameModel with ChangeNotifier {
 
   /// The current state of the game.
   GameStates get gameState => _gameState;
+
+  void addPlayer(String name);
 
   /// Sets the game state and updates the database if backend is ready.
   set gameState(GameStates value) {

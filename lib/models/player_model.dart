@@ -39,7 +39,7 @@ class PlayerModel {
   int id = -1;
   final String name;
   bool isActivePlayer = false;
-  int get sumOfRevealedCards => _getSumOfCardsInHand();
+  int get sumOfRevealedCards => getSumOfCardsInHand();
   List<CardModel> hand = [];
 
   void reset() {
@@ -59,7 +59,7 @@ class PlayerModel {
     hand[5].isRevealed = true;
   }
 
-  int _getSumOfCardsInHand() {
+  int getSumOfCardsInHand() {
     int score = 0;
     for (final CardModel card in hand) {
       if (card.isRevealed) {

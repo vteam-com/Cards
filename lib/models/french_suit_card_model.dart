@@ -25,6 +25,7 @@ class FrenchSuitCardModel extends CardModel {
     return '$rank$suit${isRevealed ? '|' : '_'}${isSelectable ? 'S' : ' '}';
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'suit': suit,
