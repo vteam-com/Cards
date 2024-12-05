@@ -149,7 +149,7 @@ class StartScreenState extends State<StartScreen> {
   Widget build(BuildContext context) {
     return Screen(
       isWaiting: _waitingOnFirstBackendData,
-      title: '9 Cards Golf',
+      title: 'Card Games',
       getLinkToShare: () {
         return getUrlToGame();
       },
