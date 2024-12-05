@@ -22,8 +22,11 @@ class GolfPlayerModel extends PlayerModel {
   factory GolfPlayerModel.fromJson(Map<String, dynamic> json) {
     // Create a list of CardModel objects from the 'hand' JSON data.
     final hand = (json['hand'] as List<dynamic>)
-        .map((cardJson) =>
-            GolfFrenchSuitCardModel.fromJson(cardJson as Map<String, dynamic>))
+        .map(
+          (cardJson) => GolfFrenchSuitCardModel.fromJson(
+            cardJson as Map<String, dynamic>,
+          ),
+        )
         .toList();
 
     // Create a new PlayerModel instance with the parsed data.
